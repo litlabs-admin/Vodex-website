@@ -1,0 +1,177 @@
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #0d1013;
+  display: flex;
+  align-items: center;
+  /* Fill exactly the remaining viewport below the sticky header on load, so
+     the whole hero is visible with no extra scroll and the next (white)
+     section never peeks in. `dvh` accounts for mobile browser chrome
+     (address bar show/hide); each line is a progressively better fallback
+     for browsers that don't support the next one (an unsupported value is
+     simply invalid and ignored, leaving the prior line in effect). The
+     header (announcement bar + navbar) sits above the hero in normal flow
+     and isn't part of this box, so its height has to be subtracted — see
+     --header-h in globals.css. */
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: calc(100vh - var(--header-h));
+  min-height: calc(100dvh - var(--header-h));
+  /* Measured: 64px from the nav to the badge, 133px from the CTAs to the
+     bottom of the artwork (section is 632px tall at the 1516px artboard).
+     Now a floor rather than the sole driver of height — align-items above
+     centres the content within whatever extra space min-height adds. */
+  padding-block: 64px 132px;
+}
+
+/* The artwork is 1516x672 and sits 40px higher than the section, so its top
+   band runs behind the (opaque) navbar. */
+.backdrop {
+  position: absolute;
+  inset: -40px 0 0;
+  z-index: -1;
+}
+
+.backdrop img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 55%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Flex items must be allowed to shrink below their intrinsic width. */
+.content > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* --- Eyebrow badge -------------------------------------------------------- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 25px;
+  height: 50px;
+  padding-inline: 8px 20px;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+.badgeIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+}
+
+.badgeIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* --- Display heading ------------------------------------------------------ */
+
+/* The heading is left-aligned inside a block that is centred on the page. */
+.title {
+  margin-top: 39px;
+  align-self: center;
+  text-align: left;
+  font-size: var(--fs-display);
+  font-weight: 600;
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  color: #fff;
+}
+
+.title :global(.accent) {
+  /* Ancizar Serif Italic runs narrower than the reference serif; scaled up so
+     the accent word occupies the same measure as the design. */
+  font-size: 1.13em;
+  line-height: 1;
+}
+
+/* --- Lead ----------------------------------------------------------------- */
+
+.lead {
+  margin-top: 25px;
+  margin-inline: auto;
+  max-width: min(1160px, 100%);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  color: #fff;
+  text-align: center;
+}
+
+/* --- CTAs ----------------------------------------------------------------- */
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 43px;
+}
+
+@media (max-width: 1100px) {
+  .hero {
+    padding-block: 56px 96px;
+  }
+
+  .title,
+  .lead {
+    margin-top: 32px;
+  }
+
+  .actions {
+    margin-top: 36px;
+  }
+}
+
+@media (max-width: 720px) {
+  .hero {
+    padding-block: 44px 72px;
+  }
+
+  .badge {
+    height: 42px;
+    gap: 12px;
+    padding-inline: 6px 16px;
+    font-size: 14px;
+  }
+
+  .badgeIcon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .title {
+    text-align: center;
+  }
+
+  /* The design's hard line break only makes sense at desktop widths. */
+  .titleBreak {
+    display: none;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-self: stretch;
+    gap: 12px;
+    margin-top: 28px;
+  }
+}

@@ -1,0 +1,34 @@
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { ArrowRight } from "./icons";
+import styles from "./Button.module.css";
+
+type ButtonProps = {
+  href: string;
+  children: ReactNode;
+  variant?: "primary" | "secondary" | "light";
+  size?: "lg" | "sm";
+  /** Appends the long right arrow used throughout the design. */
+  withArrow?: boolean;
+  className?: string;
+};
+
+export function Button({
+  href,
+  children,
+  variant = "primary",
+  size = "lg",
+  withArrow = false,
+  className,
+}: ButtonProps) {
+  const classes = [styles.button, styles[size], styles[variant], className]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <Link href={href} className={classes}>
+      {children}
+      {withArrow ? <ArrowRight /> : null}
+    </Link>
+  );
+}

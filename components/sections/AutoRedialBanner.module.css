@@ -1,0 +1,28 @@
+.section {
+  background: var(--bg);
+  padding-block: 32px 88px;
+}
+
+.frame {
+  position: relative;
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  aspect-ratio: 4107 / 1024;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.frame img {
+  object-fit: cover;
+}
+
+@media (max-width: 720px) {
+  .section {
+    padding-block: 20px 56px;
+  }
+
+  .frame {
+    border-radius: 14px;
+  }
+}

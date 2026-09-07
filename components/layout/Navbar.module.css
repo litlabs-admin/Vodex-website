@@ -1,0 +1,177 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--ink);
+  color: #fff;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  height: var(--nav-h);
+  max-width: calc(var(--container-nav) + var(--page-x) * 2);
+  margin-inline: auto;
+  padding-inline: var(--page-x);
+}
+
+.logo {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand);
+  transition: opacity var(--dur) var(--ease);
+}
+
+.logo:hover {
+  opacity: 0.82;
+}
+
+/* --- Primary links -------------------------------------------------------- */
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 21px;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.link {
+  position: relative;
+  padding-block: 4px;
+  color: #fff;
+  transition: color var(--dur) var(--ease);
+}
+
+/* Underline grows from the left on hover. */
+.link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1.5px;
+  background: var(--brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur) var(--ease);
+}
+
+.link:hover::after {
+  transform: scaleX(1);
+}
+
+/* --- Actions -------------------------------------------------------------- */
+
+.actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.login {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 17px;
+  font-weight: 500;
+  transition: color var(--dur) var(--ease);
+}
+
+.login:hover {
+  color: var(--brand);
+}
+
+/* --- Mobile --------------------------------------------------------------- */
+
+.toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  margin-right: -8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggleBar {
+  display: block;
+  width: 20px;
+  height: 1.5px;
+  background: #fff;
+  transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
+}
+
+.toggleBar + .toggleBar {
+  margin-top: 5px;
+}
+
+.open .toggleBar:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+
+.open .toggleBar:nth-child(2) {
+  opacity: 0;
+}
+
+.open .toggleBar:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+.panel {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .links,
+  .login {
+    display: none;
+  }
+
+  .toggle {
+    display: inline-flex;
+    flex-direction: column;
+  }
+
+  .panel {
+    display: grid;
+    gap: 4px;
+    overflow: hidden;
+    max-height: 0;
+    background: var(--ink);
+    transition: max-height 320ms var(--ease);
+  }
+
+  .panelOpen {
+    max-height: 420px;
+  }
+
+  .panelInner {
+    display: grid;
+    gap: 4px;
+    padding-block: 8px 24px;
+  }
+
+  .panelLink {
+    padding-block: 12px;
+    font-size: 17px;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .panelActions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-top: 16px;
+  }
+}
+
+@media (max-width: 560px) {
+  .navCta {
+    display: none;
+  }
+}

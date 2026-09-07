@@ -1,0 +1,177 @@
+.section {
+  background: var(--ink);
+  padding-block: 32px 96px;
+}
+
+.banner {
+  position: relative;
+  isolation: isolate;
+  max-width: 1327px;
+  margin-inline: auto;
+  overflow: hidden;
+  padding: 64px 48px;
+}
+
+.bg {
+  z-index: 0;
+  object-fit: cover;
+}
+
+.grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding-inline: 18px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.title {
+  margin-top: 20px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: #fff;
+}
+
+.title :global(.accent) {
+  font-size: 1.05em;
+}
+
+.lead {
+  margin-top: 18px;
+  max-width: 440px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+/* --- Orbiting icon cluster --------------------------------------------------- */
+
+/* Geometry is driven entirely by --ring-outer; every other measurement is a
+   ratio of it, taken off the reference illustration (inner ring 0.54x the
+   outer, center mark 0.58x the outer radius, icon badge 0.30x). Change
+   --ring-outer alone to rescale the whole cluster. */
+.cluster {
+  --ring-outer: 148px;
+  --ring-inner: calc(var(--ring-outer) * 0.54);
+  --node: 44px;
+
+  position: relative;
+  width: calc(var(--ring-outer) * 2 + var(--node));
+  height: calc(var(--ring-outer) * 2 + var(--node));
+}
+
+.ringOuter,
+.ringInner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+}
+
+.ringOuter {
+  width: calc(var(--ring-outer) * 2);
+  height: calc(var(--ring-outer) * 2);
+}
+
+.ringInner {
+  width: calc(var(--ring-inner) * 2);
+  height: calc(var(--ring-inner) * 2);
+}
+
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(var(--ring-outer) * 0.58);
+  height: calc(var(--ring-outer) * 0.58);
+  display: grid;
+  place-items: center;
+}
+
+.center img {
+  width: 100%;
+  height: 100%;
+}
+
+/* Nodes are placed on the outer/inner ring circumference via trigonometric
+   rotate->translate->counter-rotate, keyed off a per-node --angle custom
+   property (0deg = 12 o'clock, clockwise) — see Logo's ring-dot mark for
+   the same technique. --radius is set per ring below. */
+.node {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--node);
+  height: var(--node);
+  margin: calc(var(--node) / -2) 0 0 calc(var(--node) / -2);
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.5);
+  transform: rotate(var(--angle)) translateY(calc(-1 * var(--radius))) rotate(calc(-1 * var(--angle)));
+  transition: transform var(--dur) var(--ease);
+}
+
+.node:hover {
+  transform: rotate(var(--angle)) translateY(calc(-1 * var(--radius))) rotate(calc(-1 * var(--angle))) scale(1.08);
+}
+
+.node img {
+  width: 22px;
+  height: 22px;
+}
+
+.nodeOuter {
+  --radius: var(--ring-outer);
+}
+
+.nodeInner {
+  --radius: var(--ring-inner);
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cluster {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .banner {
+    padding: 48px 24px;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

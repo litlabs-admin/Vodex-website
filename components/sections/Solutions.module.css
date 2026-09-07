@@ -1,0 +1,153 @@
+.section {
+  background: var(--ink);
+  color: #fff;
+  padding-block: 80px 88px;
+}
+
+/* --- Header ----------------------------------------------------------------- */
+
+.header {
+  max-width: 780px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding-inline: 20px;
+  border-radius: var(--radius-pill);
+  background: #ececec;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.title {
+  margin-top: 24px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.title :global(.accent) {
+  font-size: 1.05em;
+}
+
+.lead {
+  margin-top: 20px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--on-dark-muted);
+}
+
+/* Industry tabs live in IndustryTabs.tsx / .module.css (interactive). */
+
+/* --- Use-case rows -------------------------------------------------------------- */
+
+.rows {
+  margin-top: 80px;
+  display: grid;
+  gap: 64px;
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
+  align-items: center;
+  gap: 64px;
+}
+
+/* Alternating rows put the card on the left instead. */
+.row[data-reverse="true"] .text {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.row[data-reverse="true"] .card {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.label {
+  color: var(--brand);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.heading {
+  margin-top: 12px;
+  font-size: clamp(24px, 2.2vw, 32px);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.bullets {
+  margin-top: 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.bullets li {
+  position: relative;
+  padding-left: 20px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--on-dark-muted);
+}
+
+.bullets li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.72em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1747 / 1012;
+}
+
+@media (max-width: 1100px) {
+  .rows {
+    margin-top: 56px;
+    gap: 48px;
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+    gap: 40px;
+  }
+}
+
+@media (max-width: 820px) {
+  .section {
+    padding-block: 56px 64px;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .row[data-reverse="true"] .text,
+  .row[data-reverse="true"] .card {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .card {
+    max-width: 440px;
+    margin-inline: auto;
+  }
+}
+

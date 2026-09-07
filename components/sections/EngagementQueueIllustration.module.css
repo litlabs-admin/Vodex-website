@@ -1,0 +1,860 @@
+/* Registers --progress/--n as real animatable values so their consumers
+   (progress-bar clip-paths, the recovered-amount counter) tween smoothly
+   across keyframes instead of snapping between start/end values. */
+@property --progress {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --n {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 210;
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  /* Lets .illustration below scale itself to whatever width this frame
+     actually renders at (480px desktop down to ~380px on mobile), instead
+     of a from-scratch responsive reflow of the dense row layout. */
+  container-type: inline-size;
+}
+
+.bg {
+  object-fit: cover;
+  object-position: 50% 28%;
+}
+
+/* Lightened considerably from the first pass — the card used to fill ~87%
+   of the frame with a near-black scrim on top, so the supplied background
+   photo barely read at all. The card is now ~78% of the frame (see .card)
+   and the scrim is light enough that the chrome/asphalt photo is clearly
+   visible around all four sides. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    rgba(10, 8, 8, 0.34) 0%,
+    rgba(10, 8, 8, 0.04) 45%,
+    rgba(10, 8, 8, 0.3) 100%
+  );
+}
+
+/* Fixed-size design canvas, scaled down as one unit to fit whatever width
+   .stage actually has. 480px matches the frame's own default desktop width,
+   so on desktop this resolves to scale(1) — no upscaling blur. */
+.illustration {
+  position: absolute;
+  inset: 0;
+  width: 480px;
+  height: 610px;
+  transform-origin: top left;
+  transform: scale(calc(100cqw / 480));
+}
+
+/* --- "Fully Automated" ribbon ------------------------------------------- */
+
+.ribbon {
+  position: absolute;
+  top: 24px;
+  left: 0;
+  width: 205px;
+}
+
+.ribbon img {
+  width: 100%;
+  height: auto;
+}
+
+/* --- Card ------------------------------------------------------------------
+   Smaller than v1 (was top:70 left:32 right:28 bottom:10, ~420x530 — 87% of
+   the frame). Now ~392x470 (~78%), so real background photo shows on every
+   side instead of a thin sliver. */
+
+.card {
+  position: absolute;
+  top: 104px;
+  left: 44px;
+  right: 44px;
+  bottom: 36px;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.45);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.automatedPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding-inline: 11px;
+  border-radius: var(--radius-pill);
+  background: #fdece0;
+  color: var(--brand);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.automatedDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand);
+  animation: dotPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* --- Rows --------------------------------------------------------------------
+   No flex `gap` — rows 0 and 4 need their own margin to collapse to zero
+   when they leave/enter the queue, which a shared `gap` can't do (a gap
+   still reserves space for a zero-height flex item). Rows 1-3 get a plain
+   static margin-bottom instead. */
+
+.rows {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.rowTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatarWrap {
+  position: relative;
+  flex: none;
+}
+
+.avatar {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--brand);
+  background: #fff;
+  color: var(--brand);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.identity {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.note {
+  margin-top: 2px;
+  font-size: 10px;
+  color: var(--fg-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Single-state pill (rows 2-4). */
+.pill {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding-inline: 9px;
+  border-radius: var(--radius-pill);
+  background: #fdece0;
+  color: var(--brand);
+  font-size: 9.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Stacked pill (rows 0 and 1) — states crossfade in place so the pill's own
+   box never changes size/position under them. Width is set per row below,
+   since row 0 (3 states, incl. a check icon) needs more room than row 1
+   (2 states). */
+.pillStack {
+  position: relative;
+  flex: none;
+  height: 22px;
+}
+
+.rowInner0 .pillStack {
+  width: 100px;
+}
+
+.rowInner1 .pillStack {
+  width: 82px;
+}
+
+.pillStack .pill {
+  position: absolute;
+  inset: 0;
+  justify-content: center;
+  gap: 4px;
+}
+
+.pillDone {
+  background: #e8f9ef;
+  color: #1c8a4d;
+}
+
+.pillCheck {
+  width: 9px;
+  height: 9px;
+}
+
+/* --- Progress bars ------------------------------------------------------------ */
+
+.track {
+  position: relative;
+  margin-top: 10px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  /* Deliberately bolder than the reference's literal proportions — at this
+     card's compact intrinsic size a strictly-scaled-down track reads as a
+     hairline (caught during v1's own verification pass). */
+  background: #f7ddc9;
+  overflow: hidden;
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--brand);
+  clip-path: inset(0 calc((1 - var(--progress, 0)) * 100%) 0 0);
+}
+
+/* Diagonal sheen sweeping across the *active* row's fill — the classic
+   "working right now" signal. Two-layer: this outer element only gates
+   *when* it's visible (opacity, windowed per-row below); the inner element
+   runs its own continuous sweep. Splitting them avoids two animations
+   fighting over the same property on one element. */
+.sheenWindow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.sheen {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 46%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.75),
+    transparent
+  );
+  transform: translateX(-140%) skewX(-12deg);
+  animation: sheenSweep 1.4s linear infinite;
+}
+
+@keyframes sheenSweep {
+  to {
+    transform: translateX(260%) skewX(-12deg);
+  }
+}
+
+/* Expanding ring around the *active* row's avatar — same two-layer split as
+   the sheen above. */
+.activeRing {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.activeRingPulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--brand);
+  animation: ringPulse 1.6s ease-out infinite;
+}
+
+@keyframes ringPulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+/* Every "resets to its 0% value" keyframe below is masked by this shared
+   opacity dip near the loop seam, applied to every row's inner content —
+   without it, bars/pills snapping back to their idle values would be
+   visible as a jarring pop right before the loop restarts. */
+@keyframes queueReset {
+  0%,
+  88% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.2;
+  }
+  98%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ============================================================================
+   Row 0 — Leo Martins: works, captures, then the row leaves the queue.
+   ============================================================================ */
+
+.rowSlot0 {
+  animation: row0Fade 10s var(--ease) infinite forwards;
+}
+
+@keyframes row0Fade {
+  0%,
+  44% {
+    opacity: 1;
+    margin-bottom: 8px;
+  }
+  50%,
+  94% {
+    opacity: 0;
+    margin-bottom: 0;
+  }
+  100% {
+    opacity: 1;
+    margin-bottom: 8px;
+  }
+}
+
+/* grid-template-rows 0fr<->1fr is the FaqAccordion collapse trick
+   (Faq.module.css), keyframed here instead of transitioned. A row still
+   needs its own overflow:hidden grid *item* (.clip) so its content doesn't
+   force a min height while the track is animating through 0fr. */
+.collapse0 {
+  display: grid;
+  grid-template-rows: 1fr;
+  animation: row0Collapse 10s var(--ease) infinite forwards;
+}
+
+@keyframes row0Collapse {
+  0%,
+  46% {
+    grid-template-rows: 1fr;
+  }
+  54%,
+  92% {
+    grid-template-rows: 0fr;
+  }
+  100% {
+    grid-template-rows: 1fr;
+  }
+}
+
+.clip {
+  overflow: hidden;
+}
+
+.rowInner0 {
+  padding: 10px 12px;
+  border-radius: 13px;
+  animation:
+    row0Surface 10s var(--ease) infinite forwards,
+    queueReset 10s var(--ease) infinite forwards;
+}
+
+@keyframes row0Surface {
+  0%,
+  4% {
+    background: #fdf6f2;
+    box-shadow: 0 0 0 0 rgba(255, 77, 0, 0);
+  }
+  8%,
+  36% {
+    background: #fff2e6;
+    box-shadow: 0 0 0 0 rgba(255, 77, 0, 0);
+  }
+  40% {
+    background: #fdf6f2;
+    box-shadow: 0 0 0 9px rgba(255, 77, 0, 0.28);
+  }
+  46%,
+  100% {
+    background: #fdf6f2;
+    box-shadow: 0 0 0 0 rgba(255, 77, 0, 0);
+  }
+}
+
+.rowInner0 .activeRing,
+.rowInner0 .sheenWindow {
+  animation: row0Active 10s var(--ease) infinite forwards;
+}
+
+@keyframes row0Active {
+  0%,
+  4% {
+    opacity: 0;
+  }
+  8%,
+  34% {
+    opacity: 1;
+  }
+  38%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.row0Fill {
+  animation: row0Progress 10s var(--ease) infinite forwards;
+}
+
+@keyframes row0Progress {
+  0%,
+  4% {
+    --progress: 0.22;
+  }
+  38% {
+    --progress: 1;
+  }
+  44%,
+  100% {
+    --progress: 0.22;
+  }
+}
+
+.row0PillA {
+  animation: row0PillA 10s var(--ease) infinite forwards;
+}
+
+@keyframes row0PillA {
+  0%,
+  22% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  26%,
+  96% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.row0PillB {
+  animation: row0PillB 10s var(--ease) infinite forwards;
+}
+
+@keyframes row0PillB {
+  0%,
+  24% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  28%,
+  32% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  36%,
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.row0PillC {
+  animation: row0PillC 10s var(--ease) infinite forwards;
+}
+
+@keyframes row0PillC {
+  0%,
+  32% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.92);
+  }
+  36%,
+  90% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  95%,
+  100% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.92);
+  }
+}
+
+/* ============================================================================
+   Row 1 — Andrew Cole: idles, creeps, then becomes the active row once
+   Leo's has left.
+   ============================================================================ */
+
+.rowSlot {
+  margin-bottom: 8px;
+}
+
+.rowInner1 {
+  padding: 10px 12px;
+  border-radius: 13px;
+  animation:
+    row1Surface 10s var(--ease) infinite forwards,
+    queueReset 10s var(--ease) infinite forwards;
+}
+
+@keyframes row1Surface {
+  0%,
+  58% {
+    background: #fdf6f2;
+  }
+  62%,
+  86% {
+    background: #fff2e6;
+  }
+  90%,
+  100% {
+    background: #fdf6f2;
+  }
+}
+
+.rowInner1 .activeRing,
+.rowInner1 .sheenWindow {
+  animation: row1Active 10s var(--ease) infinite forwards;
+}
+
+@keyframes row1Active {
+  0%,
+  58% {
+    opacity: 0;
+  }
+  62%,
+  86% {
+    opacity: 1;
+  }
+  90%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.row1Fill {
+  animation: row1Progress 10s var(--ease) infinite forwards;
+}
+
+@keyframes row1Progress {
+  0%,
+  6% {
+    --progress: 0.55;
+  }
+  22%,
+  40% {
+    --progress: 0.63;
+  }
+  60% {
+    --progress: 0.63;
+  }
+  78%,
+  84% {
+    --progress: 0.92;
+  }
+  92%,
+  100% {
+    --progress: 0.55;
+  }
+}
+
+.row1PillA {
+  animation: row1PillA 10s var(--ease) infinite forwards;
+}
+
+@keyframes row1PillA {
+  0%,
+  64% {
+    opacity: 1;
+  }
+  68%,
+  96% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.row1PillB {
+  animation: row1PillB 10s var(--ease) infinite forwards;
+}
+
+@keyframes row1PillB {
+  0%,
+  66% {
+    opacity: 0;
+  }
+  70%,
+  88% {
+    opacity: 1;
+  }
+  92%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ============================================================================
+   Rows 2 & 3 — Amira Shah, Daniel Reyes: ambient creep only, on staggered
+   windows so the card is never fully still even between the two featured
+   beats above. Pills stay put — restrained, per the brief.
+   ============================================================================ */
+
+.rowInner {
+  padding: 10px 12px;
+  border-radius: 13px;
+  background: #fdf6f2;
+  animation: queueReset 10s var(--ease) infinite forwards;
+}
+
+.row2Fill {
+  animation: row2Progress 10s var(--ease) infinite forwards;
+}
+
+@keyframes row2Progress {
+  0%,
+  10% {
+    --progress: 0.42;
+  }
+  26%,
+  44% {
+    --progress: 0.5;
+  }
+  90%,
+  100% {
+    --progress: 0.42;
+  }
+}
+
+.row3Fill {
+  animation: row3Progress 10s var(--ease) infinite forwards;
+}
+
+@keyframes row3Progress {
+  0%,
+  30% {
+    --progress: 0.18;
+  }
+  48%,
+  64% {
+    --progress: 0.26;
+  }
+  92%,
+  100% {
+    --progress: 0.18;
+  }
+}
+
+/* ============================================================================
+   Row 4 — Priya Nair: enters once Leo's row clears, the visible proof the
+   queue is "continuously processing" rather than a fixed 4-account list.
+   ============================================================================ */
+
+.rowSlot4 {
+  animation: row4Fade 10s var(--ease) infinite forwards;
+}
+
+@keyframes row4Fade {
+  0%,
+  44% {
+    opacity: 0;
+    margin-bottom: 0;
+  }
+  52%,
+  88% {
+    opacity: 1;
+    margin-bottom: 0;
+  }
+  94%,
+  100% {
+    opacity: 0;
+    margin-bottom: 0;
+  }
+}
+
+.collapse4 {
+  display: grid;
+  grid-template-rows: 0fr;
+  animation: row4Collapse 10s var(--ease) infinite forwards;
+}
+
+@keyframes row4Collapse {
+  0%,
+  46% {
+    grid-template-rows: 0fr;
+  }
+  54%,
+  90% {
+    grid-template-rows: 1fr;
+  }
+  96%,
+  100% {
+    grid-template-rows: 0fr;
+  }
+}
+
+.rowInner4 {
+  padding: 10px 12px;
+  border-radius: 13px;
+  background: #fdf6f2;
+  animation: queueReset 10s var(--ease) infinite forwards;
+}
+
+.row4Fill {
+  animation: row4Progress 10s var(--ease) infinite forwards;
+}
+
+@keyframes row4Progress {
+  0%,
+  54% {
+    --progress: 0;
+  }
+  62%,
+  86% {
+    --progress: 0.1;
+  }
+  100% {
+    --progress: 0;
+  }
+}
+
+/* --- Summary bar -------------------------------------------------------------- */
+
+.summary {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: 13px;
+  background: var(--brand);
+  color: #fff;
+}
+
+.summaryValue {
+  animation: queueReset 10s var(--ease) infinite forwards;
+}
+
+.summaryRight {
+  text-align: right;
+}
+
+.summaryLabel {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.summaryFigure {
+  margin-top: 2px;
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.counterTail {
+  display: inline-block;
+  min-width: 2.1em;
+  animation: countTail 10s var(--ease) infinite forwards;
+}
+
+.counterTail::after {
+  content: counter(n);
+  counter-reset: n var(--n);
+}
+
+@keyframes countTail {
+  0%,
+  36% {
+    --n: 210;
+  }
+  56%,
+  88% {
+    --n: 450;
+  }
+  96%,
+  100% {
+    --n: 210;
+  }
+}
+
+.summaryEmph {
+  margin-top: 2px;
+  font-size: 17px;
+  font-weight: 700;
+  animation: emphPulse 10s var(--ease) infinite forwards;
+}
+
+@keyframes emphPulse {
+  0%,
+  82% {
+    transform: scale(1);
+    text-shadow: none;
+  }
+  88% {
+    transform: scale(1.12);
+    text-shadow: 0 0 14px rgba(255, 255, 255, 0.6);
+  }
+  96%,
+  100% {
+    transform: scale(1);
+    text-shadow: none;
+  }
+}
+
+/* Every keyframe above is authored so its 100% value equals its 0% value —
+   that's what makes the loop "settle back to start" instead of hard
+   cutting, and it also means the project's *existing* global
+   prefers-reduced-motion rule in globals.css (which forces
+   animation-iteration-count: 1 at ~0 duration) already lands on one
+   coherent idle-state frame for free — Leo's row expanded and idle,
+   Priya's row collapsed away — with no bespoke per-component override
+   needed. Don't add one if you touch this file again, it'd be redundant. */

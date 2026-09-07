@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+build/
+.DS_Store
+*.pem
+npm-debug.log*
+.env*
+!.env.example
+next-env.d.ts
+tsconfig.tsbuildinfo
+
+# Oversized source assets — too large for GitHub, kept locally only
+vodex assets.zip
+Vodex - Product_Page.pdf
