@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
 import { LoginIcon } from "@/components/ui/icons";
+import { SolutionsMegaMenu } from "./SolutionsMegaMenu";
 import styles from "./Navbar.module.css";
 
 const NAV_LINKS = [
@@ -26,13 +27,17 @@ export function Navbar() {
         </Link>
 
         <ul className={styles.links}>
-          {NAV_LINKS.map((item) => (
-            <li key={item.label}>
-              <Link href={item.href} className={styles.link}>
-                {item.label}
-              </Link>
-            </li>
-          ))}
+          {NAV_LINKS.map((item) =>
+            item.label === "Solutions" ? (
+              <SolutionsMegaMenu key={item.label} href={item.href} />
+            ) : (
+              <li key={item.label}>
+                <Link href={item.href} className={styles.link}>
+                  {item.label}
+                </Link>
+              </li>
+            )
+          )}
         </ul>
 
         <div className={styles.actions}>

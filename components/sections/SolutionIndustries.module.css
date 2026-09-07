@@ -1,0 +1,185 @@
+.section {
+  background: var(--bg);
+  padding-block: 80px 88px;
+}
+
+.header {
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding-inline: 20px;
+  border-radius: var(--radius-pill);
+  background: #ececec;
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.title {
+  margin-top: 24px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.lead {
+  margin-top: 20px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+}
+
+/* Full 1440px container width (not a narrower max-width like Resources'
+   1180px or WhyItWorks' 1344px) — measured directly off the PDF: cards span
+   the artboard's full page margins (x=38 -> 1478 at 1516px), and the
+   454px-card / 40px-gap math lands exactly on that width. */
+.grid {
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* Sharp corners — confirmed by zooming into the PDF crop, same finding as
+     Why/FeaturedCaseStudy/Resources documented in CLAUDE.md. */
+  border-radius: 0;
+  /* Measured off the PDF crop (244,244,244), not the Resources #f7f7f7 gray. */
+  background: #f4f4f4;
+}
+
+.thumb {
+  position: relative;
+  aspect-ratio: 454 / 299;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 24px 28px;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Plain, unboxed icon — confirmed against a 4x PDF crop that this card's
+   icon has no border/box around it (matches the trust-strip/DROS icon
+   convention, not a bordered chip). */
+.icon {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  color: var(--fg);
+}
+
+.cardTitle {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--fg);
+}
+
+.description {
+  margin-top: 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+
+.divider {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 20px;
+  border: none;
+  border-top: 1px solid var(--hairline-strong);
+}
+
+.readMore {
+  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding-inline: 16px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.readMore:hover {
+  background: #000;
+}
+
+.readMore svg {
+  transition: transform var(--dur) var(--ease);
+}
+
+.readMore:hover svg {
+  transform: translateX(4px);
+}
+
+.closing {
+  margin-top: 48px;
+  text-align: center;
+  font-size: var(--fs-body);
+  color: var(--fg);
+}
+
+.closingLink {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.closingLink:hover {
+  color: var(--brand-hover);
+}
+
+@media (max-width: 1100px) {
+  .section {
+    padding-block: 64px 72px;
+  }
+
+  .grid {
+    margin-top: 40px;
+  }
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-block: 48px 56px;
+  }
+
+  .closing {
+    margin-top: 36px;
+  }
+}

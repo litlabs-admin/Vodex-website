@@ -865,7 +865,8 @@ app/
   globals.css       tokens, reset, container, .enter, .accent
   icon.svg          favicon (Vodex waveform + ring-dot mark)
 components/
-  layout/           AnnouncementBar, Navbar, Footer
+  layout/           AnnouncementBar, Navbar, Footer,
+                    SolutionsMegaMenu (client)              [Solutions — §12]
   hero/             Hero, TrustStrip
   sections/         DashboardShowcase, IntroducingDros,
                     EngagementQueueIllustration, Solutions,
@@ -876,11 +877,13 @@ components/
                     ProductHero, CoreFeatures, WhyItWorks,
                     WorksWithTools, SeeItInAction,
                     WhatYourTeamGets                      [Product Page — §11]
+                    SolutionHero, SolutionIndustries        [Solutions — §12]
   ui/               Logo (+ Wordmark), Button, Entrance, icons,
                     AudioWaveform, useWaveformData
 public/assets/      web-ready copies of supplied artwork
 
-app/products/page.tsx    Product Page route (header + main + footer)
+app/products/page.tsx                    Product Page route (header + main + footer)
+app/solutions/payment-reminders/page.tsx Solutions Page route (§12)
 ```
 
 ---
@@ -1380,3 +1383,256 @@ the PDF's FAQ section for this page has stale/mismatched placeholder copy
 (leftover "Recruiting/Staffing pricing", "Talently" text from an unrelated
 product) — flag this to the user rather than building from it literally when
 that section comes up, the same issue the landing page's FAQ had.
+
+---
+
+## 12. Solutions Page (first of a family)
+
+> Reference: `D:\litlabs\Vodex\Vodex - Solutions_Page (0.1).pdf` — 4548 ×
+> 29897pt = a 3× export of a **1516 × 9966px** artboard, same convention as
+> the landing/product PDFs. This PDF is the **"Payment Reminders"** solution
+> — `Footer.tsx`'s `COLUMNS` "Solutions" entry already declared 5 solutions
+> routes before this round (`/solutions/payment-reminders`,
+> `/solutions/promise-to-pay`, `/solutions/lead-qualification`,
+> `/solutions/debt-collection`, `/solutions/collection-software`), all
+> previously 404s — this is the first of them actually built. Route:
+> **`/solutions/payment-reminders`**.
+
+### Current progress
+
+Only the first **two** sections of this long PDF are built this round —
+**Hero** and **"Industries that Benefit"** — because those are the only two
+sections the user supplied photo assets for. Everything below that in the
+PDF (Workflows, Comparison, Results stats, Security & Compliance, FAQ,
+Enterprise band, Final CTA) is explicitly **not built yet**; `page.tsx` has
+a comment marking where to append them once assets/content exist. Built
+alongside this: a hover mega-menu on the Navbar's "Solutions" link — a UI
+pattern with zero prior precedent anywhere in this codebase.
+
+### Implementation decisions (persist these)
+
+- **`SolutionHero` is a new, reusable, prop-driven component**
+  (`components/sections/SolutionHero.tsx` + `.module.css`), *not* a
+  hardcoded one-off like `ProductHero.tsx`. Deliberate: `Footer.tsx` already
+  declares 5 solutions routes that all need this exact structure (badge →
+  H1 with one orange-italic accent → lead → primary+secondary CTA pair →
+  full-bleed photo backdrop) with entirely different copy/art per page — a
+  textbook case for a shared component, unlike `ProductHero` which was a
+  reasonable one-off *at the time* with no confirmed second product page.
+  CSS/geometry copied from `components/hero/Hero.module.css` (not
+  `ProductHero.module.css` — this page's H1 uses `line-height: var(--lh-display)`
+  like the landing hero, not the product hero's overridden `line-height: 1`).
+  Measured section height off this PDF (~634px at the 1516 artboard) landed
+  within a few px of the landing hero's own 632px, so the same
+  `padding-block: 64px 132px` numbers transferred directly.
+- **`titleLines` is a `ReactNode` prop, not a plain string + accent-word
+  pair** — the three heroes built so far each put the `.accent` span in a
+  different position (landing: mid-line-2 "outreach into `revenue`";
+  product: mid-line-1 "`phone calls`"; this page: the *entire* second line
+  "`Reminders`"), so a rigid template would already have broken on the
+  third instance. The page composing `SolutionHero` just writes normal JSX.
+- **Mobile line-break handling doesn't leak a scoped CSS class name across
+  the module boundary.** `Hero.tsx`/`ProductHero.tsx` hide their forced
+  desktop `<br>` on mobile via `<br className={styles.titleBreak}>`, but
+  `styles` there is the *page's own* hardcoded module — `SolutionHero` is
+  generic, and the page composing `titleLines` has no access to
+  `SolutionHero.module.css`'s scoped classes. Fixed with a plain HTML
+  attribute instead: callers write `<br data-hide-mobile />`, and
+  `SolutionHero.module.css` targets it as `.title br[data-hide-mobile] {
+  display: none }` under the `max-width: 720px` media query — the
+  responsive rule stays local to the component with nothing to import.
+- **CTA priority inverts this hero's own site-wide convention, confirmed
+  deliberate with the user.** Landing/product heroes both make "Schedule a
+  Demo" the primary/filled button; this PDF has "Get Started" filled/primary
+  and "Schedule a Demo" outlined/secondary. Built exactly as the PDF shows,
+  per explicit user confirmation — not normalized to match the other two.
+- **`SolutionIndustries` (`components/sections/SolutionIndustries.tsx` +
+  `.module.css`) is a locally-copied/adapted card pattern, not a shared
+  component** — direct continuation of the `Resources.tsx` → `WhyItWorks.tsx`
+  precedent already in this file (§8, Section 3 entry): copy the card
+  structure, adapt what differs, don't extract a generic `<Card>`. Real
+  measured deltas from both donors: **full 1440px container** (cards span
+  the artboard's actual page margins, x=38→1478 at 1516px — not a narrower
+  cap like Resources' 1180px or WhyItWorks' 1344px; the measured
+  454px-card/40px-gap math lands exactly on `(1440-80)/3=453.3≈454`, so
+  `grid-template-columns: repeat(3, 1fr); gap: 40px` inside a plain
+  `.container` is correct, no extra max-width needed or wanted here), and a
+  **different card-body gray** — pixel-sampled directly off the rendered
+  PDF at `(244,244,244)` / `#f4f4f4`, distinct from Resources' `#f7f7f7`.
+  Confirmed sharp `border-radius: 0` corners, same site-wide finding as
+  Why/FeaturedCaseStudy/Resources.
+  - **⚠️ One assumption in the original task brief was wrong and was caught
+    by re-measuring before building, not carried through**: the brief
+    described this card's icon as sitting in "a bordered rounded-square
+    box," reasoning by analogy to a mega-menu reference screenshot. A 4×
+    PDF crop of the actual card (`Banks & Financial Institutions`) showed
+    the icon is **plain and unboxed** — same convention as the trust-strip/
+    DROS feature icons already in this codebase, no border anywhere. Built
+    unboxed to match the real measurement, not the analogy. The bordered-box
+    treatment *was* used for the mega-menu's own icons (see below) — that
+    one genuinely is a new pattern, confirmed appropriate there because the
+    mega-menu explicitly reuses a different product's screenshot as a
+    **layout/style** benchmark (user's own words), whereas the Industries
+    card had a real PDF source to measure directly. When a task brief
+    describes a visual detail by analogy instead of by measurement, measure
+    the actual source before building — this is the same lesson as the
+    Why-section corner-radius correction earlier in this file, recurring in
+    a new form (an assumption imported from a *different* section's
+    reference, not just eyeballed from a thumbnail).
+- **3 new icons added to `components/ui/icons.tsx`** (`/* Solutions page
+  icons */` block) for the Industries cards, following the existing
+  `strokeIcon` convention (`strokeWidth: 3`, round caps/joins) rather than
+  attempting to replicate the PDF's own icon glyphs pixel-for-pixel (which,
+  per the zoomed crop, are most likely a system icon font/emoji baked into
+  the design file, not custom artwork — same treatment this project already
+  gives every other PDF icon, e.g. the trust strip): `BankIcon` (pediment +
+  columns + base), `PhoneCallIcon` (ringing handset with motion arcs —
+  deliberately distinct from the existing `PhoneLinesIcon`, which is a
+  phone+call-log-lines composite for a different context), `ShieldPlusIcon`
+  (reuses `ShieldCheckIcon`'s exact shield silhouette with a medical plus
+  swapped in for the checkmark, for visual family consistency).
+- **Closing line under the Industries grid** ("Running a collections
+  operation? See Vodex for Debt Collection") reuses the real
+  `/solutions/debt-collection` route `Footer.tsx` already declares — not a
+  new invented placeholder. Each card's own "Read More" link points at
+  `/solutions` (the parent hub) rather than an invented per-industry slug,
+  per the user's explicit direction elsewhere in this round not to invent
+  new solution/industry routes beyond what's already established.
+
+### Navbar "Solutions" mega-menu
+
+- **New pattern, zero prior precedent in this codebase** (confirmed via a
+  full-repo grep for `dropdown`/`megamenu` before starting — nothing).
+  `components/layout/SolutionsMegaMenu.tsx` (client component) +
+  `.module.css`, wired into `Navbar.tsx` by special-casing the "Solutions"
+  entry inside the existing `NAV_LINKS.map()` loop — every other nav link
+  is untouched, still a plain `<Link>`.
+- **Content scope was deliberately narrowed from the original reference.**
+  The user supplied a screenshot of a *different product's* mega-menu (3
+  columns: Main Solutions / By Industry / Capabilities, each with invented
+  generic content like "Law firms"/"Answering service") explicitly as a
+  **layout/style benchmark only** — "do not copy any of it… that ref was
+  for just benchmark." After clarifying directly, the shipped menu is a
+  single "Main Solutions" list only — no "By Industry"/"Capabilities"
+  columns at all, not just left empty. Content is **exactly** `Footer.tsx`'s
+  existing 5 Solutions items (label + href verbatim, confirmed by the user
+  as the source of truth) — Payment Reminders, Promise-to-Pay Capture, Lead
+  Qualification, Debt Collection, Collection Software — icon + title only,
+  no invented one-line descriptions (also confirmed with the user: kept
+  minimal on purpose). **If a later round adds "By Industry"/"Capabilities"
+  columns back, or per-item descriptions, treat that as new scope requiring
+  its own confirmation — it was explicitly cut this round, not deferred by
+  default.**
+  - Icon mapping: Payment Reminders → `BellIcon` (new), Promise-to-Pay
+    Capture → `CheckIcon` (existing), Lead Qualification → `FunnelIcon`
+    (new), Debt Collection → `PhoneCallIcon` (new, shared with the
+    Industries cards above), Collection Software → `WorkflowIcon`
+    (existing). 2 new icons for the mega-menu specifically, on top of the 3
+    from the Industries cards — 5 total new icons this round.
+  - All 5 links are real, already-declared `Footer.tsx` routes and are
+    genuinely clickable `<Link>`s (not disabled/plain text) per the user's
+    explicit "make sure they are clickable links, we can link the pages
+    later" — only `/solutions/payment-reminders` resolves after this round,
+    the other 4 still 404 (same as they already did via Footer's own links
+    before this round; not a regression).
+  - **Icon boxes here ARE bordered** (`.iconBox`: 38px, `1px solid
+    var(--hairline-strong)`, `border-radius: 9px`) — unlike the Industries
+    cards' plain unboxed icons (see above), this genuinely is a new pattern
+    with no existing precedent, confirmed appropriate specifically because
+    the mega-menu's *layout/style* (not content) is modeled on the user's
+    reference screenshot, which does use a bordered icon treatment.
+- **Anchor / containing-block constraint.** `<header>` renders with
+  `display: contents` (`globals.css`) specifically so `Navbar`'s
+  `position: sticky` has a containing block to travel within (§8's own
+  `.siteHeader` entry) — the mega-menu panel must never introduce a box
+  around `<header>` or otherwise touch that chain. Fixed by making the
+  "Solutions" `<li>` itself (`.solutionsItem`) the `position: relative`
+  anchor; the panel is `position: absolute` relative to that `<li>` only.
+  Verified post-build with a real scroll test (`nav.getBoundingClientRect().y
+  === 0` after `scrollTo(0, 1200)`) that the sticky pin still works exactly
+  as before.
+  - **z-index**: confirmed via a project-wide grep that `.nav`'s own
+    `z-index: 30` (`Navbar.module.css`) is the only z-index anywhere in the
+    4–30 range — everything else in the codebase is `-1`/`0`/`1`, each
+    scoped inside its own section's local stacking context. Because `.nav`
+    combines `position: sticky` with an explicit z-index, it already
+    establishes its own stacking context, so the panel only needs
+    `z-index: 1` to clear its `.nav` siblings — it automatically inherits
+    `.nav`'s elevation above the rest of the page. No larger number needed.
+- **Open/close is CSS-first (`:hover`/`:focus-within`), not React state** —
+  matches this project's demonstrated bias toward zero-JS CSS wherever CSS
+  alone suffices (`Entrance`, `Button` hover states, `CoreFeatures`
+  hover-expand strip), reserving JS for what CSS genuinely can't do
+  (`IndustryTabs`' measured sliding indicator, `FaqAccordion`'s
+  single-open-only exclusivity). Minimal JS actually used: an `Escape`
+  keydown listener that blurs the active element when focus is inside the
+  trigger/panel (dropping `:focus-within` closes it), and a `usePathname()`
+  effect that blurs on route change (Navbar/Footer persist across
+  client-side navigations, so without this a `Link` click inside the panel
+  could leave it visually open after the page swaps underneath it). No
+  outside-click handler — deliberately omitted, redundant with what
+  `:hover`/`:focus-within` already correctly handle.
+  - **Dead-gap-breaks-hover, designed around up front, not hit and fixed
+    after the fact**: the visual gap between the nav link and the visible
+    white panel is implemented as `padding-top` on the *hoverable* `.panel`
+    element itself (not a margin/offset that would leave empty space
+    outside any hoverable box), so the mouse never crosses a strip that
+    belongs to neither element while travelling from the link down into the
+    card. Verified with a real Playwright mouse-drag interaction (small
+    incremental `mouse.move` steps straight down through the gap, not
+    toggling `:hover` via devtools) — panel opacity reaches `1` and stays
+    there through the drag.
+  - `prefers-reduced-motion` needed no component-level handling — the
+    existing global wildcard rule in `globals.css` (`transition-duration:
+    0.001ms !important` under the media query) already collapses the
+    panel's opacity/transform transition the same way it does for every
+    other animated component in this project; confirmed via Playwright
+    `reducedMotion: "reduce"` emulation (panel opacity reaches `1` within
+    ~100ms of hover instead of the normal 220ms).
+  - Keyboard-verified end to end: `Tab` reaches the "Solutions" link and
+    opens the panel (`:focus-within`), a further `Tab` moves focus onto the
+    first item inside the panel without closing it, `Escape` closes it from
+    either position.
+
+### Asset → component map
+
+| Asset (`vodex assets/`) | Destination | Notes |
+| --- | --- | --- |
+| `pexels-onbab-15750755 1.jpg` | `public/assets/solution-payment-reminders-hero-bg.jpg` → Hero | confirmed pixel-identical to the PDF's hero background by direct visual comparison |
+| `pexels-szymon-shields-1503561-10178729 1.jpg` | `public/assets/industries-banks.jpg` → Industries, "Banks & Financial Institutions" | there is also a sibling `… 2.jpg` in `vodex assets/`; `1.jpg` is the confirmed match, `2.jpg` unused |
+| `Frame 2147226785.png` | `public/assets/industries-collection-agencies.jpg` → Industries, "Collection Agencies" | format-converted (flattened RGBA → JPEG), not a plain copy — source PNG is fully opaque |
+| `pexels-roman-muntean-369190311-14513059 1.jpg` | `public/assets/industries-healthcare.jpg` → Industries, "Healthcare" | confirmed pixel-identical to the PDF's surgical/healthcare photo |
+
+All 4 matches were confirmed by direct visual comparison against the
+rendered PDF crop before use, same standard as every other asset mapping in
+this file — none guessed from filenames alone.
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build`. Playwright-verified at
+1516/1280/900/430px — zero console errors, zero horizontal overflow at
+every width. Mega-menu specifically verified with a real mouse-drag
+interaction (not devtools `:hover` toggling), full keyboard navigation
+(`Tab`/`Escape`), and `reducedMotion: "reduce"` emulation. Confirmed the
+landing page (`/`) and `/products` are unaffected (re-screenshotted, zero
+new console errors/overflow) since `Navbar`/`icons.tsx`/`globals.css` are
+shared. Live screenshots visually compared against the PDF's own rendered
+crops for both built sections (Hero, Industries) — bounding boxes and
+proportions match closely.
+
+**Approved:** Nothing yet — not yet reviewed by the user, same
+pending-review status every other section in this file uses before
+explicit sign-off.
+
+**Next:** Wait for the user's review of the Hero, Industries section, and
+the mega-menu. Two flagged-but-unresolved items from the plan, still open:
+(1) the "Core features" eyebrow label on the Industries section was built
+verbatim from the PDF per instruction, but reads like a mismatched leftover
+label (it's an "Industries" section, not a "features" one) — same class of
+issue as the FAQ/CoreFeatures copy mismatches documented elsewhere in this
+file; (2) `/solutions` (the parent hub page, that both the plain Navbar
+link and the mega-menu's "View all solutions" button point at) does not
+exist yet — pre-existing gap, not introduced by this round. Once more
+assets/content are supplied, continue this PDF top-to-bottom: Workflows,
+Comparison, Results stats, Security & Compliance, FAQ, Enterprise band,
+Final CTA.

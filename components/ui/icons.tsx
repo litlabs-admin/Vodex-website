@@ -250,3 +250,63 @@ export function SyncIcon(props: IconProps) {
     </svg>
   );
 }
+
+/* -------------------------------------------------------------------------- */
+/* Solutions page icons                                                       */
+/* -------------------------------------------------------------------------- */
+
+/** Bank / institution building — pediment, columns and base. */
+export function BankIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 36 32" {...props}>
+      <path d="M18 2 33.5 11.5H2.5Z" strokeLinejoin="round" />
+      <path d="M5 14.5v12M13 14.5v12M23 14.5v12M31 14.5v12" />
+      <path d="M2.5 26.5h31" />
+      <path d="M2 30.5h32" />
+    </svg>
+  );
+}
+
+/** Ringing handset — distinct from PhoneLinesIcon's call-log composite. */
+export function PhoneCallIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 28 28" {...props}>
+      <path d="M4 6.2A2 2 0 0 1 6 4h2.8a1.2 1.2 0 0 1 1.2 1l.7 3.3a1.2 1.2 0 0 1-.3 1.1l-1.6 1.7a14 14 0 0 0 6.4 6.4l1.7-1.6a1.2 1.2 0 0 1 1.1-.3l3.3.7a1.2 1.2 0 0 1 1 1.2V20a2 2 0 0 1-2 2A17 17 0 0 1 4 6.2Z" />
+      <path d="M15.5 3.2a6 6 0 0 1 4.8 4.8" />
+      <path d="M18 .8a9.5 9.5 0 0 1 7.7 7.7" />
+    </svg>
+  );
+}
+
+/** Shield with a medical plus — same shield silhouette as ShieldCheckIcon. */
+export function ShieldPlusIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 36 44" {...props}>
+      <path d="M18 1.8 34.2 8.6v11.7c0 9.8-7 17-16.2 20.3C8.8 37.3 1.8 30.1 1.8 20.3V8.6Z" />
+      <path d="M18 15v12M12 21h12" />
+    </svg>
+  );
+}
+
+/** Reminder bell. */
+export function BellIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 24 24" {...props}>
+      <path d="M12 2.5v1.8" />
+      <path
+        d="M5 17h14l-1.8-2.3A6 6 0 0 1 16 11V9.5a4 4 0 0 0-8 0V11a6 6 0 0 1-1.2 3.7Z"
+        strokeLinejoin="round"
+      />
+      <path d="M9.5 20a2.5 2.5 0 0 0 5 0" />
+    </svg>
+  );
+}
+
+/** Lead funnel. */
+export function FunnelIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 24 24" {...props}>
+      <path d="M3 4h18l-7 9v6l-4 2v-8Z" strokeLinejoin="round" />
+    </svg>
+  );
+}
