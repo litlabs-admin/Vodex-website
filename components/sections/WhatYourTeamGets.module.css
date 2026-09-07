@@ -1,0 +1,115 @@
+/* Dark section wrapping a single rounded banner — the only rounded-corner
+   surface among this round's new sections (confirmed by corner-pixel zoom
+   against the PDF, radius ~24px); everything else on this page is sharp per
+   direct user instruction, so don't "fix" this one to match. */
+.section {
+  background: var(--ink);
+  padding-block: 96px 64px;
+}
+
+.banner {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  max-width: 1338px;
+  margin-inline: auto;
+  border-radius: 24px;
+  padding: 56px 64px;
+  min-height: 330px;
+  display: flex;
+  align-items: center;
+}
+
+.bg {
+  z-index: 0;
+  object-fit: cover;
+}
+
+.logo {
+  position: absolute;
+  z-index: 1;
+  top: 32px;
+  right: 40px;
+  color: var(--brand);
+}
+
+.grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 40px;
+  width: 100%;
+}
+
+.title {
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: #fff;
+}
+
+.lead {
+  margin-top: 16px;
+  max-width: 380px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.list {
+  display: grid;
+  gap: 20px;
+  align-content: center;
+}
+
+.item {
+  position: relative;
+  padding-left: 22px;
+  font-size: 18px;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.item::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.6em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+@media (max-width: 900px) {
+  .banner {
+    padding: 40px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .logo {
+    top: 24px;
+    right: 24px;
+  }
+}
+
+@media (max-width: 560px) {
+  .section {
+    padding-block: 64px 48px;
+  }
+
+  .banner {
+    padding: 32px 24px;
+    border-radius: 18px;
+  }
+
+  .logo {
+    display: none;
+  }
+}

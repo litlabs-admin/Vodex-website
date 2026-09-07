@@ -863,7 +863,7 @@ app/
   layout.tsx        fonts + metadata
   page.tsx          section composition
   globals.css       tokens, reset, container, .enter, .accent
-  icon.svg          favicon (Vodex waveform)
+  icon.svg          favicon (Vodex waveform + ring-dot mark)
 components/
   layout/           AnnouncementBar, Navbar, Footer
   hero/             Hero, TrustStrip
@@ -873,7 +873,9 @@ components/
                     CallSamplesGrid (client), CallCard (client), Why,
                     FeaturedCaseStudy, Resources, Faq, FaqAccordion (client),
                     EnterpriseBand, FinalCta,
-                    ProductHero, CoreFeatures            [Product Page — §11]
+                    ProductHero, CoreFeatures, WhyItWorks,
+                    WorksWithTools, SeeItInAction,
+                    WhatYourTeamGets                      [Product Page — §11]
   ui/               Logo (+ Wordmark), Button, Entrance, icons,
                     AudioWaveform, useWaveformData
 public/assets/      web-ready copies of supplied artwork
@@ -905,6 +907,16 @@ app/products/page.tsx    Product Page route (header + main + footer)
 > landing page, confirmed by measurement, not assumed.
 
 ### Current progress
+
+All 9 Product Page sections are implemented — Hero, Core Features, Why it
+works, Works with the tools you already run, See it in action, What your
+team gets, FAQ (reused), Enterprise Band (reused), Final CTA (reused) —
+plus the shared Footer. Sections 3–9 were built/fixed by rendering
+`Vodex - Product_Page.pdf` at 24dpi (`pdftoppm -r 24`, same convention as
+the landing PDF) and extracting exact bbox coordinates via
+`pdftotext -bbox`, then cropping each target section to measure geometry
+directly rather than eyeballing a thumbnail — see the per-section notes,
+the "Round 2" fixes, and the Asset mapping table below.
 
 Sections 1–2 (Hero, Core Features) implemented — `ProductHero.tsx` +
 `CoreFeatures.tsx` in `components/sections/`, composed at
@@ -1068,19 +1080,303 @@ telephone actually in the reference), **not** `pexels-aboodi-17396096 1.jpg`
 slot — confirmed by pixel correlation and resolved with the user directly
 before building; `aboodi` goes unused.
 
+### Section 3 — Why it works
+
+`components/sections/WhyItWorks.tsx` + `.module.css`. Light section, header
+block (`eyebrow`/`title`/`lead`) copied verbatim from `Resources.module.css`'s
+pattern. Body is `Resources.tsx`'s card structurally reused almost 1:1
+(photo top, light-gray `#f7f7f7` body, title, description, hairline divider,
+dark "Read More" pill + `ArrowRight`) — changed to a 4-column grid (2-col at
+≤1100px, 1-col at ≤560px) instead of 3, and the `category` line was dropped
+(the reference cards don't have one). `border-radius: 0` throughout per
+direct user instruction ("they all have sharp corners"). Grid `max-width:
+1344px` — measured directly off the PDF crop (card row spans x≈86–1430 at
+the 1516-canvas render), which lines up with the project's existing
+"inset band" convention (`FeaturedCaseStudy`/`FinalCta` use 1327px) rather
+than the full 1440 container or `Resources`' own 1180px cap.
+
+Card image mapping — confirmed by opening each supplied asset and matching
+its actual content against the PDF crop (not guessed), and it turned out the
+user's given file order already matches the PDF's left-to-right order
+exactly:
+
+| Card | Source | Copied to |
+| --- | --- | --- |
+| Human-like conversations | `brooke-cagle-TS1H4Tllz54-unsplash 1.jpg` | `public/assets/why-works-1.jpg` |
+| System integration | `image 1025.jpg` (abstract 3D render) | `public/assets/why-works-2.jpg` |
+| Enterprise-grade standards | `docusign-7RWBSYA9Rro-unsplash 1.jpg` | `public/assets/why-works-3.jpg` |
+| Built for scale | `image 1026.jpg` (flat illustration) | `public/assets/why-works-4.jpg` |
+
+### Section 4 — Works with the tools you already run
+
+`components/sections/WorksWithTools.tsx` + `.module.css`. Deliberately
+minimal — **no eyebrow pill and no H2**, unlike every other section header
+in the project. Measured the heading's glyph height against the PDF bbox
+data and it matches the project's body/lead text size, not `--fs-h2`, so
+it's rendered as a single centered `--fs-body`-sized line (weight 600) above
+a plain centered flex row of the 5 logos.
+
+⚠️ **The faint grid lines visible in the PDF at this section are not real
+dividers.** They looked like they might delineate 5 logo cells (aligned
+suspiciously close to the column edges), but sampling their pixel color
+(225–237 across R/G/B) matched the `#EDEDED` Figma layout-grid overlay this
+project's CLAUDE.md already documents as a landing-PDF artifact (§2) — not a
+designed element. Confirmed and built with a plain, borderless row instead of
+a bordered/cell-divided one. **If a future section in either PDF shows what
+looks like a bordered grid, sample the line color before assuming it's a
+real border** — this is the second time in the project a guide-overlay line
+has been mistakable for a real design element (the first was the artboard's
+own 40px-margin guides in §2).
+
+Logo assets are transparent PNGs (confirmed via alpha channel) at their
+native ~842×369 intrinsic size; `.logo` in CSS scales every logo to the same
+rendered height (`height: 40px; width: auto`) so width varies naturally per
+logo rather than being force-fit to a hardcoded width per brand.
+
+| Logo | Source | Copied to |
+| --- | --- | --- |
+| HubSpot | `Frame 2147226760.png` | `public/assets/tool-hubspot.png` |
+| HighLevel | `Frame 2147226761.png` | `public/assets/tool-highlevel.png` |
+| Make | `Frame 2147226762.png` | `public/assets/tool-make.png` |
+| Twilio | `Frame 2147226764.png` | `public/assets/tool-twilio.png` |
+| VICIdial | `Frame 2147226763.png` | `public/assets/tool-vicidial.png` |
+
+⚠️ Note the last two rows: the PDF's actual left-to-right visual order is
+HubSpot, HighLevel, Make, **Twilio, VICIdial** — this swaps the filenames'
+own numeric order (`...763` = VICIdial, `...764` = Twilio). The component's
+`TOOLS` array follows the PDF's visual order, not the filename numbers.
+
+### Section 5 — See it in action
+
+`components/sections/SeeItInAction.tsx` + `.module.css`. Dark (`--ink`)
+section; header block (`eyebrow`/`title`/`lead`) copied verbatim from
+`Why.module.css`'s dark-section pattern (`#ececec` pill, white H2 with
+`.accent` italic, `--on-dark-muted` lead) — same 1344px-max-width grid
+convention as Section 3, now 3 columns (1-col at ≤820px).
+
+Card is a hybrid of two existing patterns rather than a straight reuse of
+either: the photo + title + arrow portion adapts `CoreFeatures.module.css`'s
+`.panel`/`.scrim`/`.copy` overlay mechanism (image `fill`, bottom gradient
+scrim, white text pinned to the bottom-left) — but always visible, not a
+hover-reveal like `CoreFeatures`' strip — plus a **separate solid-black body
+panel below the photo** for the description text. Confirmed via pixel
+sampling that this lower panel is `rgb(0,0,0)`, distinct from the section's
+own `#1a1a1a` background, not a CSS mistake. The diagonal arrow reuses the
+existing `ExternalLinkIcon` from `components/ui/icons.tsx` (already exactly
+this glyph) instead of the `ArrowRight` used everywhere else — the reference
+uses a different, smaller diagonal arrow specifically for these three cards.
+
+⚠️ **Round-2.5 fix — cards weren't bottom-aligning when descriptions wrapped
+to different line counts.** The user flagged the three cards as visibly "not
+at the same level" after reviewing round 2. Measured via Playwright
+bounding boxes rather than guessing: `.grid`'s default `align-items:
+stretch` correctly stretches every `<article class={styles.card}>` to match
+the tallest card in the row (card 3's 3-line description vs. cards 1-2's
+2-line descriptions — confirmed 452.77px outer height on all three), but
+`.body` (the black description panel) had no `flex` rule, so it only took
+its own natural content height (84.78px for cards 1-2 vs. 107.17px for card
+3) — the leftover ~22px inside the taller, stretched `<article>` was empty
+space showing the section's `#1a1a1a` background instead of black, which is
+what read as "different levels" (the photo/title portion was always
+correctly aligned; only the black panel's *bottom* edge was inconsistent).
+**Fix:** `.body { flex: 1; }` — confirmed via the same Playwright
+measurement that all three `.body` elements now report identical height
+(107.17px). **If any other card grid in this project pairs a
+fixed-aspect-ratio image with a variable-length text block below it, give
+the text block's container `flex: 1` (or equivalent) up front** — relying
+on the grid's stretch alone only equalizes the outer box, not how the inner
+flex children divide that space. Re-verified after the fix with the same
+Playwright bounding-box method on `overlayTitle`/`thumb`/`body` — all three
+now report byte-identical `y` and `height` across cards — plus a matching
+visual crop of the photo-bottom/title/panel-top boundary, confirming the
+alignment is real and not just numerically coincidental.
+
+⚠️ **Site favicon (`app/icon.svg`) was out of date with the real `Logo`
+mark.** It already traced the waveform bars exactly (same 5 bar
+coordinates as `Logo.tsx`'s `BARS` array — not a coincidence, confirmed by
+comparing values), but was missing the 20-dot ring `Logo.tsx` draws around
+it (`RING_DOTS`, a circle of dots at radius 146 from centre (158,153)).
+Regenerated the same `RING_DOTS` formula (`cx = 158 + 146·cos(θ)`,
+`cy = 153 - 146·sin(θ)`, `θ = 90° + i·18°` for `i` in 0-19) and added them
+as a second `<g>` of `r=7.5` circles, so the favicon is now a faithful
+crop of the actual navbar mark instead of a partial trace. Verified by
+rendering the SVG standalone in headless Chromium before committing it —
+matches `Logo`'s mark exactly. If `Logo.tsx`'s mark geometry (bar heights,
+ring radius, dot count) ever changes, regenerate `icon.svg` the same way
+rather than letting the two drift apart again.
+
+⚠️ **Header `max-width` had to be widened from the `Why.module.css` value it
+was copied from.** Built first at `720px` (copying `Why`'s header
+max-width verbatim); the H2 "Conversations that carry real outcomes" then
+wrapped to two lines, where the PDF has it on one. Measured the actual line
+width via `pdftotext -bbox` (spans x≈314–1203px at the 1516-canvas scale,
+≈888px) and widened `.header` to `920px` to match — fixed by measurement,
+not by trial-and-error resizing. **If a header block copied from another
+section ever wraps unexpectedly, measure the specific heading's line width
+in the PDF bbox data rather than assuming the donor section's max-width
+transfers unchanged** — headline length varies per section even when the
+rest of the header pattern is identical.
+
+Card image/copy mapping — same visual-match-against-PDF-crop method as
+Section 3, and again the user's given order matched the PDF exactly:
+
+| Card | Source | Copied to |
+| --- | --- | --- |
+| Upcoming payment reminders | `ali-mkumbwa-AEz70PS5eSU-unsplash 1.jpg` (card payment terminal) | `public/assets/action-1.jpg` |
+| Payment plan negotiation | `mina-rad-qFSQFSmfZkA-unsplash 1.jpg` (handshake) | `public/assets/action-2.jpg` |
+| Overdue payment reminders | `jakub-zerdzicki-P_f_UvZhj8Q-unsplash 1.jpg` (cash, pen, signed note) | `public/assets/action-3.jpg` |
+
+`Read More`/detail hrefs for all three new sections (`WhyItWorks`,
+`SeeItInAction`) point to `/products#<slug>` anchors — no destination pages
+exist yet, same placeholder-link convention `Resources.tsx` already uses on
+the landing page (plausible-looking hrefs, not live routes).
+
+### Round 2 — user-reported fixes + Sections 6–9
+
+The user flagged Sections 4 (Works with the tools) and 5 (See it in action)
+as "not as per the PDF" after reviewing screenshots, and separately reported
+two real bugs in the landing page's `Faq`/`FaqAccordion` that had to be fixed
+before that component could be reused here. Re-verified everything against
+`Vodex - Product_Page.pdf` directly (rendered crops + `pdftotext -bbox`
+measurements) rather than re-guessing.
+
+⚠️ **Section 4's logos were rendering ~3x too small — root cause found via
+alpha-channel bounding-box analysis, not eyeballing.** The 5 source PNGs
+(`Frame 2147226760-764.png`) are each an 842×369 canvas, but the *opaque
+logo mark* only occupies a small, differently-sized region within that
+canvas — a large transparent margin is baked into every file, and 3 of the
+5 also carry a spurious 1-2px fully-opaque border-artifact line at the
+canvas edges (a PNG export quirk) that pollutes naive bbox detection unless
+excluded. The original build passed the full 842×369 canvas as `next/image`
+intrinsic `width`/`height`, so CSS `height: 40px` scaled the *invisible
+padding* right along with the visible mark — logos rendered at ~42-61px
+wide instead of the reference's actual ~104-185px. **Fix:** cropped each
+PNG in place to its true content bbox (alpha > 120, 2px edge artifact
+excluded, +14px padding) via a one-off PIL script; `WorksWithTools.tsx` now
+lists each logo's own real cropped `width`/`height` individually (they are
+NOT uniform — HubSpot 454×148, HighLevel 538×142, Make 464×156, Twilio
+418×142, VICIdial 646×165) instead of assuming a shared canvas size.
+`.logo { height: 40px; width: auto }` was already correct and needed no
+change once given accurate intrinsic dimensions. Also widened `.row`'s
+`gap` from `56px 72px` to `56px 140px` — the reference's measured
+edge-to-edge gap between logos is ~154px, which had been tuned against the
+too-small logos and needed correcting once they were fixed. **If a future
+transparent-PNG asset in this project renders oddly small/oddly
+proportioned relative to its neighbors, check the alpha-channel content
+bbox before assuming the CSS sizing is wrong** — this is the second time
+in the project a source asset's own canvas padding has caused a sizing bug
+(the first was the footer wordmark's blur, a related-but-different asset
+quality issue).
+
+Section 5 (See it in action) was re-measured (card widths/gaps/photo
+aspect) against the same PDF crop and found to already match what was
+built in round 1 — no code change was needed there; re-confirmed via a
+fresh screenshot, still correct.
+
+### Section 6 — What your team gets
+
+`components/sections/WhatYourTeamGets.tsx` + `.module.css`. Dark (`--ink`)
+section wrapping a single **rounded** banner (`border-radius: 24px`,
+measured via corner-pixel zoom) — this is the one section on this page
+that genuinely has rounded corners, unlike every sharp-corner section
+built in round 1; don't "fix" it to match those. Background is
+`public/assets/team-gets-bg.jpg` (from supplied `Frame 2147226819.jpg`, an
+abstract orange/black streak photo) via `next/image fill`, with the same
+"real photo, live text overlay" pattern as `EnterpriseBand`/
+`FeaturedCaseStudy` — not a flat pre-composited asset like
+`AutoRedialBanner`. Two-column content (measured banner span ≈1338px,
+same inset-band family as Sections 3/5): left = plain white heading "What
+your team gets" (no accent word) + lead; right = a 4-item bullet list. The
+Vodex mark top-right reuses `components/ui/Logo.tsx` at `height={22}`,
+colored via `color: var(--brand)` (the component fills with `currentColor`)
+— matches the reference's orange (not white) logo treatment. Logo is
+hidden below 560px (`.logo { display: none }`) rather than shrunk further,
+since the banner itself drops to a much smaller `border-radius`/padding at
+that width and the mark reads as clutter at that scale.
+
+### Section 7 — FAQ, reused verbatim from the landing page (2 bugs fixed first)
+
+`<Faq />` is imported unchanged from `components/sections/Faq.tsx` — no
+props, no products-page-specific copy. The PDF confirms `EnterpriseBand`
+and `FinalCta` (Sections 8-9) are byte-identical in copy across both pages
+already, so reusing `Faq`'s existing Vodex-relevant copy here follows the
+same established pattern rather than inventing a genericization the user
+didn't ask for. Before it could be reused, two real bugs the user reported
+on the *landing page* were fixed (both now fixed on both pages, since it's
+the same component):
+
+⚠️ **Bug A — side card didn't match the accordion column's height.**
+`Faq.module.css`'s `.grid` had `align-items: start`, which stops a CSS
+grid's default row-stretch behavior from making both columns match height
+— the right column (side text + "Do you have more questions?" card) just
+sized to its own content, so the card's bottom (and its "Talk to Sales"
+button) landed well short of the accordion's actual bottom edge whenever
+the accordion had more/taller items. Reference design has the card's
+bottom edge land exactly at the last accordion item's bottom edge. Fixed
+with three coordinated changes (all three are needed together — any one
+alone doesn't fix it): `.grid { align-items: stretch }` (was `start`); the
+right-hand `<Entrance delay={90}>` in `Faq.tsx` got a new class
+`styles.sideCol` (`display: flex; flex-direction: column; height: 100%`)
+so the grid's stretch actually reaches through the `Entrance` wrapper;
+`.card` got `flex: 1; display: flex; flex-direction: column` to consume
+the now-available height; `.cardButton`'s `margin-top` changed from a
+fixed `20px` to `auto` so it's pinned to the card's bottom edge — same
+bottom-pinning technique as `Resources.module.css`'s `.divider` and this
+session's `WhyItWorks.module.css`. At the 820px breakpoint `.grid` drops to
+a single column, where each item becomes its own grid row and
+`align-items: stretch` has no cross-column effect — confirmed the card
+still sizes to its own natural content there rather than stretching
+oddly.
+
+⚠️ **Bug B — first accordion item was open by default.**
+`FaqAccordion.tsx` had `useState(0)`, defaulting the first item open on
+every load. Changed to `useState(-1)` (nothing open). No other change was
+needed: the existing click handler already used `-1` as the
+"nothing-open" sentinel when collapsing the currently-open item
+(`onClick={() => setOpenIndex(open ? -1 : i)}`), and the CSS collapse
+mechanism (`grid-template-rows: 0fr` → `.itemOpen` sets `1fr`) is applied
+per-item via the `.itemOpen` modifier class with no global
+single-active-item assumption, so "nothing matches `openIndex`" cleanly
+renders all items collapsed with no side effects. Verified via Playwright
+(`[aria-expanded="true"]` count = 0 on load, both `/` and `/products`, at
+1516 and 430px).
+
+### Sections 8-9 — Enterprise Band + Final CTA, reused verbatim
+
+Cropped and confirmed the product PDF's "Built for enterprises" and "Ready
+to supercharge your engagement?" sections are byte-identical in copy and
+design to the landing page's `EnterpriseBand`/`FinalCta` (same headline,
+body copy, badge text, icon cluster). Both imported unchanged into
+`app/products/page.tsx`, same pattern as the shared `Footer`.
+
 ### Status / Approved / Next
 
-**Status:** clean `tsc --noEmit` + `next build`. Playwright verification at
-1516/1280/900/430px (zero console errors, zero horizontal overflow at every
-width), a 7-frame hover filmstrip confirming the panel-expand transition is
-smooth, and a `reducedMotion: "reduce"` pass. Confirmed the landing page
-(`/`) is unaffected — nothing shared was touched.
+**Status:** clean `tsc --noEmit` + `next build` (Sections 1–9 combined, all
+of `/products` now built end to end). Playwright-verified at
+1516/1280/900/430px — zero console errors, zero horizontal overflow at
+every width — plus visual comparison of every new/fixed section's live
+screenshot against its own cropped PDF reference render. The landing page
+(`/`) was also re-verified after the shared `Faq` fix (same zero-error,
+zero-overflow, zero-default-open checks) since that component is now used
+on both pages.
 
 **Approved:** Nothing on the Product Page yet — user said "just build clean
 … I will verify myself," the same pending-review status the landing page
-uses for its own not-yet-reviewed work. Do not treat Sections 1–2 as
-approved until the user says so about this implementation specifically.
+uses for its own not-yet-reviewed work. Do not treat any Product Page
+section as approved until the user says so about this implementation
+specifically. The landing page's `Faq` bugfixes (height-stretch,
+default-open) are corrections to previously-shipped, already-approved
+behavior, not new pending-review content — but confirm with the user if in
+doubt before treating the landing page's FAQ section as still "approved"
+post-fix.
 
-**Next:** Wait for the user's review of the hero and the invented panel
-copy, then continue with Section 3 (Why it works — 4 cards) onward per the
-inventory above.
+**Next:** Wait for the user's review of the full Product Page (Sections
+1–9) and of the FAQ fixes on both pages. Remaining known gaps: the landing
+page's Call Samples section still has placeholder (mismatched) audio, per
+§7 of this file — unrelated to this round's work but still open — and this
+page's FAQ reuses the landing page's Q&A verbatim; revisit if the user
+wants products-specific questions instead. Note:
+the PDF's FAQ section for this page has stale/mismatched placeholder copy
+(leftover "Recruiting/Staffing pricing", "Talently" text from an unrelated
+product) — flag this to the user rather than building from it literally when
+that section comes up, the same issue the landing page's FAQ had.

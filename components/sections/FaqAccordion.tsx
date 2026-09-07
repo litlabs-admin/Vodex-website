@@ -9,7 +9,8 @@ type FaqItem = {
 };
 
 export function FaqAccordion({ items }: { items: FaqItem[] }) {
-  const [openIndex, setOpenIndex] = useState(0);
+  // -1 = nothing open. All items start collapsed; opening one is a click, not a default.
+  const [openIndex, setOpenIndex] = useState(-1);
 
   return (
     <div className={styles.list}>

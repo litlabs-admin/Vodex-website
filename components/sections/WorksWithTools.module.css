@@ -1,0 +1,56 @@
+/* Short, plain band — no eyebrow pill, no H2. Measured against the reference:
+   the heading text sits at body/lead size, not the big section-H2 style used
+   elsewhere, and the faint grid lines visible in the PDF at this section are
+   the Figma layout-grid overlay (#EDEDED, same as CLAUDE.md documents for the
+   landing PDF) — not real card borders, so no dividers are drawn here. */
+.section {
+  background: var(--bg);
+  padding-block: 72px;
+}
+
+.heading {
+  text-align: center;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: var(--lh-body);
+  color: var(--fg);
+}
+
+/* Measured edge-to-edge gap between logos in the reference is ~154px, once
+   the logos themselves are sized to their real (cropped) content — not the
+   ~72px this was originally tuned against the too-small, padding-inflated
+   logos. */
+.row {
+  margin-top: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 56px 140px;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  height: 40px;
+  width: auto;
+}
+
+@media (max-width: 720px) {
+  .section {
+    padding-block: 56px;
+  }
+
+  .row {
+    margin-top: 32px;
+    gap: 36px 44px;
+  }
+
+  .logo {
+    height: 32px;
+  }
+}

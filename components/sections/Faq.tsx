@@ -52,7 +52,7 @@ export function Faq() {
             <FaqAccordion items={FAQS} />
           </Entrance>
 
-          <Entrance delay={90}>
+          <Entrance delay={90} className={styles.sideCol}>
             <p className={styles.sideText}>
               Everything you need to know about putting GenAI voice agents to
               work. Can&rsquo;t find an answer? Talk to our team.

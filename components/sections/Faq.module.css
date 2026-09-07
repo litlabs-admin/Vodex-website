@@ -9,7 +9,10 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
   gap: 64px;
-  align-items: start;
+  /* Both columns stretch to the row's height (grid default) so the side
+     card can be told to fill it — see .sideCol/.card below. Reference has
+     the card's bottom edge land exactly at the accordion's last item. */
+  align-items: stretch;
 }
 
 .heading {
@@ -26,6 +29,16 @@
   font-family: var(--font-serif);
   font-style: normal;
   font-weight: 500;
+}
+
+/* Stretched to the grid row's height by .grid's align-items: stretch; .card
+   below then flexes to consume whatever's left after .sideText, so its
+   bottom edge (and the button inside it) lands at the row's full height
+   regardless of how tall the accordion column ends up. */
+.sideCol {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .sideText {
@@ -103,6 +116,10 @@
 /* --- Side card -------------------------------------------------------------- */
 
 .card {
+  margin-top: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 28px;
   border: 1px solid var(--hairline-strong);
   border-radius: 18px;
@@ -134,8 +151,13 @@
   color: var(--fg-muted);
 }
 
+/* auto margin pushes the button to the card's bottom edge once .card is
+   stretched taller than its natural content (see .card/.sideCol above);
+   with no extra height to fill (e.g. mobile's single-column stack) this
+   still leaves the button's natural spacing intact. */
 .cardButton {
-  margin-top: 20px;
+  margin-top: auto;
+  padding-top: 20px;
   width: 100%;
 }
 
