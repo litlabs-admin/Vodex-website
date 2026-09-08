@@ -1,0 +1,106 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #f7f7f7;
+  border-radius: 0;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
+}
+
+.thumb {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+}
+
+.thumb img {
+  transition: transform 420ms var(--ease);
+}
+
+.card:hover .thumb img {
+  transform: scale(1.05);
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 24px;
+}
+
+.category {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg-muted);
+}
+
+.cardTitle {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--fg);
+}
+
+/* Stretched-link: covers the whole card so any click on it activates this
+   link, while assistive tech only ever announces the one, meaningful link
+   (the title) rather than a second "Read More". */
+.titleLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.excerpt {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+
+.meta {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
+.divider {
+  width: 100%;
+  margin-top: 16px;
+  border: none;
+  border-top: 1px solid var(--hairline-strong);
+}
+
+.readMore {
+  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding-inline: 16px;
+  border-radius: var(--radius-btn);
+  background: var(--ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  width: fit-content;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.card:hover .readMore {
+  background: #000;
+}
+
+.readMore svg {
+  transition: transform var(--dur) var(--ease);
+}
+
+.card:hover .readMore svg {
+  transform: translateX(4px);
+}

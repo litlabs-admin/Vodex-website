@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
 import { LoginIcon } from "@/components/ui/icons";
 import { SolutionsMegaMenu } from "./SolutionsMegaMenu";
+import { ResourcesMegaMenu } from "./ResourcesMegaMenu";
 import styles from "./Navbar.module.css";
 
 const NAV_LINKS = [
@@ -27,17 +28,21 @@ export function Navbar() {
         </Link>
 
         <ul className={styles.links}>
-          {NAV_LINKS.map((item) =>
-            item.label === "Solutions" ? (
-              <SolutionsMegaMenu key={item.label} href={item.href} />
-            ) : (
+          {NAV_LINKS.map((item) => {
+            if (item.label === "Solutions") {
+              return <SolutionsMegaMenu key={item.label} href={item.href} />;
+            }
+            if (item.label === "Resources") {
+              return <ResourcesMegaMenu key={item.label} href={item.href} />;
+            }
+            return (
               <li key={item.label}>
                 <Link href={item.href} className={styles.link}>
                   {item.label}
                 </Link>
               </li>
-            )
-          )}
+            );
+          })}
         </ul>
 
         <div className={styles.actions}>

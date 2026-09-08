@@ -1,50 +1,47 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ComponentType, ReactNode } from "react";
 import { Entrance } from "@/components/ui/Entrance";
-import { ArrowRight, BankIcon, PhoneCallIcon, ShieldPlusIcon } from "@/components/ui/icons";
+import { ArrowRight } from "@/components/ui/icons";
 import styles from "./SolutionIndustries.module.css";
 
-const CARDS = [
-  {
-    title: "Banks & Financial Institutions",
-    description:
-      "Proactively manage payment reminders regarding credit cards, debts, short-term loans, and more.",
-    Icon: BankIcon,
-    src: "/assets/industries-banks.jpg",
-  },
-  {
-    title: "Collection Agencies",
-    description:
-      "First-touch voice AI reminders for upcoming and overdue payments, freeing agents for escalation-worthy cases.",
-    Icon: PhoneCallIcon,
-    src: "/assets/industries-collection-agencies.jpg",
-  },
-  {
-    title: "Healthcare",
-    description:
-      "Ensure reduced missed payments with due date reminders, on-day reminders, and more.",
-    Icon: ShieldPlusIcon,
-    src: "/assets/industries-healthcare.jpg",
-  },
-];
+type IndustryCard = {
+  title: string;
+  description: string;
+  Icon: ComponentType<{ className?: string }>;
+  src: string;
+};
 
-export function SolutionIndustries() {
+type SolutionIndustriesProps = {
+  eyebrow?: string;
+  heading?: ReactNode;
+  lead: string;
+  cards: IndustryCard[];
+};
+
+export function SolutionIndustries({
+  eyebrow = "Core features",
+  heading = (
+    <>
+      Industries that <span className="accent">Benefit</span>
+    </>
+  ),
+  lead,
+  cards,
+}: SolutionIndustriesProps) {
   return (
     <section className={styles.section} aria-labelledby="industries-title">
       <div className="container">
         <Entrance className={styles.header}>
-          <p className={styles.eyebrow}>Core features</p>
+          <p className={styles.eyebrow}>{eyebrow}</p>
           <h2 id="industries-title" className={styles.title}>
-            Industries that <span className="accent">Benefit</span>
+            {heading}
           </h2>
-          <p className={styles.lead}>
-            Wherever a due date matters, an AI voice agent can make the reminder
-            call for you.
-          </p>
+          <p className={styles.lead}>{lead}</p>
         </Entrance>
 
         <div className={styles.grid}>
-          {CARDS.map(({ title, description, Icon, src }, i) => (
+          {cards.map(({ title, description, Icon, src }, i) => (
             <Entrance key={title} delay={i * 70} as="article" className={styles.card}>
               <div className={styles.thumb}>
                 <Image

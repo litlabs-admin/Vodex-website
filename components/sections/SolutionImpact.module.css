@@ -1,0 +1,167 @@
+.section {
+  background: var(--bg);
+  padding-block: 88px 96px;
+}
+
+.header {
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding-inline: 20px;
+  border-radius: var(--radius-pill);
+  background: #ececec;
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.title {
+  margin-top: 24px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.title :global(.accent) {
+  font-size: 1.05em;
+}
+
+.lead {
+  margin-top: 20px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+}
+
+/* Full 1440px container — measured (xmin 37 / xmax 1476 at the 1516
+   artboard), matching SolutionResults' own full-width convention. */
+.box {
+  margin-top: 48px;
+  background: var(--ink);
+  border-radius: 0;
+  padding: 48px;
+}
+
+.groups {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 48px;
+}
+
+.divider {
+  align-self: stretch;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.group {
+  flex: 1;
+  max-width: 620px;
+}
+
+.groupLabel {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding-inline: 16px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.stats {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.stat {
+  background: #fff;
+  border-radius: 0;
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.statNumber {
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--brand);
+}
+
+.statLabel {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--fg);
+}
+
+.closing {
+  margin-top: 40px;
+  text-align: center;
+  font-size: var(--fs-body);
+  color: var(--fg);
+}
+
+.closingLink {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.closingLink:hover {
+  color: var(--brand-hover);
+}
+
+@media (max-width: 1100px) {
+  .section {
+    padding-block: 64px 72px;
+  }
+
+  .box {
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 820px) {
+  .groups {
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .group {
+    max-width: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-block: 48px 56px;
+  }
+
+  .closing {
+    margin-top: 32px;
+  }
+}

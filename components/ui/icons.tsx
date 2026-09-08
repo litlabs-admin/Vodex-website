@@ -190,6 +190,15 @@ export function CheckIcon(props: IconProps) {
   );
 }
 
+/** Plain X / cross — "traditional process" pain points in the comparison panel. */
+export function XIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 16 16" {...props}>
+      <path d="m3.5 3.5 9 9M12.5 3.5l-9 9" />
+    </svg>
+  );
+}
+
 /* -------------------------------------------------------------------------- */
 /* Call Samples player                                                        */
 /* -------------------------------------------------------------------------- */
@@ -307,6 +316,131 @@ export function FunnelIcon(props: IconProps) {
   return (
     <svg {...strokeIcon} viewBox="0 0 24 24" {...props}>
       <path d="M3 4h18l-7 9v6l-4 2v-8Z" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Broadcast mast with signal ticks — utilities & telecom. */
+export function SignalTowerIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 32 32" {...props}>
+      <path d="M16 11v17" />
+      <path d="M13 11 11 9M10.5 13.5 7 10M8 16.5 3 12" />
+      <path d="M19 11 21 9M21.5 13.5 25 10M24 16.5 29 12" />
+      <circle cx="16" cy="9" r="2" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/** Four-pointed sparkle — effortless / automated compliance. */
+export function SparkleIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 28 28" strokeLinejoin="round" {...props}>
+      <path d="M14 2c.8 4.3 1.7 6.2 3.8 8.2 2.1 2 4 3 8.2 3.8-4.3.8-6.2 1.7-8.2 3.8-2 2.1-3 4-3.8 8.2-.8-4.3-1.7-6.2-3.8-8.2-2.1-2-4-3-8.2-3.8 4.3-.8 6.2-1.7 8.2-3.8C12.3 8.2 13.3 6.3 14 2Z" />
+    </svg>
+  );
+}
+
+/** Padlock — script locking / compliance controls. */
+export function LockIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 24 24" strokeLinejoin="round" {...props}>
+      <rect x="4.5" y="11" width="15" height="10" rx="2" />
+      <path d="M8 11V7.5a4 4 0 0 1 8 0V11" />
+      <circle cx="12" cy="15.5" r="1.4" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Blog / resources                                                           */
+/* -------------------------------------------------------------------------- */
+
+/** Magnifying glass — search input on the blog listing. */
+export function SearchIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 20 20" {...props}>
+      <circle cx="8.5" cy="8.5" r="6" />
+      <path d="m18 18-4.3-4.3" />
+    </svg>
+  );
+}
+
+/** Filled play triangle in a screen frame — video/podcast overlays. */
+export function PlayFrameIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 28 24" {...props}>
+      <rect x="2" y="2" width="24" height="20" rx="3" />
+      <path d="M11.5 8.3v7.4l6.5-3.7Z" fill="currentColor" stroke="none" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Resources mega menu icons                                                  */
+/* -------------------------------------------------------------------------- */
+
+/** Article page — a headline plus body lines. */
+export function ArticleIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 28 32" {...props}>
+      <rect x="2" y="2" width="24" height="28" rx="2" />
+      <path d="M8 10h12M8 16h12M8 22h7" />
+    </svg>
+  );
+}
+
+/** Briefcase — case studies. */
+export function CaseStudyIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 28 24" {...props}>
+      <rect x="2" y="7" width="24" height="15" rx="2" />
+      <path d="M9 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" />
+      <path d="M2 14h24" />
+    </svg>
+  );
+}
+
+/** Lab flask — research & reports. */
+export function ResearchIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 24 28" {...props}>
+      <path d="M9 2h6M10 2v7.5L3.8 21.6A2 2 0 0 0 5.6 24.5h12.8a2 2 0 0 0 1.8-2.9L14 9.5V2" strokeLinejoin="round" />
+      <path d="M6.5 17.5h11" />
+    </svg>
+  );
+}
+
+/** Circled "i" — About. */
+export function InfoIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 24 24" {...props}>
+      <circle cx="12" cy="12" r="9.5" />
+      <path d="M12 11v6" />
+      <circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/** Folded newspaper — News. */
+export function NewsIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 28 24" {...props}>
+      <path
+        d="M4 4h16a2 2 0 0 1 2 2v13a1.5 1.5 0 0 0 1.5 1.5H6.5A2.5 2.5 0 0 1 4 18Z"
+        strokeLinejoin="round"
+      />
+      <path d="M8 8.5h8M8 12.5h8M8 16h5" />
+    </svg>
+  );
+}
+
+/** Envelope — Contact Us. */
+export function MailIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 28 22" {...props}>
+      <rect x="2" y="2" width="24" height="18" rx="2.5" />
+      <path d="m3.2 4 10.8 8L24.8 4" />
     </svg>
   );
 }

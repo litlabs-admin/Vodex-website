@@ -867,6 +867,7 @@ app/
 components/
   layout/           AnnouncementBar, Navbar, Footer,
                     SolutionsMegaMenu (client)              [Solutions — §12]
+                    ResourcesMegaMenu (client)                   [Resources — §17]
   hero/             Hero, TrustStrip
   sections/         DashboardShowcase, IntroducingDros,
                     EngagementQueueIllustration, Solutions,
@@ -877,13 +878,30 @@ components/
                     ProductHero, CoreFeatures, WhyItWorks,
                     WorksWithTools, SeeItInAction,
                     WhatYourTeamGets                      [Product Page — §11]
-                    SolutionHero, SolutionIndustries        [Solutions — §12]
+                    SolutionHero, SolutionIndustries,
+                    SolutionWorkflows, SolutionComparison,
+                    SolutionResults, SolutionSecurity          [Solutions — §12]
+                    BlogFeaturedPost, BlogExplorer (client)          [Blog — §16]
+                    VideoFeatured, VideoExplorer (client)          [Videos — §17]
+                    CaseStudyFeatured, CaseStudyGrid          [Case Studies — §19]
   ui/               Logo (+ Wordmark), Button, Entrance, icons,
-                    AudioWaveform, useWaveformData
+                    AudioWaveform, useWaveformData, BlogPostCard      [Blog — §16]
+                    VideoCard                                     [Videos — §17]
+                    CaseStudyCard                              [Case Studies — §19]
+  blog/             ArticleHeader, ArticleToc (client), ArticleBody,
+                    RelatedPosts                                     [Blog — §16]
 public/assets/      web-ready copies of supplied artwork
+lib/                blog-posts.ts — mock blog content + helpers       [Blog — §16]
+                    videos.ts — mock video content + helpers       [Videos — §17]
+                    case-studies.ts — mock case study content + helpers [Case Studies — §19]
 
 app/products/page.tsx                    Product Page route (header + main + footer)
 app/solutions/payment-reminders/page.tsx Solutions Page route (§12)
+app/resources/blog/page.tsx              Blog listing route (§16)
+app/resources/blog/[slug]/page.tsx       Blog post route (§16)
+app/resources/videos/page.tsx            Videos listing route (§17)
+app/resources/call-samples/page.tsx      Call Samples route — composes existing sections (§18)
+app/resources/case-studies/page.tsx      Case Studies route (§19)
 ```
 
 ---
@@ -1400,14 +1418,21 @@ that section comes up, the same issue the landing page's FAQ had.
 
 ### Current progress
 
-Only the first **two** sections of this long PDF are built this round —
-**Hero** and **"Industries that Benefit"** — because those are the only two
-sections the user supplied photo assets for. Everything below that in the
-PDF (Workflows, Comparison, Results stats, Security & Compliance, FAQ,
-Enterprise band, Final CTA) is explicitly **not built yet**; `page.tsx` has
-a comment marking where to append them once assets/content exist. Built
-alongside this: a hover mega-menu on the Navbar's "Solutions" link — a UI
-pattern with zero prior precedent anywhere in this codebase.
+**The full PDF is now built end to end** — Hero, Industries that Benefit,
+Workflows, Comparison, Results ("What you can expect"), Security &
+Compliance, plus `Faq`/`EnterpriseBand`/`FinalCta` reused verbatim (confirmed
+byte-identical copy in this PDF too, same "Sections 8-9" precedent already
+used on `/products` — see §11) and the shared `Footer`. This was built in two
+rounds: round 1 (Hero + Industries) shipped with the Navbar mega-menu; round
+2 (this one) added Workflows/Comparison/Results/Security using a second batch
+of user-supplied assets, plus one cross-cutting instruction — **every new
+card/panel this round has sharp corners** (`border-radius: 0`), no
+exceptions except the small rounded "VS" badge in Comparison, which is
+treated as an inline pill (same idiom as every eyebrow pill on this page),
+not a card. Round-2 sections were planned with the same PDF-crop
+pixel-measurement method as round 1 (pixel-scanning a 24dpi render + zoomed
+crops), not eyeballed. `page.tsx` now renders every section in PDF order
+with nothing left to append.
 
 ### Implementation decisions (persist these)
 
@@ -1594,6 +1619,128 @@ pattern with zero prior precedent anywhere in this codebase.
     first item inside the panel without closing it, `Escape` closes it from
     either position.
 
+### Round 2 — Sections 3–6 (Workflows, Comparison, Results, Security & Compliance)
+
+Built from a second batch of user-supplied assets, plus one instruction that
+applies across all four new sections: **every new card/panel has sharp
+corners** (`border-radius: 0`) — the only exception is the small rounded "VS"
+badge in Comparison, kept as an inline pill (see below). All geometry below
+is measured, not eyeballed — pixel-scanned from a 24dpi render of the PDF
+(1516px = 1:1 with the artboard) plus zoomed crops at 96–192dpi for fine
+detail, same method as round 1.
+
+- **`components/sections/SolutionWorkflows.tsx` + `.module.css`** — dark
+  section (`background: var(--ink)`), header pattern copied from the landing
+  page's `Solutions.module.css` (eyebrow "Workflows", H2 "Actions you can
+  `streamline`", lead). 6-card grid, **3 columns × 2 rows** (verified from
+  the PDF crop — not 2×3), inside a `max-width: 1327px` inset band (not the
+  full 1440 container `SolutionIndustries` uses — measured narrower here,
+  matching the `FeaturedCaseStudy`/`FinalCta` inset-band family already in
+  this file). Cards: `aspect-ratio: 436/492` (~0.886:1, portrait, measured),
+  `border-radius: 0`, full-bleed photo with an **always-on** bottom gradient
+  scrim (title + `ExternalLinkIcon` + description overlaid directly on the
+  photo — confirmed by pixel-sampling that the dark area under the text
+  varies rather than being flat black, i.e. it's the photo continuing under
+  a gradient, not a separate solid panel like `SeeItInAction` has). The
+  scrim/copy CSS is an always-visible adaptation of `CoreFeatures.module.css`'s
+  hover-triggered `.scrim`/`.copy` (opacity hardcoded to visible, the
+  `flex-grow` hover-expand machinery removed — these are static grid cells,
+  not a hover-expand strip).
+- **`components/sections/SolutionComparison.tsx` + `.module.css`** — light
+  section, same header pattern as `SolutionIndustries` (eyebrow
+  "Comparison", H2 "Traditional process vs `Vodex AI`"). **Lead text is
+  byte-identical to `SolutionIndustries`'s own lead** ("Wherever a due date
+  matters, an AI voice agent can make the reminder call for you.") —
+  confirmed this is genuinely what the PDF shows in both places, not a
+  copy-paste artifact; built verbatim in both, not deduplicated or reworded.
+  Two-panel layout (`1fr 138px 1fr` grid) inside the same 1327px inset band:
+  left "Traditional process" panel is `background: var(--ink)` with 5 items
+  each using a **new `XIcon`** (`components/ui/icons.tsx`, added after
+  `CheckIcon`, same `strokeIcon` convention — no X/cross icon existed in
+  this file before); right "Vodex AI" panel's background is a **real photo**
+  (`public/assets/comparison-vodex-bg.jpg`, copied from `magicpattern-
+  iAR6yhCkrxc-unsplash 1.jpg`), not a CSS gradient — confirmed by
+  pixel-sampling a gradient from bright orange `rgb(253,105,66)` to dark
+  maroon `rgb(102,12,12)` that pixel-matches that supplied texture file
+  exactly, with 5 items using the existing `CheckIcon`. The **"VS" mark in
+  the PDF is a stylized brush/distressed-texture graphic** with no matching
+  supplied asset and no realistic way to reproduce in Inter/CSS — built as a
+  plain small rounded dark badge with bold "VS" text instead (a clean
+  equivalent in the site's own visual language, not a pixel-fidelity
+  attempt, same treatment this project already gives other PDF-only
+  decorative glyphs with no source asset). This badge is the one deliberate
+  exception to the "sharp corners" instruction — treated as an inline pill
+  (`border-radius: var(--radius-pill)`), the same idiom as every eyebrow
+  pill already on this page, not a card/panel. The closing line ("Running a
+  collections operation? See Vodex for Debt Collection") is **duplicated
+  locally** here rather than imported from `SolutionIndustries.tsx` — same
+  copy-adapt-don't-extract precedent as the scrim-card pattern above, for an
+  even smaller unit (~10 lines, one link).
+- **`components/sections/SolutionResults.tsx` + `.module.css`** — full-bleed
+  photo-background section (`isolation: isolate` + `next/image fill`,
+  pattern copied from `EnterpriseBand.tsx`/`.module.css`). Background:
+  `public/assets/results-bg.jpg` (copied from `Frame 2147226791.jpg`,
+  confirmed pixel-identical to this section's photo). Eyebrow is
+  **"Comparison" again — reused a third time in this PDF** (Industries'
+  "Core features," this section's and Comparison's shared "Comparison," and
+  Security's "Resources" below are now 3 separate instances of the PDF
+  reusing a mismatched/generic eyebrow label across sections it doesn't
+  really describe) — built verbatim per this project's established
+  "measure, don't invent" rule, flagged rather than silently relabeled, same
+  as the Industries "Core features" precedent. 3 stat cards sit in the
+  **full 1440px container** (measured wider than the other three round-2
+  sections' 1327px inset band — x=42→1494 at the 1516 artboard), `#fff`
+  cards, `border-radius: 0`, big number styled `font-family: var(--font-serif);
+  font-style: italic; color: var(--brand)` — reusing the exact styling
+  convention `FeaturedCaseStudy.module.css`'s `.statNumber` already
+  established for "big stat number" elsewhere on the site, just at a larger
+  size to match this section's measured proportions. This "stat card"
+  pattern (number + label + description, 3-across) did not exist anywhere
+  else in the codebase before this — confirmed by a full-codebase search —
+  built as a new local pattern in this file's own module only.
+- **`components/sections/SolutionSecurity.tsx` + `.module.css`** — light
+  section, eyebrow **"Resources"** (third mismatched-label reuse in this
+  PDF, same treatment: verbatim, flagged, not relabeled). 4-card row in the
+  1327px inset band, `grid-template-columns: repeat(4, 1fr); gap: 12px`
+  (tight gap, matches Workflows' own measured ~14px gap convention). Cards
+  reuse the Workflows scrim pattern (copy-adapted, not shared/imported) but
+  **caption-only, no icon** — confirmed no diagonal arrow on these cards in
+  the PDF crop, unlike Workflows. `aspect-ratio: 324/294` (measured — cards
+  are close to square, slightly wider than tall). Two of the four source
+  photos are **intentional reuses of files already used elsewhere** in this
+  codebase (`luke-chesser-JKUTrJ4vK00-unsplash 1.jpg`, already `feature-3.jpg`
+  on the Product Page's Core Features strip; `Frame 2147227673.jpg`, already
+  the footer's cert-badge grid source) — confirmed by direct visual
+  comparison that the PDF genuinely reuses the same source photos in
+  multiple places, not a filename collision to resolve. Copied as fresh
+  files under new `security-*.jpg` names rather than referencing the
+  existing copies, so each section's assets stay independently swappable.
+- **`Faq`, `EnterpriseBand`, `FinalCta` reused verbatim**, same as the
+  `/products` "Sections 8-9" precedent (§11) — confirmed byte-identical copy
+  in this PDF too (badge/heading/lead text for all three matched exactly via
+  `pdftotext -layout`, cross-checked against each component's own JSX). No
+  new code; just appended to `page.tsx` in PDF order after
+  `SolutionSecurity`.
+- A **debugging note worth keeping**: the first full-page Playwright
+  screenshot taken during verification showed every new photo card as solid
+  black (Workflows, Comparison's right panel, Results' background, Security's
+  4 cards) — not a code bug. `next/image`'s native `loading="lazy"` means a
+  plain `fullPage: true` Playwright screenshot doesn't reliably force every
+  image to decode before the composite is taken, even though `fullPage`
+  auto-scrolls the page (confirmed via a per-element screenshot of one
+  "black" card, which rendered the photo correctly in isolation, and via
+  `page.$$eval` showing zero broken/failed image requests). Fixed by
+  explicitly scrolling the page in steps first, then `waitForFunction`
+  asserting every **visible** `<img>` has `complete && naturalWidth > 0`
+  (`img.offsetParent === null` used to skip intentionally-hidden images,
+  e.g. Final CTA's icon cluster which is `display:none` below 900px and
+  therefore never loads) before taking the real screenshot. This is a
+  stricter version of the "scroll before screenshotting lazy images" gotcha
+  CLAUDE.md already documents for Section 9/Call Samples — **if a future
+  full-page (not just per-element) screenshot ever shows unexpectedly blank
+  images, this scroll-and-wait-for-complete pattern is the fix, not a
+  suspicion that the images themselves are broken.**
+
 ### Asset → component map
 
 | Asset (`vodex assets/`) | Destination | Notes |
@@ -1602,37 +1749,1410 @@ pattern with zero prior precedent anywhere in this codebase.
 | `pexels-szymon-shields-1503561-10178729 1.jpg` | `public/assets/industries-banks.jpg` → Industries, "Banks & Financial Institutions" | there is also a sibling `… 2.jpg` in `vodex assets/`; `1.jpg` is the confirmed match, `2.jpg` unused |
 | `Frame 2147226785.png` | `public/assets/industries-collection-agencies.jpg` → Industries, "Collection Agencies" | format-converted (flattened RGBA → JPEG), not a plain copy — source PNG is fully opaque |
 | `pexels-roman-muntean-369190311-14513059 1.jpg` | `public/assets/industries-healthcare.jpg` → Industries, "Healthcare" | confirmed pixel-identical to the PDF's surgical/healthcare photo |
+| `rasheed-kemy-oqY09oVTa3k-unsplash 1.jpg` | `public/assets/workflow-1.jpg` → Workflows, "Upcoming Due Date Reminders" | subway commuter photo, confirmed pixel-identical |
+| `pexels-karola-g-4968385 1.jpg` | `public/assets/workflow-2.jpg` → Workflows, "Same-Day Payment Reminders" | cash/wallet exchange photo |
+| `polina-lavor-G71Q0Wz8rcc-unsplash 1.jpg` | `public/assets/workflow-3.jpg` → Workflows, "Grace-Period Follow-Ups" | subway photo, curly hair/sunglasses |
+| `julio-lopez-vhXte7wBkMc-unsplash 1.jpg` | `public/assets/workflow-4.jpg` → Workflows, "Overdue Payment Reminders" | night street photo |
+| `image 1029.jpg` | `public/assets/workflow-5.jpg` → Workflows, "Final & Last-Chance Notifications" | vintage brick phone, purple bg |
+| `mina-rad-qFSQFSmfZkA-unsplash 2.jpg` | `public/assets/workflow-6.jpg` → Workflows, "Promise-to-Pay Confirmations" | handshake photo — note the sibling `…1.jpg` is already used elsewhere (Product Page's "Payment plan negotiation" card); this is a *different* crop from the same photographer, confirmed by direct comparison, not a duplicate reference |
+| `magicpattern-iAR6yhCkrxc-unsplash 1.jpg` | `public/assets/comparison-vodex-bg.jpg` → Comparison, "Vodex AI" panel background | grain/gradient texture, confirmed pixel-match by sampled gradient colors, not a CSS gradient |
+| `Frame 2147226791.jpg` | `public/assets/results-bg.jpg` → Results section background | glowing lamp/table photo |
+| `dlxmedia-hu-ljnwOfYboGc-unsplash 1.jpg` | `public/assets/security-1.jpg` → Security, "Encrypted call recordings" | Zoom H1 audio recorder photo |
+| `pexels-edwin-mandries-2152983550-36627633 3.jpg` | `public/assets/security-2.jpg` → Security, "Consent checks" | man on phone outdoors |
+| `luke-chesser-JKUTrJ4vK00-unsplash 1.jpg` | `public/assets/security-3.jpg` → Security, "Full audit trails" | analytics dashboard photo — same source already used as Product Page's `feature-3.jpg`, intentional reuse (see decisions above) |
+| `Frame 2147227673.jpg` | `public/assets/security-4.jpg` → Security, "ISO 27001, SOC 2, and HIPAA compliant" | cert-badge grid — same source already cropped into the footer's 8 individual badges, intentional reuse |
 
-All 4 matches were confirmed by direct visual comparison against the
-rendered PDF crop before use, same standard as every other asset mapping in
-this file — none guessed from filenames alone.
+All matches (round 1 and round 2) were confirmed by direct visual comparison
+against the rendered PDF crop before use, same standard as every other asset
+mapping in this file — none guessed from filenames alone.
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` across both rounds. Round 2
+Playwright-verified at 1516/1280/900/430px — zero console errors, zero
+horizontal overflow at every width (using the scroll-and-wait-for-complete
+screenshot method described above, needed specifically because this round
+added several new full-bleed photo cards). Every new card/panel corner
+confirmed `border-radius: 0` except the flagged VS badge. Landing page (`/`)
+and `/products` re-verified unaffected (zero new console errors/overflow)
+since `icons.tsx` (new `XIcon`) is shared. Live screenshots visually compared
+against the PDF's own rendered crops for all 6 sections — bounding boxes,
+grid arity, and card proportions all match closely. Mega-menu (round 1)
+remains verified as previously documented — untouched this round.
+
+**Approved:** Nothing yet on this page — not yet reviewed by the user, same
+pending-review status every other section in this file uses before explicit
+sign-off. Round 1 (Hero, Industries, mega-menu) and round 2 (Workflows,
+Comparison, Results, Security, the Faq/EnterpriseBand/FinalCta reuse) are
+both awaiting the user's first look.
+
+**Next:** Wait for the user's review of the full page top to bottom. Open
+items still flagged, not yet resolved:
+1. Three separate mismatched/reused eyebrow labels across this PDF —
+   Industries' "Core features," Comparison's and Results' shared
+   "Comparison," and Security's "Resources" — all built verbatim per this
+   project's "measure, don't invent" rule rather than silently relabeled to
+   something more section-appropriate.
+2. `/solutions` (the parent hub page that both the plain Navbar link and the
+   mega-menu's "View all solutions" button point at) still does not exist —
+   pre-existing gap, not introduced by either round.
+3. Comparison's "VS" badge is a clean CSS reconstruction, not a match to the
+   PDF's distressed-brush-texture graphic (no source asset existed for it) —
+   flagged as a deliberate simplification, not an oversight.
+4. `SolutionComparison`'s lead text is byte-identical to `SolutionIndustries`'s
+   — confirmed as genuinely what the PDF shows in both places, not
+   deduplicated since CLAUDE.md's own precedent is to build verbatim PDF
+   copy even when it repeats oddly.
+
+This PDF is now fully built — no more sections remain to append. Any further
+work on this page would be user-driven revisions, not continuing top-to-bottom
+construction.
+
+---
+
+## 16. Resources — Blog (`/resources/blog`)
+
+> No PDF reference for this page — `Footer.tsx` pre-declared `Blog →
+> /resources/blog` (and `Navbar.tsx` links to `/resources`) before either
+> existed, same situation every Solutions page was in before being built.
+> The user supplied `D:\litlabs\Chapeau-website` (its `/insights` listing
+> page + `/insights/[slug]` post page) as a **structural/interaction
+> benchmark only** — layout, filter/search logic, and the sidebar
+> table-of-contents scroll-spy mechanism — with explicit instruction to
+> re-express everything through this project's own design tokens (CSS
+> Modules, `--brand` orange not the benchmark's pink, this project's
+> sharp-corner-by-default convention) rather than port its Tailwind classes,
+> and to keep the result "consistent with the whole website."
+
+### Current progress
+
+Built both the listing page (`/resources/blog`) and a working dynamic post
+route (`/resources/blog/[slug]`) with the sidebar TOC + scroll-spy, per the
+user's explicit scope choice (not listing-only). Content is a small, grounded
+mock set — 1 featured + 5 grid posts (6 total) — across the **same 3
+categories the landing page's `Resources.tsx` already established** ("Debt
+Collection", "AI & Technology", "Voice Technology"), for sitewide taxonomy
+consistency per the user's direct instruction. Only the featured post
+("Introducing DROS…") has a fully fleshed-out, multi-heading body; the other
+5 slugs resolve (no dead links) but with shorter stub bodies — flagged as
+pending real content, same treatment this project already gives Section 9's
+placeholder audio.
+
+### Implementation decisions
+
+- **`lib/blog-posts.ts`** is the single source of truth for all blog content
+  — a plain typed array (`BLOG_POSTS`), not an async repository layer (this
+  project has no CMS/data-fetching abstraction anywhere else, so one wasn't
+  invented here either). Both the listing page and the `[slug]` route import
+  from it, so a post's data is never duplicated. `PostBlock` is a small union
+  (`heading | paragraph | list | quote`); `tocFromBlocks()` derives the
+  sidebar's table of contents straight from a post's own `heading` blocks —
+  same principle as the Chapeau benchmark: the TOC and the in-body anchors
+  can never drift apart because they're the same data, read twice.
+- **Hero reuses `SolutionHero` verbatim**, no new hero component — it was
+  already generic/prop-driven (see §12), and the copy/CTA shape the user's
+  attached mockup shows (badge "Blog", H1 with one accent phrase, lead, a
+  "Talk To Our Expert"/"Schedule a Demo" CTA pair) is exactly this
+  component's existing shape. Background: `public/assets/blog-hero-bg.jpg`,
+  a copy of the user-specified
+  `vodex assets/pexels-szymon-shields-1503561-10178729 2.jpg` — the same
+  source photo already used as `solution-promise-to-pay-hero-bg.jpg`
+  elsewhere, an intentional reuse consistent with this project's established
+  precedent of reusing source photos across pages.
+- **New shared card component: `components/ui/BlogPostCard.tsx`** — used by
+  both the listing grid and `RelatedPosts` on the post page, so a post's
+  card only has one implementation. Copy-adapted from `Resources.tsx`'s card
+  idiom (light `#f7f7f7` body, sharp `border-radius: 0`, category label,
+  divider, dark pill "Read More"), per this project's established
+  "copy-adapt, don't force a shared generic component" rule — not a retrofit
+  of `Resources.tsx` itself, which stays landing-page-hardcoded content.
+  **One deliberate deviation from the `Resources.tsx` card it's copied
+  from**: the whole card is clickable, not just "Read More" — implemented as
+  a **stretched-link** (`.titleLink::after { position:absolute; inset:0 }`
+  over a `position:relative` card, with "Read More" reduced to
+  `aria-hidden="true"` decoration) rather than nesting a second `<Link>`
+  inside the card, which would be invalid HTML (nested anchors) and would
+  double-announce the link for screen readers. This is the standard
+  accessible pattern for "the whole card is clickable but there's only one
+  real link" — reuse it if another card grid in this project ever wants the
+  same behavior. `BlogFeaturedPost.tsx`'s 2-column featured card uses the
+  identical technique on its own title.
+- **`components/sections/BlogExplorer.tsx`** (`"use client"`) is a direct
+  port of the Chapeau benchmark's `InsightsExplorer` filtering logic —
+  `useState`/`useMemo`, AND-combined category + substring text match (title/
+  excerpt/category, case-insensitive), an `aria-live="polite"` result-count
+  announcement, and a dashed-border empty state with a "Clear filters"
+  button — re-expressed with this project's own CSS Modules/tokens instead
+  of Tailwind/framer-motion (this project has neither). Category chips are
+  plain toggle buttons (`activeCategory: string` single-select state, the
+  same one-active-item-in-parent idiom `FaqAccordion`/`CallSamplesGrid`
+  already use elsewhere in this codebase), active state filled `var(--brand)`
+  in place of the benchmark's pink. New `SearchIcon` added to
+  `components/ui/icons.tsx` (same `strokeIcon` convention as every other
+  icon there) since no search/magnifying-glass icon existed before.
+- **`components/blog/ArticleToc.tsx`** (`"use client"`) is a **direct
+  algorithmic port** of the Chapeau benchmark's own `ArticleToc` — a
+  `ticking` + `requestAnimationFrame`-throttled `scroll`/`resize` listener
+  that walks heading elements in document order and marks the last one whose
+  `getBoundingClientRect().top` has crossed an offset line as active.
+  Deliberately **not** IntersectionObserver, for the same reason the
+  benchmark's own code comment gives: a fast scroll (Page Down, a large
+  wheel delta) can carry a heading past a narrow observed intersection band
+  in a single frame without ever triggering it; continuous
+  `getBoundingClientRect()` recomputation has no such gap. `ACTIVE_OFFSET`
+  is re-tuned to `96px` for this site's own sticky navbar (`--nav-h: 64px`,
+  not the benchmark's collapsing-pill header) — every heading in
+  `ArticleBody.module.css` carries a matching `scroll-margin-top: 96px`.
+  Sidebar is `display:none` below 901px (no mobile drawer — same choice the
+  benchmark itself made, simply omitting it on small screens rather than
+  inventing an unasked-for pattern) and renders `null` entirely when a post
+  has fewer than 2 headings (nothing to navigate).
+- **Sitewide taxonomy, not a new one**: `CATEGORIES` in `lib/blog-posts.ts`
+  is exactly the 3 categories `Resources.tsx` (landing page) already
+  established — "Debt Collection", "AI & Technology", "Voice Technology" —
+  per the user's explicit "make sure the UI is consistent with the whole
+  website" instruction. Do not add a 4th category without checking whether
+  `Resources.tsx`/`SolutionBlogCards`/`WhyItWorks` should be updated too.
+- **Only the featured post has a complete article body.** The other 5 posts
+  (`rpc-verification-…`, `auto-re-dial-logic-…`, `fdcpa-regf-tcpa-…`,
+  `what-makes-voice-ai-sound-human`, `promise-to-pay-capture-…`) each have a
+  short 2-heading stub body — enough for a working TOC and a real page, but
+  thin content, matching the user's "listing page + **one** sample post
+  page" scope decision. If asked to flesh these out later, extend each
+  post's `body` array in `lib/blog-posts.ts` directly; no component changes
+  are needed since `ArticleBody`/`ArticleToc` are already generic over
+  however many blocks/headings a post has.
+- **`app/resources/blog/[slug]/page.tsx` uses Next 15's async `params`**
+  (`params: Promise<{ slug: string }>`, `await`ed in both the page component
+  and `generateMetadata`) — this is the first dynamic route in the project,
+  so this is also the first place that convention appears; follow the same
+  `Promise<{...}>` + `await` shape for any future dynamic route rather than
+  the pre-15 synchronous `params` shape.
+- **Custom `not-found.tsx` scoped to `app/resources/blog/[slug]/`** (not a
+  global 404) — renders the same header/footer chrome plus an on-brand
+  "We couldn't find that article" message and a button back to the blog
+  index. `generateStaticParams()` pre-renders all 6 known slugs; any other
+  slug 404s through this route-scoped page via `notFound()`.
+- **Related Posts reuses `BlogPostCard`** via `getRelatedPosts()`
+  (same-category-first, backfilled with the rest, same algorithm as the
+  Chapeau benchmark) — no separate card implementation.
+
+### Asset → component map addition
+
+| Asset (`vodex assets/`) | Destination | Notes |
+| --- | --- | --- |
+| `pexels-szymon-shields-1503561-10178729 2.jpg` | `public/assets/blog-hero-bg.jpg` → Blog hero | same source already used as `solution-promise-to-pay-hero-bg.jpg` — intentional reuse, per user's own instruction to use this exact file |
+
+Post thumbnails reuse existing assets already in `public/assets/` (no new
+copies beyond the hero background) — `results-bg.jpg` (featured/DROS),
+`resources-1.jpg` (RPC verification), `action-3.jpg` (auto re-dial),
+`security-4.jpg` (compliance checklist), `why-works-1.jpg` (human-sounding
+voice AI — literally the same photo Product Page's "Human-like
+conversations" card already uses, a fitting reuse), `action-2.jpg`
+(promise-to-pay capture).
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` (all 6 post slugs
+statically generated via `generateStaticParams`, confirmed in the build
+output). A full Playwright screenshot/interaction pass (filter clicks,
+empty-state search, fast-scroll TOC scroll-spy check, reduced-motion
+emulation, 1516/1280/900/430px) was attempted but the verification script
+hung mid-run and was killed rather than left running — the likely cause is
+`page.goto(..., { waitUntil: "networkidle" })` against a `next dev` server,
+whose persistent HMR WebSocket keeps the network from ever going idle, so
+each navigation was probably eating its full navigation timeout one at a
+time rather than any actual bug in the pages. The dev server and the
+verification task were both stopped cleanly (no hung processes left
+running) per the user's explicit "just build clean … I will verify it
+manually" instruction — same pending-review status this project already
+gives Section 9's audio player and the Section 10-15/Footer photo swap. If
+this needs re-attempting later, switch the wait strategy to `"load"` (or a
+`domcontentloaded` + explicit image-ready check, which the script already
+does separately) instead of `"networkidle"` when driving a `next dev`
+target.
+
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off.
+
+**Next:** Wait for the user's manual review of both `/resources/blog` and
+`/resources/blog/introducing-dros-engagement-operating-system` (the one
+fully-authored post). Known open items, flagged rather than silently
+decided: (1) 5 of 6 posts have stub bodies only, pending real content; (2)
+`/resources` itself (the bare hub the Navbar link points at) still 404s —
+pre-existing gap, not introduced here, same situation `/solutions` is
+still in; (3) no share buttons/comments/newsletter signup on the post page
+— the Chapeau benchmark doesn't have them either, so none were added.
+
+---
+
+## 17. Resources — Videos & Podcasts (`/resources/videos`) + Resources mega menu
+
+> No PDF reference — same situation as §16. The user supplied a mockup
+> screenshot of the hero only (badge "Videos", H1 "Videos & podcasts", the
+> lead copy, the same CTA pair as the Blog hero) and asked for the rest of
+> the page to follow the Blog listing page's structure, with explicit
+> instructions: reuse a background from one of the other existing hero
+> sections rather than sourcing a new photo, and keep the content mock —
+> **no real video/playback this round**. Separately, the user asked for the
+> navbar's "Resources" link to get the same hover mega-menu treatment
+> `SolutionsMegaMenu` already has, listing: Blog, Videos, Call Samples, Case
+> Studies, FAQ, About, Research, News, Investors, Contact Us.
+
+### Current progress
+
+Both pieces are built. `/resources/videos` mirrors `/resources/blog`'s
+structure (`SolutionHero` → featured card → filterable grid → `FinalCta`)
+but every card is **static, not a link** — there's no real per-video page to
+send anyone to yet, so a nested/duplicate "watch" affordance would just be a
+dead click. `ResourcesMegaMenu.tsx` is new, wired into `Navbar.tsx` the same
+way `SolutionsMegaMenu` already is.
+
+### Implementation decisions
+
+- **Hero reuses `SolutionHero` verbatim** (no new hero component, same as
+  Blog). Copy matches the user's mockup exactly: badge "Videos" with
+  `badgeIcon={PlayIcon}` (an explicit override of the default `Waveform`
+  badge icon — the first time `SolutionHero`'s `badgeIcon` prop has been
+  used for something other than its default, since a filled play triangle
+  reads better than a waveform for a video/podcast section), H1 "Videos &
+  podcasts" with **no accent word** — built faithful to the reference
+  screenshot rather than force-fitting the sitewide "one orange word per
+  heading" convention, since the mockup genuinely shows plain white text
+  throughout. Background: `product-hero-bg.jpg`, reused directly via import
+  (no new file copied into `public/assets/`) — the user explicitly said to
+  pull from an existing hero rather than source new art; picked for being
+  the least-reused hero photo in the project (most other hero backgrounds
+  are already tied to a specific vertical/page).
+- **`lib/videos.ts`** mirrors `lib/blog-posts.ts`'s shape (plain typed
+  array, `VIDEOS`, `VIDEO_CATEGORIES`, small helpers) — 1 featured + 5 grid
+  videos, 3 categories drawn straight from the hero's own lead copy
+  ("demos, customer stories, … podcasts") → **Product Demos, Customer
+  Stories, Podcast**. This is a deliberately different taxonomy from Blog's
+  3 categories (Debt Collection / AI & Technology / Voice Technology) —
+  videos are grouped by *format*, blog posts by *subject* — not an
+  oversight; don't try to unify them into one shared category list.
+  Thumbnails reuse existing photos already in `public/assets/`, including
+  `dashboard-mockup.png` for the featured "Inside DROS" demo (a natural fit
+  — it's literally a product screenshot).
+- **`VideoCard` (`components/ui/`) and `VideoFeatured` (`components/sections/`)
+  are copy-adapted from `BlogPostCard`/`BlogFeaturedPost`** — same light
+  `#f7f7f7` body / sharp-corner card shell, same hover lift — but **not
+  links**. Per the user's explicit "no need of actual video" scope, wrapping
+  cards in a `<Link>` to nowhere (or a self-referential href) would just be
+  a fake affordance; instead each thumbnail gets a centered circular
+  play-button overlay (scales up + turns brand-orange on card hover, an
+  intentionally decorative micro-interaction, `aria-hidden` since it isn't a
+  real control) and a duration badge. If/when real video pages exist later,
+  swap these back to the `BlogPostCard` stretched-link pattern (see §16) —
+  the visual shell is already identical, only the interactivity needs
+  restoring.
+- **`VideoExplorer` is a copy-adapted port of `BlogExplorer`** — identical
+  filter/search logic and empty state, operating over `Video[]` instead of
+  `BlogPost[]`. Kept as a separate component rather than genericizing
+  `BlogExplorer` over a shared type, consistent with this project's
+  established "copy-adapt, don't force a shared generic component" rule —
+  the two already diverge in card type and will likely diverge further once
+  videos get real detail pages.
+- **`ResourcesMegaMenu.tsx` (`components/layout/`) is a structural copy of
+  `SolutionsMegaMenu.tsx`** — identical mechanics (CSS-first
+  `:hover`/`:focus-within` open, the padding-not-margin gap trick so the
+  mouse never crosses a dead zone between the nav link and the panel, the
+  Escape-blurs-active-element handler, the pathname-change blur so a
+  same-page-shell client navigation doesn't leave the panel stuck open,
+  icon-box treatment). **One structural difference from Solutions' menu,
+  deliberate**: the 10 requested items are split into two labeled groups —
+  "Resources" (Blog, Videos, Call Samples, Case Studies, FAQ, Research) and
+  "Company" (About, News, Investors & Partners, Contact Us) — stacked
+  vertically in one panel (not side-by-side columns), rather than one flat
+  list. This isn't an invented grouping: it's exactly how `Footer.tsx`
+  already splits its own "Resources" and "Company" columns, just reflected
+  into the mega menu so the two stay conceptually in sync; grouping also
+  keeps a 10-item list scannable the way Solutions' explicit "single flat
+  list" choice worked for 5. Panel widened from Solutions' `420px` to
+  `460px` to comfortably fit "Investors & Partners" without cramped
+  wrapping. **Every href reuses an href `Footer.tsx` already declares**
+  (`/resources/blog`, `/resources/videos`, `/#call-samples-title`,
+  `/resources/case-studies`, `/#faq-title`, `/resources/research`,
+  `/company/about`, `/company/news`, `/company/investors`, `/contact`) — no
+  new routes invented; several (Case Studies, Research, About, News,
+  Investors, Contact Us) still 404 today, same "clickable now, page comes
+  later" precedent already established for the Solutions mega menu's own
+  not-yet-built destinations.
+- **7 new icons added to `components/ui/icons.tsx`** under a "Resources mega
+  menu icons" block (`ArticleIcon`, `CaseStudyIcon`, `ResearchIcon`,
+  `InfoIcon`, `NewsIcon`, `MailIcon`, plus `PlayFrameIcon` filed separately
+  right after `SearchIcon` since it's also used stand-alone) — all generic
+  redraws in the existing `strokeIcon` convention, not pixel-traces of
+  anything (no source PDF/asset exists for these). 3 items reuse existing
+  icons where the fit was already exact: `PhoneCallIcon` (Call Samples,
+  already used for "Debt Collection" in Solutions' own menu — reusing the
+  same glyph for a related-but-different concept in a different menu is
+  fine, they're never shown side by side), `ChatIcon` (FAQ — already this
+  project's established FAQ glyph, see the landing page's FAQ side card),
+  `TrendingUpIcon` (Investors & Partners — already exists from the Final CTA
+  icon cluster, a strong conceptual fit for "growth/investors").
+- **Navbar.tsx's desktop link loop** changed from a two-way ternary to a
+  three-way `if` chain (`"Solutions" → SolutionsMegaMenu`,
+  `"Resources" → ResourcesMegaMenu`, else plain `<Link>`) — the mobile
+  hamburger panel needed **no change**: it already renders every
+  `NAV_LINKS` entry as a plain link unconditionally (mega menus are
+  desktop-only, `:hover`/`:focus-within` behavior doesn't apply to the
+  mobile drawer), so "Resources" in the mobile panel is still just a plain
+  link to `/resources` — confirmed by reading `Navbar.tsx` before assuming
+  a mobile variant was needed.
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` (19 routes, `/resources/videos`
+included). Curl smoke-test confirmed `/`, `/resources/blog`,
+`/resources/videos`, and the featured blog post all return 200 on a fresh
+`next dev` server. A Playwright visual pass was attempted twice this
+session and abandoned both times — first a `networkidle`-related hang
+(§16), then a Chromium renderer crash mid-`page.evaluate` on a retry using
+`waitUntil: "load"` instead — both look like environment friction with this
+sandboxed Windows Chromium rather than app bugs (curl/build/tsc all clean
+throughout), but **the mega menu's hover panel, the video cards' hover
+micro-interactions, and both pages' responsive layout have not been
+visually confirmed by a screenshot this session**. Dev servers and the
+crashed Playwright process were both stopped cleanly each time; no
+processes left running.
+
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off.
+
+**Next:** Wait for the user's manual review — of `/resources/videos`, the
+Resources mega menu (hover it in a real browser to confirm the two-group
+panel reads well and nothing overflows/clips at narrower desktop widths),
+and the video cards' non-interactive treatment. If real per-video pages
+get built later, revisit the "cards aren't links" decision above.
+
+---
+
+## 18. Resources — Call Samples (`/resources/call-samples`)
+
+> Reference: a mockup screenshot (`Vodex - Resources -_ Call Samples.png`),
+> not a PDF. Confirmed by inspection (cropped and re-examined at full
+> resolution before building — see below) that most of this page is not new
+> design at all: it's the landing page's own `CallSamples` and `Resources`
+> sections, screenshotted back-to-back under a new page-specific hero,
+> followed by the already-existing `EnterpriseBand`/`FinalCta`/`Footer`. The
+> user confirmed this directly ("we have sections created on either home
+> page, so we will use those sections, instead") before any code was
+> written, and this page is built almost entirely by composing those
+> existing components — no new section components at all.
+
+### What the mockup actually showed vs. what was built (both confirmed with the user first)
+
+Two things in the mockup didn't cleanly match reusing the real components
+verbatim, and — per the user's explicit "ask, do not assume" — both were
+asked about rather than guessed:
+
+1. **Hero badge said "Videos"**, not "Call Samples" — this page has zero
+   video content, so it read as a leftover from the `/resources/videos`
+   mockup rather than intentional. **Confirmed with the user: use "Call
+   Samples."**
+2. **The mockup's `CallSamples`-section header (eyebrow "Debt Collection",
+   heading "Real calls, real conversations", lead "Three conversation
+   flows…") does not match what `CallSamples.tsx` already ships with on the
+   landing page** (eyebrow "Call Samples", heading "Hear the difference
+   `context` makes", lead "Real conversation flows our AI agents run every
+   day — natural, compliant, and built around your business rules.") — the
+   card data itself (Upcoming payment reminder / Payment plan negotiation /
+   Overdue payment, Olivia, 0:48/1:12/0:57) matches exactly, only the
+   section header text differs. Zoomed crops of both the `CallSamples` and
+   `Resources` header blocks in the mockup showed **byte-identical**
+   eyebrow/heading/lead between the two sections despite one showing audio
+   cards and the other blog cards ("Three conversation flows…" describing a
+   grid of written articles makes no sense) — strong evidence this is a
+   Figma copy-paste artifact, not intentional new copy. **Confirmed with
+   the user: reuse `CallSamples` exactly as it already ships (no copy
+   changes) rather than edit it to match the mockup** — editing it would
+   also have changed the landing page, since it's the same shared
+   component. This is why the live page's `CallSamples`/`Resources`
+   sections don't visually match this specific mockup's header text; that
+   was a deliberate, confirmed choice, not an oversight.
+
+### Implementation decisions
+
+- **`app/resources/call-samples/page.tsx` composes existing components
+  only**: a new page-specific `SolutionHero` call, then `<CallSamples />`,
+  `<Resources />`, `<EnterpriseBand />`, `<FinalCta />` verbatim (same
+  "reused verbatim" precedent as every other page in this file) —
+  zero new section components were written for this page.
+- **`SolutionHero`'s `bgImage` prop is now optional** (`bgImage?:
+  Parameters<typeof Image>[0]["src"]`) — the mockup's hero showed a flat
+  dark background with no photo, the first time any hero on this site
+  needed that, so the backdrop `<Image>`/wrapper now only renders when
+  `bgImage` is passed (omitting it lets `.hero`'s own pre-existing
+  `background: #0d1013` show through). **This page itself doesn't end up
+  using that path** — per direct follow-up ("use some existing hero bg for
+  call samples page") it now passes `bgImage={callSamplesHeroBg}`
+  (`debt-collection-hero-bg.jpg`, reused directly via import, no new file
+  copied — picked for being the least-reused hero photo in the project at
+  the time). The optional-prop change is left in place regardless since
+  it's a reasonable, low-risk extension in the same spirit as
+  `SolutionWorkflows`' `eyebrow`/`heading` props (§15) — a future page that
+  genuinely wants a flat-color hero can still omit `bgImage`.
+- **Badge icon left at the default `Waveform`** (no `badgeIcon` override,
+  unlike the Videos hero's `PlayIcon` override) — the mockup's badge icon
+  looked like the same generic circular mark used on every other hero
+  badge, not a distinct glyph.
+- **`ResourcesMegaMenu`'s "Call Samples" href updated** from
+  `/#call-samples-title` (the landing-page anchor, a placeholder from §17
+  since no dedicated page existed yet) to `/resources/call-samples` now
+  that a real page exists. `Footer.tsx`'s own "Call Samples" link (in its
+  **Product** column, not Resources) was deliberately left pointing at
+  `/#call-samples-title` — that's a pre-existing, different link in a
+  different context (a Product-page-shaped feature list), not something
+  introduced by this page, and changing it wasn't asked for.
+- No new copy was invented for this page beyond the hero (badge/H1/lead/
+  CTAs, all taken directly from the mockup with the one confirmed badge
+  fix) — everything below the hero is pre-existing, already-reviewed-or-
+  pending-review content from `CallSamples`/`Resources`/`EnterpriseBand`/
+  `FinalCta`.
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` (20 routes,
+`/resources/call-samples` included). Curl smoke-test confirmed `/`,
+`/resources/call-samples`, `/resources/blog`, and `/resources/videos` all
+return 200 on a fresh `next dev` server with no errors in the dev log; dev
+server stopped cleanly afterward. No Playwright visual pass attempted this
+round (per the environment friction hit twice in §16/§17) — not yet
+visually confirmed by screenshot.
+
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off.
+
+**Next:** Wait for the user's review, in particular of the
+`debt-collection-hero-bg.jpg` reuse for this hero and of the deliberate
+decision to keep `CallSamples`' existing header copy rather than match the
+mockup's (see above — flag if the user actually wants the landing page's
+copy changed too, since that would be a different, larger change).
+
+---
+
+## 19. Resources — Case Studies (`/resources/case-studies`)
+
+> Reference: a mockup screenshot (`Vodex - Resources -_ Case Studies.png`),
+> same non-PDF treatment as §16-§18. Structurally close to the Call Samples
+> mockup (§18) — new hero, then two "existing landing-page section"-shaped
+> blocks, then `EnterpriseBand`/`FinalCta`/`Footer` — but this time the two
+> reused-looking blocks didn't cleanly map onto reusing the real components
+> verbatim, so this one took real back-and-forth with the user before
+> building (three rounds of `AskUserQuestion`, all answered before any code
+> was written, per explicit "ask, do not assume").
+
+### What was asked, and what the answers actually resolved to
+
+1. **Hero badge** said "Videos" in the mockup again (third page in a row
+   with this exact leftover) — confirmed with the user: use **"Case
+   Studies"**.
+2. **The mockup's featured-case-study banner doesn't match the live,
+   shared `FeaturedCaseStudy` component** (used on the landing page):
+   different eyebrow ("Debt Recovery" vs. "Featured Case Study"), a
+   single-line un-accented "Improved by 3X" heading vs. the live
+   component's two-line accented one, and — the real structural
+   difference — **a second "Read Case Study" button that doesn't exist in
+   the live component at all** (today there's only one bottom CTA bar).
+   Asked whether to reuse `FeaturedCaseStudy` verbatim (§18's precedent) or
+   edit it to match. **The user's answer wasn't either offered option** —
+   *"or we can do like blogs page instead, it looks good"* — i.e., stop
+   trying to force-fit the small single-banner teaser shape at all, and
+   build this page with the Blog page's actual pattern (a dedicated
+   featured card + a card grid, §16), the same way Blog and Videos each
+   got their own purpose-built components instead of reusing/editing a
+   landing-page section. This is why `CaseStudyFeatured`/`CaseStudyGrid`/
+   `CaseStudyCard` are **new** components below, and why the shared
+   `FeaturedCaseStudy` (and the landing page that uses it) was never
+   touched.
+3. **Both mockup sections are wrapped in a "Debt Collection" eyebrow +
+   heading + lead, and followed by a "Running a collections operation? See
+   Vodex for Debt Collection" cross-sell line** — neither wrapper exists on
+   the actual landing-page components. Asked whether to include this
+   framing. **Answer: "do as what ref says"** — include it. Applied
+   literally where the mockup's copy made sense, with one deliberate
+   exception (see next section) rather than reproducing a line already
+   identified as broken.
+
+### The one line that was NOT reproduced, and why
+
+The mockup's **first** section header (above the featured card) shows the
+lead *"Three conversation flows our agents run every day for collections
+teams, from friendly reminders to payment negotiation."* — this is the
+**exact same sentence**, verbatim, already flagged in both §18 (Call
+Samples) and originally in the Call Samples mockup itself, describing audio
+call flows. It appears here a third time, now sitting above a page about
+case studies, where it makes even less sense. This is conclusively a Figma
+template artifact (the same placeholder lead copy-pasted across every one
+of these Resources mockups), not real per-page copy — so per the
+established "correct obvious mockup/PDF errors rather than reproduce them"
+project convention (§12/§13's "Benifit"→"Benefit" fix, §15's CTA typo fix),
+**it was dropped, not rebuilt**: `CaseStudyFeatured`'s header shows only the
+eyebrow + heading, no lead line, since the featured card immediately below
+already carries its own description. The **second** section's lead
+("From BNPL portfolios at massive volume to conversion-focused sales teams,
+the results follow the same pattern.") is a genuinely different, sensible
+sentence — that one **was** kept verbatim in `CaseStudyGrid`.
+
+### Implementation decisions
+
+- **`lib/case-studies.ts`** — same plain-array pattern as
+  `blog-posts.ts`/`videos.ts`. The featured entry reuses the landing page's
+  real stats (3X debt recovery / 7X connect rate — same numbers already in
+  `FeaturedCaseStudy.tsx`, new supporting copy) and its existing
+  `case-study-bg.jpg` photo. **The 5 grid entries are grounded, not
+  invented from nothing**: they map 1:1 onto the exact industries and
+  photos already established in `app/solutions/debt-collection/page.tsx`'s
+  `INDUSTRIES` array (BNPL, Medical & Healthcare, Credit Card Payments,
+  Insurance Collections, Banks & Lending — BHPH excluded to keep the grid
+  at 5, matching Blog/Videos' own "1 featured + 5 grid = 6" precedent),
+  reusing those pages' `debt-collection-industry-*` photos rather than
+  sourcing anything new. Case-study descriptions are new (outcome-phrased,
+  not the solutions page's capability-phrased copy) but stay consistent
+  with what that page already claims each industry gets from Vodex.
+- **`CaseStudyCard` (`components/ui/`) is copy-adapted from
+  `BlogPostCard`** (§16) — identical light-card/stretched-link/hover shell,
+  with the date/read-time meta line replaced by a headline stat (serif
+  italic brand-orange number, the same "big stat number" convention
+  `FeaturedCaseStudy.module.css`'s `.statNumber` already established,
+  reused again here at a smaller size for the grid card).
+- **`CaseStudyFeatured` and `CaseStudyGrid` (`components/sections/`) are
+  each self-contained**, owning their own header + content + cross-sell
+  line — same "duplicate a small closing line locally rather than extract
+  a shared component for it" precedent §12 already established for the
+  Solutions pages' own "Running a collections operation?" links (which
+  this page's cross-sell line and destination — `/solutions/debt-collection`
+  — directly reuses).
+- **No filter/search on the grid**, unlike Blog/Videos — not asked for this
+  page, and with one case study per industry a category filter would just
+  toggle between "1 result" and "1 result." If a larger case-study library
+  gets built later, revisit this the same way `BlogExplorer` was built.
+- **Featured card's "Read Case Study" CTA and each grid card's "Read More"
+  link to plausible `/resources/case-studies/[slug]` hrefs that don't
+  resolve yet** — same placeholder-link convention `Resources.tsx` already
+  uses on the landing page; no detail-page route was asked for this round.
+- **Hero background: `solution-payment-reminders-hero-bg.jpg`** (the bank/
+  institution building photo), reused directly via import per the user's
+  general instruction this round to pull from existing `vodex assets`
+  rather than source anything new — picked over reusing
+  `debt-collection-hero-bg.jpg` again (just used one page ago, §18) for
+  visual variety across the Resources page family, and because the
+  building's "institutional credibility" read fits a case-studies page
+  reasonably well.
+- **`ResourcesMegaMenu`'s "Case Studies" item already pointed at
+  `/resources/case-studies`** (set in §17, before this page existed) — no
+  change needed there; it now resolves.
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` (21 routes,
+`/resources/case-studies` included). Curl smoke-test confirmed `/` and all
+4 Resources routes (`call-samples`, `case-studies`, `blog`, `videos`)
+return 200 on a fresh `next dev` server with no dev-log errors; server
+stopped cleanly. No Playwright visual pass this round either (same
+environment friction noted in §16/§17/§18) — not yet visually confirmed.
+
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off.
+
+**Next:** Wait for the user's review — in particular of the "built like the
+blog page" reinterpretation of the featured banner (a real deviation from
+the mockup's literal layout, chosen because it was explicitly requested
+over both original options), and of the 5 invented grid case studies
+(grounded in the Debt Collection page's industries, but still new copy
+pending review, same status as every other invented-but-grounded content
+block in this file).
+
+---
+
+## 13. Solutions Page 2 — Promise-to-Pay Capture
+
+> Reference: `D:\litlabs\Vodex\Vodex - Solutions_Page (0.2).pdf` — 4548 ×
+> 29752pt = a 3× export of a **1516 × 9917px** artboard, same convention as
+> every other PDF in this project. Confirmed (not assumed) to be the
+> **"Promise-to-Pay Capture"** entry from `Footer.tsx`'s existing 5-route
+> `Solutions` list (previously 404) — its own Footer copy literally reads
+> "Promise-to-Pay Capture", and its H1 is "Voice AI Agents that Capture
+> Payment Intent". Route: **`/solutions/promise-to-pay`**.
+
+### What was actually verified before building
+
+The user's brief was "just a replica with assets/content swapped" — checked
+rather than assumed, per explicit instruction, by rendering the PDF at
+24dpi, extracting `pdftotext -bbox` coordinates, cropping specific regions
+at 72–96dpi, and reading all 11 supplied asset files to confirm placement
+against the PDF crops (not filenames). Findings:
+
+- **Structurally identical to Page 1**: same 9 sections in the same order,
+  same card/stat counts (3 industries, 6 workflows, 5-item comparison
+  lists, 3 results stats, 4 security items), same eyebrow/heading text for
+  every section (including the pre-existing "Core features"/"Comparison"/
+  "Resources" eyebrow mismatches documented in §12 — this PDF repeats the
+  *same* mismatches, not new ones).
+- **Comparison, Security, FAQ, EnterpriseBand and FinalCta copy is
+  word-for-word identical to Page 1's already-shipped copy** (confirmed via
+  `pdftotext -layout` diffed against each component's hardcoded strings).
+  Only Comparison's background photo differs between the two pages.
+- **Industries, Workflows and Results have entirely different lead text,
+  card/stat data, and photos** — genuine per-page content, not a
+  copy-paste.
+- The "Industries that Benifit" typo is present in *both* PDFs (0.1 and
+  0.2) — Page 1's shipped component already corrects it to "Benefit", so
+  Page 2 follows that same established fix rather than the PDF's literal
+  typo.
+- Industries card icons are positional, not semantic, same as Page 1: card
+  1 ("Debt Collection Firms") uses the bank-building icon, card 2
+  ("Lending & Financial Services") uses the phone-call icon — carried over
+  from the *same slot* Page 1 used those icons in, not matched to the new
+  titles' literal meaning. Card 3 ("Utilities & Telecom") needed a new icon
+  (see below).
+- All 10 supplied photos were visually confirmed against their PDF card
+  crop before mapping — most tellingly, `pexels-markus-winkler-1430818-
+  4144765 1.jpg` (a typewriter literally reading "Send a Mail") maps to the
+  "SMS & Email Confirmations" workflow card, and the gold/magenta
+  `jumping-jax--TfwQjOWEp8-unsplash 2.jpg` soundwave graphic was pixel-
+  matched to the "PTP Negotiation Paths" card's background.
+
+### Refactor: `SolutionIndustries`/`SolutionWorkflows`/`SolutionResults` are now prop-driven
+
+Since a genuine second instance now exists (with a 3rd–5th already declared
+in `Footer.tsx`/`SolutionsMegaMenu.tsx`), these three components got the
+same treatment `SolutionHero` already justified for itself in §12 — moved
+from page-hardcoded content to props, **only for the pieces that actually
+differed between the two known pages**:
+
+- `SolutionIndustries`: `{ lead: string; cards: {title, description, Icon,
+  src}[] }` — eyebrow ("Core features") and heading ("Industries that
+  `Benefit`") stay hardcoded, confirmed identical text in both PDFs. The
+  closing cross-sell line ("Running a collections operation? → Debt
+  Collection") also stays hardcoded — it's the same link/copy in both PDFs,
+  reads as a site-wide convention rather than per-page content.
+- `SolutionWorkflows`: `{ lead: string; workflows: {title, description,
+  src}[] }` — eyebrow/heading unchanged (also confirmed identical).
+- `SolutionResults`: `{ lead: string; stats: {number, label, description}[]
+  }` — eyebrow/heading/background (`results-bg.jpg`) unchanged; no new
+  Results asset was supplied for Page 2, consistent with the user's "other
+  sections are exact same" framing.
+- `SolutionComparison` got a single **optional** `bgImage` prop defaulting
+  to the existing `/assets/comparison-vodex-bg.jpg` — everything else about
+  it (heading, lead, both 5-item lists) is byte-identical across both
+  pages, so this was the only change needed, and `payment-reminders/page.tsx`
+  needs no edit for it (it just gets the default).
+- `SolutionSecurity`, `Faq`, `EnterpriseBand`, `FinalCta` were reused with
+  **zero changes** — confirmed byte-identical content again, same
+  page-agnostic pattern already established for these four across the
+  landing/product/Page-1 solutions pages.
+
+**`app/solutions/payment-reminders/page.tsx` was updated to pass its
+existing hardcoded content explicitly as props** to the three refactored
+components (its `CARDS`/`WORKFLOWS`/`STATS` arrays and lead strings moved
+from inside the components into that page file). This is a pure relocation,
+not a content change — verified by a full-page Playwright screenshot at
+1516px showing the page renders identically to before the refactor (same
+total page height, same visible content, zero console errors).
+
+### New icon — `SignalTowerIcon`
+
+Added to `components/ui/icons.tsx`'s existing "Solutions page icons" block
+for the "Utilities & Telecom" card — a mast with a top dot and two fans of
+signal ticks (three per side, increasing length), same `strokeIcon`
+convention as `BankIcon`/`PhoneCallIcon`/`ShieldPlusIcon` (stroke-only,
+round caps/joins, own viewBox). Like every other icon in this file, it's a
+generic redraw of the PDF's icon-font glyph, not a pixel-trace.
+
+### Asset → component map
+
+| Slot | Source (`vodex assets/`) | Destination |
+| --- | --- | --- |
+| Hero bg | `pexels-szymon-shields-1503561-10178729 2.jpg` | `solution-promise-to-pay-hero-bg.jpg` |
+| Industries 1 (Debt Collection Firms, BankIcon) | `pexels-yankrukov-7794003 1.jpg` | `promise-to-pay-industries-1.jpg` |
+| Industries 2 (Lending & Financial Services, PhoneCallIcon) | `pexels-davegarcia-32642489 2.jpg` | `promise-to-pay-industries-2.jpg` |
+| Industries 3 (Utilities & Telecom, SignalTowerIcon) | `pexels-aboodi-17396096 1.jpg` | `promise-to-pay-industries-3.jpg` |
+| Workflow 1 (PTP Capture & Confirmation) | `pexels-gulsahaydgn-19501540 1.jpg` | `promise-to-pay-workflow-1.jpg` |
+| Workflow 2 (PTP Reminder Sequence) | `pexels-rdne-7947968 1.jpg` | `promise-to-pay-workflow-2.jpg` |
+| Workflow 3 (Missed PTP Recovery) | `microsoft-copilot-Zcp8xN9DnjM-unsplash 1.jpg` | `promise-to-pay-workflow-3.jpg` |
+| Workflow 4 (PTP Update or Reschedule Calls) | `pexels-ketut-subiyanto-4963379 1.jpg` | `promise-to-pay-workflow-4.jpg` |
+| Workflow 5 (SMS & Email Confirmations) | `pexels-markus-winkler-1430818-4144765 1.jpg` | `promise-to-pay-workflow-5.jpg` |
+| Workflow 6 (PTP Negotiation Paths) | `jumping-jax--TfwQjOWEp8-unsplash 2.jpg` | `promise-to-pay-workflow-6.jpg` |
+| Comparison bg (Vodex AI panel) | `magicpattern-iAR6yhCkrxc-unsplash 1.jpg` | `promise-to-pay-comparison-bg.jpg` (note: this is the *same source image* Page 1's `comparison-vodex-bg.jpg` was cropped from — Page 2 happens to reuse it too; both pages' Comparison panel looks the same as a result) |
+
+`pexels-szymon-shields-1503561-10178729 1.jpg` (the sibling used for Page
+1's `industries-banks.jpg`) is unrelated to `… 2.jpg` used here for the
+Hero — confirmed two different crops of the same building, not a mix-up.
 
 ### Status / Approved / Next
 
 **Status:** clean `tsc --noEmit` + `next build`. Playwright-verified at
-1516/1280/900/430px — zero console errors, zero horizontal overflow at
-every width. Mega-menu specifically verified with a real mouse-drag
-interaction (not devtools `:hover` toggling), full keyboard navigation
-(`Tab`/`Escape`), and `reducedMotion: "reduce"` emulation. Confirmed the
-landing page (`/`) and `/products` are unaffected (re-screenshotted, zero
-new console errors/overflow) since `Navbar`/`icons.tsx`/`globals.css` are
-shared. Live screenshots visually compared against the PDF's own rendered
-crops for both built sections (Hero, Industries) — bounding boxes and
-proportions match closely.
+1516 and 430px on both `/solutions/promise-to-pay` and
+`/solutions/payment-reminders` — zero console errors, zero horizontal
+overflow on either. `/solutions/payment-reminders` re-screenshotted after
+the prop refactor and confirmed visually unchanged (byte-identical
+rendered content). New Industries card 3 with `SignalTowerIcon` screenshot-
+verified in isolation. No `/solutions` hub page still (pre-existing gap
+from §12, not introduced here) — the mega-menu and Footer links to
+`/solutions/promise-to-pay` itself now resolve instead of 404ing.
 
-**Approved:** Nothing yet — not yet reviewed by the user, same
-pending-review status every other section in this file uses before
-explicit sign-off.
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off.
 
-**Next:** Wait for the user's review of the Hero, Industries section, and
-the mega-menu. Two flagged-but-unresolved items from the plan, still open:
-(1) the "Core features" eyebrow label on the Industries section was built
-verbatim from the PDF per instruction, but reads like a mismatched leftover
-label (it's an "Industries" section, not a "features" one) — same class of
-issue as the FAQ/CoreFeatures copy mismatches documented elsewhere in this
-file; (2) `/solutions` (the parent hub page, that both the plain Navbar
-link and the mega-menu's "View all solutions" button point at) does not
-exist yet — pre-existing gap, not introduced by this round. Once more
-assets/content are supplied, continue this PDF top-to-bottom: Workflows,
-Comparison, Results stats, Security & Compliance, FAQ, Enterprise band,
-Final CTA.
+**Next:** Wait for the user's review. When building solution pages 3–5
+(Lead Qualification, Debt Collection, Collection Software), reuse this same
+approach: `SolutionHero`/`SolutionIndustries`/`SolutionWorkflows`/
+`SolutionResults` already accept the per-page data as props, so a new page
+is mostly a new `page.tsx` with its own content arrays plus whatever new
+assets/icons that page's PDF needs — check each new PDF's actual content
+before assuming eyebrows/headings/Comparison-Security-FAQ copy stay
+identical a third time; two data points is a pattern, not a guarantee.
+
+---
+
+## 14. Solutions Page 3 — Loan & Borrower Lead Qualification
+
+> Reference: `D:\litlabs\Vodex\Vodex - Solutions_Page (0.3).pdf` — 4548 ×
+> 29801pt = a 3× export of a **1516 × 9933.7px** artboard, same convention as
+> every other PDF in this project. Confirmed (not assumed) to be the
+> **"Loan & Borrower Lead Qualification"** entry from `Footer.tsx`'s
+> 5-route `Solutions` list (previously 404) — its H1 reads "AI Voice Agents
+> for Loan & Borrower Lead Qualification". Route:
+> **`/solutions/lead-qualification`**.
+
+### What was actually verified before building — Section 2 is NOT a third copy of the 3-card grid
+
+The user's brief was again "just a replica with assets/content swapped,
+except Section 2 which is similar to something already built on the site" —
+checked by rendering the PDF at 24/48dpi, extracting `pdftotext -bbox`
+coordinates, cropping the Industries/Workflows/Hero regions, and opening
+every one of the 13 supplied asset files to confirm placement by visual
+content match (never filename-guessed). Findings:
+
+- **Hero, Workflows, Comparison, Results, Security, FAQ, Enterprise Band,
+  Final CTA are structurally identical to Pages 1 & 2** — same components,
+  same eyebrow/heading text (including the same "Core features"/
+  "Comparison"/"Resources" mismatched-eyebrow pattern already documented in
+  §12, and the same PTP-flavored Results copy — see Open items below).
+  `SolutionComparison` and `SolutionSecurity` render with **zero props** —
+  confirmed byte-identical heading/lead/list copy to Pages 1 & 2 via
+  `pdftotext -layout`.
+- **Section 2 ("Industries that Benifit") is genuinely different this
+  time**: not `SolutionIndustries`' 3-card icon+description grid, but a
+  **full-bleed strip of 7 equal-width photo panels, 554px tall** — measured
+  by pixel-scanning a rendered crop (vertical scan found the strip spans
+  artboard y≈1119–1673, i.e. 554px, matching the Product Page's
+  `CoreFeatures` strip's 555px almost exactly). The flat PDF export has
+  **zero per-panel captions**, same as `CoreFeatures`' own source had zero.
+  Confirmed with the user (not assumed) that this should be built as a new
+  hover-expand component reusing `CoreFeatures.module.css`'s exact
+  mechanism, with 7 invented captions grounded in each photo's content.
+- All 14 supplied assets (1 hero bg, 7 industry photos, 6 workflow photos)
+  were opened and visually matched against the PDF crops before mapping,
+  per this project's standing rule. Two of these assets are
+  **intentional reuses of sources already cropped elsewhere in
+  this codebase**: `Frame 2147227673.jpg` (the cert-badge grid, already
+  cropped into the 8 individual footer badges and into `security-4.jpg`) is
+  reused whole here as the "Compliance & Consent Logging" workflow photo;
+  `pexels-roman-muntean-369190311-14513059 1.jpg` (already
+  `industries-healthcare.jpg` on Page 1) is reused as the "Healthcare"
+  industry panel here too — both confirmed by direct visual comparison, not
+  filename collisions to "fix".
+
+### New component: `SolutionIndustryStrip`
+
+`components/sections/SolutionIndustryStrip.tsx` + `.module.css` — a
+copy-adapt of `CoreFeatures.tsx`/`.module.css` (not a shared/parameterized
+`CoreFeatures`, consistent with this project's "copy the pattern, adapt what
+differs" convention), **not** a variant of `SolutionIndustries` — the two
+components now cover the two genuinely different Industries layouts this
+PDF family has produced (3-card grid vs. 7-panel strip), and a page picks
+whichever one its own PDF actually shows rather than always defaulting to
+one.
+
+- 7 panels instead of `CoreFeatures`' 9, same `flex: 1 1 0` strip,
+  `flex-grow` hover/focus expansion (0.74 resting / 3.1 hovered, same
+  specificity trick so `.strip:hover .panel:hover` beats
+  `.strip:hover .panel`), scrim + copy fade-in, 3-col static grid below
+  900px, 2-col below 560px.
+- Heading uses this page family's **shared** `--fs-h2`/`--lh-h2`/`--ls-h2`
+  tokens at weight 600 (i.e. `SolutionIndustries`' heading style), not
+  `CoreFeatures`' locally-overridden weight-700/tracking-0.015em/
+  line-height-1.5 — that override was measured specifically for the Product
+  Page's own heading copy, and this section's copy ("Industries that
+  Benefit") didn't show the same gap against Inter. Heading uses the
+  correct "Benefit" spelling — confirmed (again) that the PDF's own text
+  has the same "Benifit" typo already documented for Pages 1 & 2; this
+  component follows the same established fix.
+- `industries: {label, description, src}[]` prop + `lead` prop; eyebrow
+  ("Industries") and the closing cross-sell line ("Running a collections
+  operation? → Debt Collection", linking to the existing
+  `/solutions/debt-collection` route) are hardcoded, matching
+  `SolutionIndustries`' own hardcode-vs-prop split.
+- Panel mapping (photo content → invented label, confirmed by opening every
+  file):
+
+  | Order | Photo content | Source asset | Label |
+  | --- | --- | --- | --- |
+  | 1 | Cash, credit cards, passport | `pexels-davegarcia-32642489 2.jpg` | Banking & Credit |
+  | 2 | Student w/ "Managerial Economics" textbook, MBA lanyard | `pexels-mba-classroom-2155665220-33887551 1.jpg` | Education & Student Loans |
+  | 3 | Apartment building exterior | `pexels-mahmoud-zakariya-2154822140-35397760 1.jpg` | Real Estate |
+  | 4 | Surgeon in scrubs | `pexels-roman-muntean-369190311-14513059 1.jpg` (reused — see above) | Healthcare |
+  | 5 | Hand holding house-shaped keychain + Euro notes | `pexels-jakubzerdzicki-34023907 1.jpg` | Mortgage & Property Finance |
+  | 6 | Woman holding "HOME INSURANCE POLICY" clipboard | `pexels-mikhail-nilov-7734599 1.jpg` | Insurance |
+  | 7 | Laptop open to a Facebook business page + phone | `austin-distel-tLZhFRLj6nY-unsplash 1.jpg` | Marketing & Sales Teams |
+
+  Descriptions are one invented line each, grounded in the
+  lead-qualification theme (e.g. "Pre-qualify credit card and loan
+  applicants before they reach a loan officer."). **Flagged as pending
+  review**, same status as `CoreFeatures`' own captions — not from the PDF,
+  which has none.
+- Verified interactively via Playwright: default state renders all 7 panels
+  equal-width in the PDF's photo order; hovering panel 3 grows it via
+  `flex-grow` and reveals "Real Estate / Qualify property buyers and
+  renters before scheduling a viewing." — confirmed the hover mechanic and
+  copy both work, not just that the component compiles.
+- **⚠️ Fixed after the user reported the panels "look pixelated"**: `sizes`
+  was first copied over as `"...15vw"` for desktop, reasoning from each
+  panel's *resting* width (1/7 ≈ 14.3vw) — but `next/image` decides which
+  source width to fetch once, from that hint, and the resting width isn't
+  what matters here: a hovered panel's `flex-grow: 3.1` against 6 siblings
+  at `0.74` makes it occupy **~41% of the strip**, not ~14%. So the browser
+  had already fetched a ~640px-wide source (sized for 15vw) and was
+  stretching it ~2x on hover — soft/blocky, exactly what got reported.
+  `CoreFeatures` already solved this for its own 9-panel strip (34.4%
+  hover fraction → `40vw` sizes hint, not its own ~11% resting width);
+  this component's math (41.1% hover fraction) needed `45vw`. Verified with
+  a real Playwright network-request check, not just eyeballing: at a 1516px
+  viewport and DPR 2, the hovered panel now requests a 1920px-wide source
+  against a 623px-CSS-px (1246px physical) rendered box — comfortable
+  headroom — where the `15vw` version had been serving 640px into that same
+  1246px slot. **The lesson generalizes**: for any `next/image` inside an
+  element whose CSS size changes on hover/interaction (this strip, and any
+  future `flex-grow`-driven layout), size the `sizes` hint for the
+  *largest* rendered state, not the resting one — `next/image` never
+  re-fetches a larger source after the initial pick.
+
+### Page: `app/solutions/lead-qualification/page.tsx`
+
+Mirrors `payment-reminders/page.tsx`'s structure — `SolutionHero` with its
+own copy/CTAs (`"Talk To Our Expert"` primary this time, not `"Get
+Started"` — confirmed from the hero crop, same filled/outline pairing as
+Pages 1 & 2), `SolutionIndustryStrip` (new, see above) in place of
+`SolutionIndustries`, `SolutionWorkflows`/`SolutionResults` with their own
+`WORKFLOWS`/`RESULTS_STATS` arrays, `SolutionComparison`/`SolutionSecurity`
+with **no props at all**, then `Faq`/`EnterpriseBand`/`FinalCta` reused
+verbatim.
+
+### Asset → component map
+
+| Slot | Source (`vodex assets/`) | Destination |
+| --- | --- | --- |
+| Hero bg | `michael-bourgault-aHetdmuNoO4-unsplash 1.jpg` | `lead-qualification-hero-bg.jpg` |
+| Industries 1–7 | see table above | `lead-qualification-industry-1.jpg` … `-7.jpg` |
+| Workflow 1 (Data Collection & Validation) | `pexels-kampus-8171183 1.jpg` | `lead-qualification-workflow-1.jpg` |
+| Workflow 2 (Qualification Calls) | `pexels-jack-sparrow-5917332 1.jpg` | `lead-qualification-workflow-2.jpg` |
+| Workflow 3 (Intent Analysis) | `pexels-rdne-7947968 1.jpg` | `lead-qualification-workflow-3.jpg` |
+| Workflow 4 (Compliance & Consent Logging) | `Frame 2147227673.jpg` (cert-badge grid — intentional reuse) | `lead-qualification-workflow-4.jpg` |
+| Workflow 5 (Human Handoff) | `pexels-julio-lopez-75309646-29179702 1.jpg` | `lead-qualification-workflow-5.jpg` |
+| Workflow 6 (Appointment Scheduling) | `pexels-roberto-hund-5356720 3.jpg` | `lead-qualification-workflow-6.jpg` |
+
+All copied as fresh, page-specific files (never referencing another page's
+copy of a shared source directly), same "independently swappable"
+precedent as the Security section.
+
+### Open items flagged to the user (not silently "fixed")
+
+1. **Results section copy says "PTP" (Promise-to-Pay), not
+   lead-qualification language** — the section lead ("...when voice AI runs
+   the PTP conversation end to end.") and all 3 stat labels ("Higher PTP
+   intent rate", "Reduction in missed payments", "Lift in PTP conversions")
+   read like they're copy-pasted from the Promise-to-Pay page, not this
+   one. Same class of mismatched/reused copy already flagged for Pages 1 &
+   2's own Results/Security eyebrows — built verbatim per this project's
+   "measure, don't invent" rule.
+2. The 7 industry panel captions are invented (see above) — pending the
+   user's review.
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build`. Dev-server Playwright check
+at 1516px: zero console errors, full page renders top to bottom with every
+image loading. `SolutionIndustryStrip`'s hover-expand mechanic specifically
+verified (default equal-width state + a hovered-panel screenshot showing
+the grown panel and revealed caption).
+
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off.
+
+**Next:** Wait for the user's review, in particular of the new
+`SolutionIndustryStrip` component and its 7 invented captions. When building
+solution pages 4–5 (Debt Collection, Collection Software), check each PDF's
+own Industries section shape before assuming it matches either the 3-card
+grid (Pages 1–2) or the 7-panel strip (this page) — three data points still
+isn't a guarantee the next one matches either.
+
+---
+
+## 15. Solutions Page 4 — Debt Collection
+
+> Reference: `D:\litlabs\Vodex\Vodex - Solutions_Page (0.4).pdf` — 4548 ×
+> 28583pt = a 3× export of a **1516 × 9527.67px** artboard, same convention
+> as every other PDF in this project. Confirmed to be the **"Debt
+> Collection"** entry from `Footer.tsx`'s 5-route Solutions list (previously
+> 404) — its H1 reads "AI Voice Agents for Debt Collection" and its Footer
+> copy literally reads "Debt Collection". Route: **`/solutions/debt-collection`**.
+> Note: an earlier PDF in the same folder, `Vodex - Solutions_Page (0.3).pdf`,
+> is the already-built `/solutions/lead-qualification` page (§14) — the two
+> are unrelated; this round only touched 0.4.
+
+### What was actually verified before building
+
+Checked directly against a fresh 24dpi render + `pdftotext -bbox`/`-layout`
+extraction + zoomed corner crops, per this project's established method —
+**this PDF turned out to have a structurally different section lineup than
+Pages 1–3**, not a copy-with-assets-swapped repeat:
+
+- **No Workflows, Comparison, or Security sections at all.** This page's own
+  section order is: Hero → a 2-stat photo band → a 6-badge cert strip → a
+  3-card "Why Vodex" grid → a 6-card dark "Industries" grid (visually the
+  `SolutionWorkflows` scrim-card pattern, not the `SolutionIndustries`
+  light-card pattern) → a single "Collections software integration" banner
+  → Faq → a new 3-card "From the blog" grid → EnterpriseBand → FinalCta →
+  Footer. Confirmed by reading the full `pdftotext -layout` dump before
+  writing any code, not assumed from the Page 1/2/3 template.
+- **The 2-stat band's copy and background photo are a literal duplicate of
+  the landing page's `FeaturedCaseStudy` section** — "3X Debt recovery rate
+  improvement" / "7X Connect rate improvement", same `Frame 2147227651.jpg`
+  background. Not reused as a component, though: `FeaturedCaseStudy` also
+  carries a heading, lead paragraph and "Read the full case study" CTA that
+  this section's PDF crop does not have — just two bare white stat cards
+  over the photo, nothing else. Built as a new minimal component instead of
+  stretching `FeaturedCaseStudy` to hide half its own markup.
+- **The "Industries" section is visually `SolutionWorkflows`, not
+  `SolutionIndustries`**, confirmed by corner-crop + layout comparison: dark
+  `var(--ink)` background, full-bleed photo cards with an always-on bottom
+  scrim, `ExternalLinkIcon` diagonal arrow next to each title — the exact
+  scrim-card idiom `SolutionWorkflows` already implements, not
+  `SolutionIndustries`' light `#f4f4f4`-body-with-unboxed-icon idiom. Since
+  this is a second real use of that dark-scrim-grid pattern under different
+  copy, `SolutionWorkflows` was made prop-driven for `eyebrow`/`heading`
+  (both optional, defaulting to the existing "Workflows"/"Actions you can
+  streamline" so Pages 1–3 need no changes) rather than forked into a new
+  component — same reasoning §13 already used to prop-drive
+  `SolutionIndustries`/`SolutionWorkflows`/`SolutionResults` once a second
+  real instance existed.
+- **A 6-badge certification row sits directly under the stat band, with no
+  section heading of its own.** Confirmed by direct comparison that these
+  are the *same six* `footer-cert-*.png` assets already cropped for the
+  Footer (§8) — ISO 27001, HIPAA, FDCPA, Reg F, TCPA, AICPA SOC 2 — just
+  DebtLink and RMAi omitted and, importantly, in a **different order than
+  the Footer's own `CERTIFICATIONS` array** (Footer: ISO, SOC2, HIPAA,
+  FDCPA, RegF, TCPA; this row: ISO, HIPAA, FDCPA, RegF, TCPA, SOC2). Caught
+  by a direct pixel comparison after the first build reused the Footer's
+  array order verbatim and it didn't match the reference row — fixed by
+  giving `SolutionCertRow` its own explicitly-ordered list rather than
+  importing the Footer's. **Don't assume two components that share the same
+  underlying asset set also share the same display order — check the
+  reference for each usage.**
+- **The "Why Vodex" 3-card grid is `WhyItWorks` (Product Page §11) with an
+  icon added to each card title**, not `SolutionIndustries`/a new pattern —
+  photo top, `#f7f7f7` body, hairline divider, dark "Read More" pill +
+  `ArrowRight`, sharp corners — confirmed by direct layout comparison, just
+  3 columns instead of `WhyItWorks`' 4 and an icon inline with each title
+  (`WhyItWorks` itself has no per-card icon). Built as a new component,
+  `SolutionWhyUs`, copy-adapted from `WhyItWorks.tsx`/`.module.css` rather
+  than reused directly, since `WhyItWorks` is Product-Page-hardcoded and a
+  3-vs-4 column grid is a real structural difference, not just a prop.
+  - Icons: `PhoneCallIcon` (existing) for "Consistent Outreach",
+    `SignalTowerIcon` (existing, already built for the Promise-to-Pay page's
+    "Utilities & Telecom" industry card) for "Operational Scalability" —
+    both close enough to the reference's icon-font glyphs under this
+    project's established "generic redraw, not pixel-trace" convention for
+    every other PDF icon. "Effortless Compliance" needed a genuinely new
+    icon — a four-pointed sparkle/diamond, matching nothing already in
+    `icons.tsx` — added as `SparkleIcon` (same `strokeIcon` convention).
+- **The "Collections software integration" banner is a new one-off
+  pattern** — closest existing relative is `WhatYourTeamGets` (Product Page
+  §11: photo-bg rounded banner, two-column, right side informational
+  content) but two real differences meant copy-adapting rather than
+  reusing: (a) **sharp corners here**, confirmed by corner-pixel zoom,
+  where `WhatYourTeamGets`' rounded banner is explicitly documented as the
+  *one* deliberately-rounded surface on the Product Page — so this is not
+  "the same banner treatment again," it's a different treatment that
+  happens to share the photo-bg-with-overlaid-content idea; (b) the right
+  column here is 3 individual translucent pill-shaped info cards (own
+  background, own rounded-pill radius, centered bold text) rather than a
+  bulleted list, and the left column has a CTA button `WhatYourTeamGets`
+  doesn't. Built as new component `SolutionIntegration`, prop-driven
+  (`eyebrow`, `titleLines`, `lead`, `cta`, `items`, `bgImage`) since a
+  future solutions page could plausibly reuse this exact shape with new
+  copy, following this project's established default of prop-driving a
+  new solutions-page component from the start rather than waiting for a
+  second instance to force a refactor later.
+  - **The PDF's own CTA copy has a typo — "Learn More About Integerations"**
+    — fixed to "Learn More About Integrations" per this project's
+    established precedent of correcting PDF typos rather than reproducing
+    them verbatim (same treatment as "Industries that Benifit" → "Benefit"
+    in §12/§13). The CTA links to `/solutions/collection-software`, an
+    already-declared (if not yet built) Footer route — a more specific,
+    plausible destination than a generic `/demo` link, since the button
+    text is literally about that other solution.
+- **A "From the blog" 3-card section is genuinely new** — no equivalent
+  section exists on Pages 1–3 (their Resources-shaped content is
+  `SolutionSecurity`'s 4-item compliance grid, not a blog list). Closest
+  relatives considered and rejected: the landing page's `Resources.tsx`
+  (light `#f7f7f7` body + dark pill button — this reference has a **solid
+  black** body with no separate button, just an underlined text link) and
+  the Product Page's `SeeItInAction` (solid black body, but with a
+  description paragraph this reference's cards don't have). Built as a new
+  component, `SolutionBlogCards`, prop-driven (`lead`, `posts`) since blog
+  cards are an obvious candidate to reappear on other solution pages.
+- **⚠️ One supplied asset doesn't match its slot — flagged, not silently
+  substituted.** The first blog card's reference photo is a 4-person
+  conference-room meeting (laptops, a wall screen reading "Commercial break
+  in progress", a red cup) — the asset the user supplied for this slot,
+  `pexels-ai25studio-8837570 1.jpg`, is a *different* 3-person meeting
+  (three people in hijabs around a round table with houseplants, already
+  used elsewhere as `why-tile-1.jpg` on the landing page's Why section).
+  The other two supplied "resources" assets (`pexels-edwin-mandries-
+  2152983550-36627633 3.jpg`, `luke-chesser-JKUTrJ4vK00-unsplash 1.jpg`)
+  were pixel-confirmed exact matches for cards 2 and 3. A quick search of
+  every not-yet-used file in `vodex assets/` for a better match (tried
+  `austin-distel-tLZhFRLj6nY-unsplash 1.jpg`, `samuel-regan-asante-
+  h7Sk4Ap07k0-unsplash 1.jpg` — neither matches either) didn't turn up the
+  actual reference photo. Since the user explicitly supplied
+  `pexels-ai25studio-8837570 1.jpg` *for this section*, it was used for
+  card 1 anyway (`debt-collection-blog-1.jpg`) rather than blocking the
+  build on it — but this is a known, real mismatch, not a verified match
+  like the other 14 assets on this page. **If the correct conference-room
+  photo turns up later, swap `public/assets/debt-collection-blog-1.jpg`
+  only** — nothing else about the card needs to change.
+- **The Industries 6-card grid's assets required per-photo visual
+  verification, not filename-order assumption** — same lesson as every
+  earlier asset-mapping pass in this file. Two of the six user-supplied
+  filenames turned out to require disambiguation from same-named siblings
+  already used elsewhere (`pexels-karola-g-4968385 1.jpg` for "Buy Here Pay
+  Here", `pexels-szymon-shields-1503561-10178729 1.jpg` — not the
+  already-used `… 2.jpg` — for "Banks & Lending"), and the "Why Vodex"
+  section's 3 photos were supplied in an order that does **not** match the
+  PDF's card order (user list: giorgio-trovato, davegarcia, roberto-hund;
+  actual card order: roberto-hund → "Consistent Outreach", giorgio-trovato
+  → "Operational Scalability", davegarcia → "Effortless Compliance") —
+  caught by opening each file and visually matching it against its PDF crop
+  before writing the page, not by trusting supplied order.
+- **FAQ, EnterpriseBand, FinalCta reused verbatim** — same byte-identical-
+  copy precedent already confirmed for every other page in this file (§11
+  "Sections 8-9", §12 "Faq, EnterpriseBand, FinalCta reused verbatim", §13,
+  §14). No changes to any of the three.
+
+### Asset → component map
+
+| Slot | Source (`vodex assets/`) | Destination |
+| --- | --- | --- |
+| Hero bg | `lu-KEYuGr18XE4-unsplash 1.jpg` | `debt-collection-hero-bg.jpg` |
+| Stat band bg | `Frame 2147227651.jpg` (same source as landing page's `case-study-bg.jpg`) | `debt-collection-stats-bg.jpg` |
+| Why Vodex — Consistent Outreach | `pexels-roberto-hund-5356720 3.jpg` | `why-vodex-1.jpg` |
+| Why Vodex — Operational Scalability | `giorgio-trovato-_geAgtjqLzY-unsplash 1.jpg` | `why-vodex-2.jpg` |
+| Why Vodex — Effortless Compliance | `pexels-davegarcia-32642489 2.jpg` | `why-vodex-3.jpg` |
+| Industries — Buy Now Pay Later (BNPL) | `pexels-julio-lopez-75309646-29502356 1.png` | `debt-collection-industry-1.png` |
+| Industries — Medical & Healthcare | `pexels-roman-muntean-369190311-14513059 1.jpg` | `debt-collection-industry-2.jpg` |
+| Industries — Buy Here Pay Here (BHPH) | `pexels-karola-g-4968385 1.jpg` | `debt-collection-industry-3.jpg` |
+| Industries — Credit Card Payments | `ali-mkumbwa-AEz70PS5eSU-unsplash 1.jpg` | `debt-collection-industry-4.jpg` |
+| Industries — Insurance Collections | `pexels-mikhail-nilov-7734599 1.jpg` | `debt-collection-industry-5.jpg` |
+| Industries — Banks & Lending | `pexels-szymon-shields-1503561-10178729 1.jpg` | `debt-collection-industry-6.jpg` |
+| Integration banner bg | `Frame 2147227676.jpg` | `debt-collection-integration-bg.jpg` |
+| Blog card 1 | `pexels-ai25studio-8837570 1.jpg` — ⚠️ known mismatch, see above | `debt-collection-blog-1.jpg` |
+| Blog card 2 | `pexels-edwin-mandries-2152983550-36627633 3.jpg` | `debt-collection-blog-2.jpg` |
+| Blog card 3 | `luke-chesser-JKUTrJ4vK00-unsplash 1.jpg` | `debt-collection-blog-3.jpg` |
+| Cert badges (×6) | *(reused, no new copy)* | existing `footer-cert-{iso,hipaa,fdcpa,regf,tcpa,soc2}.png` |
+
+### Round 2 — two user-reported fixes
+
+The user pasted two screenshots after the first pass and flagged both
+directly; both were re-measured against the reference rather than
+eyeballed:
+
+- **`SolutionCertRow` badges were far too small.** Shipped at `height: 48px`
+  — copied straight from the Footer's own `.certBadge` value without
+  re-measuring this section's own reference crop first (the Footer's 48px
+  is a different, denser context: 8 badges in one dense footer row). A
+  fresh crop of the reference PDF at this row's actual y-position measured
+  the badges at **~128–130px diameter**, nearly 3× larger. Fixed to
+  `height: 128px` (96px at ≤900px, 64px at ≤640px), with a comment in the
+  CSS specifically warning not to re-shrink it to match the Footer without
+  re-measuring — this is the second time in the project an asset shared
+  with the Footer needed a different size in its new context (the first was
+  the logo-canvas-padding bug documented in §11's Round 2).
+- **`SolutionIntegration`'s section had `padding-block: 0 96px`** — 0 top
+  padding, copied from `SolutionWhyUs`/`SolutionBlogCards`, where 0 is
+  correct because the section immediately before them is already a *light*
+  section ending in its own white bottom padding. Here, though, the
+  section immediately before is `SolutionWorkflows` (dark `var(--ink)`
+  background, used for this page's "Industries" grid) — so 0 top padding
+  meant the dark Industries section's own dark bottom padding ran directly
+  into this banner's dark photo with **no visible white break between
+  them**, reading as one continuous dark block. A fresh crop of the
+  reference confirmed a real ~135px white gap between the two sections.
+  Fixed to `padding-block: 88px 96px` (56px 64px at ≤560px). **General
+  lesson**: a `padding-block: 0 …` copied from another component is only
+  safe when the *actual* previous section in the page (not just "some
+  previous section" in the abstract) shares this section's own background
+  color — check the real neighbor each time a section is composed into a
+  new page, don't copy the pattern by rote.
+- Both re-verified against the reference PDF crop (badge size, white-gap
+  height) and via a fresh Playwright pass at 1516/1280/430px — zero console
+  errors, zero overflow, both fixes visually confirmed matching.
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` after both Round 2 fixes.
+Playwright-verified at 1516/1280/430px (scroll-and-wait-for-`img.complete`
+method, per the gotcha documented in §12) — zero console errors, zero
+404s, zero horizontal overflow at any width. Every new section's live
+screenshot compared directly against its own PDF crop: Hero, stat band,
+cert row (now correctly sized), Why Vodex (all 3 photos + icons),
+Industries (all 6 photos, correct titles/descriptions), integration banner
+(now correctly spaced from the section above; heading/lead/CTA/right-column
+pills all confirmed), and blog cards (cards 2–3 exact photo matches, card 1
+the known-mismatched asset) all confirmed to match. Corner-radius checked
+by zoomed-pixel crop for every new surface (stat cards, Why Vodex cards,
+Industries cards, integration banner, blog cards) — all sharp, no
+exceptions this round (unlike `WhatYourTeamGets` on the Product Page, which
+is deliberately rounded).
+
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off.
+
+**Next:** Wait for the user's review, in particular of (1) the known blog
+card 1 photo mismatch — either supply the correct conference-room photo or
+confirm the current one is acceptable, and (2) the `SolutionWorkflows`
+eyebrow/heading prop-drive, since it's a change to an already-shipped,
+shared component (Pages 1–3 were re-verified unaffected — same default
+props, same rendered output — but flagging per this project's rule of
+calling out edits to previously-approved code). When building Solution Page
+5 (Collection Software, the last of the 5 Footer-declared routes), check
+its own PDF's section lineup from scratch rather than assuming it matches
+any of Pages 1–4 — four data points now, and each of the four has had at
+least one structural surprise (Page 2: none really, closest to a pure
+replica; Page 3: a 7-panel industry strip instead of a 3-card grid; Page 4:
+an entirely different section lineup with three new components).
+
+---
+
+## 16. Solutions Page 5 — Collection Software
+
+> Reference: `D:\litlabs\Vodex\Vodex - Solutions_Page (0.5).pdf` — 4548 ×
+> 32525pt = a 3× export of a **1516 × 10841.7px** artboard, same convention
+> as every other PDF in this project. Confirmed to be the **"Collection
+> Software"** entry from `Footer.tsx`'s 5-route Solutions list (previously
+> the last remaining 404) — H1 "Add compliant, API-first Voice AI into your
+> debt collection software", Footer copy "Collection Software". Route:
+> **`/solutions/collection-software`**. Per explicit user instruction, this
+> page was analyzed and planned in full before any code was written
+> (measured section-by-section from a 24dpi render + pixel-scanned
+> container/gap widths), not built section-by-section from assumption.
+
+### What was actually verified before building
+
+This PDF has a **structurally unique lineup**, closer in spirit to Page 4
+(Debt Collection) than to the pure-replica Pages 1–3 — confirmed by reading
+the full `pdftotext -layout` dump and cropping every section before writing
+any component:
+
+```
+Hero → How the integration works (4 steps) → Why add a voice layer
+  → Key capabilities (3 cards) → Four core workflows (4 cards)
+  → Impact on both sides of the platform (2×3 stats) → Compliance
+  controls, built in → Faq → EnterpriseBand → FinalCta → Footer
+```
+
+- **No Comparison or Security sections at all** — this page targets
+  *software platforms integrating Vodex*, not an end-customer industry, so
+  the copy and structure diverge from the Pages 1–3 template more than any
+  prior solutions page.
+- **"How the integration works"** is the user's own flagged exception
+  ("similar to what we have built on home page") — confirmed by direct
+  comparison to be the `Resources.tsx`/`WhyItWorks.tsx` card pattern (photo
+  top, light `#f4f4f4` body, title + description + hairline divider + dark
+  "Read More" pill), just 4 columns instead of 3/4, full 1440px container
+  (not a narrower inset band — pixel-scanned edges at x=87→1430 relative to
+  a 1344px measured span, matching WhyItWorks' own 1344px convention almost
+  exactly), and — new for this card shape — a closing cross-sell line
+  ("Running a collections operation? → Debt Collection") beneath the grid,
+  which neither `Resources` nor `WhyItWorks` has.
+- **"Why add a voice layer"** is a new two-panel comparison, structurally
+  adjacent to `SolutionComparison` but genuinely different: the whole
+  section is a **dark `var(--ink)` section** (not light), there is **no "VS"
+  badge** between the panels (just a measured ~32px gap, pixel-scanned:
+  left panel 82→740, right panel 772→1432 at the 1516 artboard — an almost
+  exact 50/50 split), and each panel's bullet list uses the brand's own
+  `Waveform` icon (`components/ui/icons.tsx`, already used in every page
+  badge) as the marker glyph, not `CheckIcon`/`XIcon`. A single hairline
+  divider sits under the two-panel band, and there is **no closing
+  cross-sell line for this section specifically** (confirmed by checking
+  the PDF text between this section's band and the next section's eyebrow —
+  nothing there).
+- **"Key capabilities"** is `SolutionIndustries` reused verbatim in
+  structure — same 3-card, `#f4f4f4`-body, unboxed-icon shape, same closing
+  line — but under a **different eyebrow/heading** ("Platform" / "Key
+  `capabilities`" instead of "Core features" / "Industries that Benefit").
+  `SolutionIndustries` had these hardcoded; both are now optional props
+  defaulting to the original literals, so Pages 1–3 need no changes (same
+  "prop-drive once a second real divergent instance exists" precedent
+  already used for `SolutionWorkflows`' eyebrow/heading in §12/§15).
+  **The 3 cards are a direct, confirmed reuse of the Promise-to-Pay page's
+  own Industries photos** (`pexels-yankrukov-7794003 1.jpg`,
+  `pexels-davegarcia-32642489 1.jpg`, `pexels-aboodi-17396096 1.jpg`) under
+  the same 3 titles (Debt Collection Firms / Lending & Financial Services /
+  Utilities & Telecom) with new description copy — confirmed by direct
+  visual comparison, not assumed from the title match alone.
+- **"Four core workflows"** looked at first glance like `SolutionWorkflows`
+  (dark section, same eyebrow/heading/lead pattern, same 1327px band), but
+  a close crop of one card revealed the card *shape* is actually the
+  `SolutionIndustries`/`WhyItWorks` light-body pattern (photo + `#f4f4f4`
+  body + title + description + divider + Read More), **not** the scrim-
+  overlay style every prior `SolutionWorkflows` usage has — confirmed by
+  cropping a single card at 2× and comparing pixel-for-pixel against both
+  card shapes before deciding. Rather than fork a new component for what is
+  otherwise identical section chrome, `SolutionWorkflows` gained a
+  `variant?: "scrim" | "panel"` prop (default `"scrim"`, so Pages 1–4 are
+  byte-identical in output), a `columns?: number` prop (default 3, this
+  page passes 4), and an optional `closing` prop (`{text, linkText, href}`)
+  since this instance's closing line — "Want the collections team view?
+  See how agencies and lenders use Vodex" — is real per-page copy, not the
+  "Running a collections operation?" boilerplate every other closing line
+  on this page reuses.
+- **"Impact on both sides of the platform"** is a new pattern: a light
+  section wrapping a **full-width (1440px, pixel-scanned xmin 37/xmax
+  1476), sharp-cornered dark inset box** that holds **two groups of 3 stat
+  cards**, each group under its own small pill label, separated by a single
+  vertical hairline divider — distinct from `SolutionResults` (a full-bleed
+  *photo*-background band with 3 bare cards, no grouping/divider). New
+  component `SolutionImpact.tsx`. **The PDF's own group labels are
+  identically "For banks, agencies & lenders" on both sides** — given the
+  section heading is explicitly "Impact on **both sides**" and the lead
+  line separately calls out "banks, collection agencies, lenders, **and the
+  software providers who serve them**," the duplicate label is treated as
+  the same class of broken/mismatched PDF content already established
+  throughout this file (FAQ, Compliance chips below) and the second group's
+  label was corrected to **"For software providers"** rather than
+  reproduced verbatim — flagged here specifically because every other
+  "measure, don't invent" case in this project left the mismatched text
+  alone; this one was corrected because the section's own heading and lead
+  directly contradict the duplicate and no plausible verbatim reading of
+  "for banks, agencies & lenders" twice makes sense as "both sides."
+- **"Compliance controls, built in"** is a new pattern: a light section
+  wrapping a dark inset band (same 1327px family) containing a
+  `flex-wrap`, centered row of **white pill-shaped chips** (icon + label,
+  no photos, no description) — visually unrelated to `SolutionSecurity`'s
+  4-photo scrim-card grid used on Pages 1–4. New component
+  `SolutionCompliance.tsx`, new `LockIcon` (`components/ui/icons.tsx`,
+  same `strokeIcon` convention as every other icon in this file). **All 5
+  chips in the PDF read the identical placeholder text** ("Script locking &
+  audit trails" ×5) — the same class of broken/leftover content as this
+  project's FAQ rewrite precedent (§7) — so 5 real items were written,
+  grounded in compliance facts already established elsewhere on the site
+  (TCPA/FDCPA/Reg F, SOC 2/ISO 27001, encrypted recordings, consent
+  capture); flagged as invented/pending review, not from the PDF.
+
+### Asset mapping — one real mismatch caught and fixed mid-build
+
+Per the user's framing ("other sections are [assets from elsewhere], so
+copy that instead"), **every photo on this page except the hero is a reuse
+of an asset already used elsewhere in the project** — confirmed true after
+mapping, not assumed going in. A perceptual-hash matcher (`numpy`, average-
+hash over a 16×16 grayscale downsample, cosine-normalized MSE) was written
+specifically for this page to search the full `vodex assets/` pool against
+crops of each PDF card photo, since eyeballing ~100 candidate files
+one-by-one had already produced one wrong answer earlier in the same
+session (see gotcha below) — every low-confidence hash match was still
+individually opened and visually confirmed before use, never trusted on
+score alone.
+
+| Slot | Source (`vodex assets/`) | Notes |
+| --- | --- | --- |
+| Hero bg | `michael-bourgault-aHetdmuNoO4-unsplash 1.jpg` | supplied directly by the user for this slot |
+| Step 1 — Plug in via API | `pexels-cottonbro-6804594 1.jpg` | man at dual monitors, code visible — unused elsewhere |
+| Step 2 — Configure flows | `image 1025.jpg` | abstract cube/geometric render — see gotcha below |
+| Step 3 — Launch campaigns | `samuel-regan-asante-h7Sk4Ap07k0-unsplash 1.jpg` | "GO VEGAN FOR £1M?" mural — previously *tried and rejected* as a candidate for the Debt Collection page's blog-1 slot (§15) and left unused there; genuinely belongs here instead |
+| Step 4 — Sync outcomes back | `microsoft-copilot-Zcp8xN9DnjM-unsplash 1.jpg` | already `lead-qualification-workflow-3.jpg` (§14) — intentional reuse |
+| Voice layer — right panel bg | `magicpattern-iAR6yhCkrxc-unsplash 1.jpg` | same source as `comparison-vodex-bg.jpg` / `promise-to-pay-comparison-bg.jpg` — third reuse of this texture |
+| Capability 1 — Debt Collection Firms | `pexels-yankrukov-7794003 1.jpg` | already Promise-to-Pay's `promise-to-pay-industries-1.jpg` (§13) |
+| Capability 2 — Lending & Financial Services | `pexels-davegarcia-32642489 1.jpg` | sibling of the already-used `…2.jpg` (§13) |
+| Capability 3 — Utilities & Telecom | `pexels-aboodi-17396096 1.jpg` | already Promise-to-Pay's `promise-to-pay-industries-3.jpg` (§13) |
+| Workflow 1 — Payment Reminders | `brooke-cagle-TS1H4Tllz54-unsplash 1.jpg` | already `why-works-1.jpg` (§11) |
+| Workflow 2 — Promise to Pay Capture | *(reuses the Step 2 file, `image 1025.jpg`)* | the PDF genuinely repeats this exact graphic in both slots — confirmed by direct visual comparison, not a copy-paste bug |
+| Workflow 3 — Right Party Contact | `docusign-7RWBSYA9Rro-unsplash 1.jpg` | already `why-works-3.jpg` (§11) |
+| Workflow 4 — Dispute Triage | `image 1026.jpg` | already `why-works-4.jpg` (§11), flat illustration |
+
+All copied as fresh, page-specific files under `collection-software-*`
+names (workflow-2 intentionally points at the already-copied `step-2.jpg`
+file rather than duplicating identical bytes a second time within the same
+page — the "independently swappable" precedent from §14 is about *pages*
+sharing a source, not one page reusing its own already-copied file twice).
+
+**⚠️ Gotcha hit and fixed mid-build: a batch contact-sheet mislabeled one
+asset, and it shipped before being caught by screenshot review.** To
+identify ~9 unknown photos quickly, a Python script pasted thumbnails of
+~20 candidate files into one grid image with filename captions. That sheet
+mislabeled `Frame 2147226753.jpg` as the abstract-cubes render (it is
+actually a waving American flag — `Frame 2147226754.jpg` is a similar
+Indian flag; neither is used anywhere on this page) — the real cubes image
+is `image 1025.jpg`, exactly as CLAUDE.md's own §11 table already recorded
+for a different slot. The wrong file was copied into
+`collection-software-step-2.jpg` and only caught by the first live
+Playwright screenshot showing a flag where "Configure flows" should be.
+Root cause, worth generalizing: **a batch grid script that renames files to
+disk (`f.replace(" ", "_")`) and then re-lists the directory to caption
+them re-sorts alphabetically, decoupling each thumbnail from the caption
+meant for it** — every filename that was ultimately trusted was one either
+(a) confirmed by opening it *individually* with a fresh `Image.open(exact
+filename)` call rather than reading a position out of a grid, or (b) scored
+by a perceptual-hash search that returns `(score, filename)` pairs directly
+with no intermediate re-listing step. **If a future asset-matching pass in
+this project uses a contact-sheet/grid image again, either skip the
+disk-round-trip (paste thumbnails straight from the already-open `Image`
+objects, in the same loop, at the same index used for placement) or treat
+every grid-sourced identification as a hypothesis to re-confirm with a
+single direct `Image.open` + view before it's copied into `public/assets`
+— a hash-search top result close to zero (e.g. 0.02–0.2) was reliable every
+time it was individually re-opened in this session; a grid label was not.**
+Also worth keeping: `Frame 2147226753.jpg` and `.754.jpg` (both flags, both
+2600×1290) are not used anywhere in this project — don't reach for them by
+filename proximity to the icon `Frame 2147227660-666.png` files (Final CTA
+icons, unrelated numbering block).
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` (all 9 solutions-family
+routes + `/` + `/products` build together with zero errors). Playwright-
+verified at 1516px (scroll-and-wait-for-`img.complete`, per the gotcha
+documented in §12) and 430px — zero console errors, zero horizontal
+overflow at either width, confirmed via `document.documentElement
+.scrollWidth <= clientWidth`. Every new/extended section's live screenshot
+compared directly against its own PDF crop after the asset-mismatch fix
+above: Hero, How the integration works (4 cards + closing line), Why add a
+voice layer (both panels, waveform bullets, no VS badge, hairline divider),
+Key capabilities (reused `SolutionIndustries` under new eyebrow/heading),
+Four core workflows (new `panel` variant, 4 columns, custom closing line),
+Impact (two stat groups + divider, corrected second-group label), and
+Compliance (5 pill chips, dark inset band) all confirmed matching. Mobile
+430px pass confirmed: voice-layer panels stack to 1 column, capability/
+workflow card grids stack to 1 column, Impact's two groups stack with the
+vertical divider hidden, Compliance chips wrap into a centered column —
+nothing overflows or clips.
+
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off.
+
+**Next:** Wait for the user's review, in particular of (1) the corrected
+"For software providers" Impact group label (a deliberate deviation from
+the PDF's literal duplicate text — see the reasoning above, and confirm
+with the user if they'd rather see the literal duplicate reproduced
+instead, consistent with every *other* mismatched-copy case in this
+project being left verbatim), and (2) the 5 invented Compliance chip
+items. This closes out all 5 Footer-declared Solutions routes — every
+`/solutions/*` link in `Footer.tsx` and the navbar's `SolutionsMegaMenu`
+now resolves instead of 404ing. The `/solutions` parent hub page itself
+(linked by the mega-menu's "View all solutions" and the plain navbar link)
+is still not built — a pre-existing gap carried forward from §12–§15, not
+introduced here.

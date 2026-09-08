@@ -20,7 +20,8 @@ type SolutionHeroProps = {
   lead: string;
   primaryCta: Cta;
   secondaryCta: Cta;
-  bgImage: Parameters<typeof Image>[0]["src"];
+  /** Omit for a flat `--ink`-toned hero (the section's own background) — no photo backdrop. */
+  bgImage?: Parameters<typeof Image>[0]["src"];
   bgAlt?: string;
   bgObjectPosition?: string;
 };
@@ -44,16 +45,18 @@ export function SolutionHero({
 }: SolutionHeroProps) {
   return (
     <section className={styles.hero} aria-labelledby={headingId}>
-      <div className={styles.backdrop} style={{ "--bg-pos": bgObjectPosition } as CSSProperties}>
-        <Image
-          src={bgImage}
-          alt={bgAlt}
-          priority
-          quality={90}
-          sizes="100vw"
-          placeholder="blur"
-        />
-      </div>
+      {bgImage && (
+        <div className={styles.backdrop} style={{ "--bg-pos": bgObjectPosition } as CSSProperties}>
+          <Image
+            src={bgImage}
+            alt={bgAlt}
+            priority
+            quality={90}
+            sizes="100vw"
+            placeholder="blur"
+          />
+        </div>
+      )}
 
       <div className={`container ${styles.content}`}>
         <Entrance delay={0}>

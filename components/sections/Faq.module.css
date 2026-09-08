@@ -159,6 +159,13 @@
   margin-top: auto;
   padding-top: 20px;
   width: 100%;
+  /* Button's own .lg size sets min-width: 268px (only zeroed out below
+     720px) — without this override, at viewport widths where this card
+     sits in the 340px-capped grid column (e.g. 821-1100px) the button can
+     press right up against the card's padding with almost no clearance
+     against its rounded corner. Zeroing min-width lets width: 100% fully
+     govern at every breakpoint. */
+  min-width: 0;
 }
 
 @media (max-width: 1100px) {

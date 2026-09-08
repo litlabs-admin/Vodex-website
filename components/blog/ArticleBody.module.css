@@ -1,0 +1,84 @@
+.body {
+  max-width: 720px;
+}
+
+.heading {
+  /* Clears the sticky navbar when following an in-page anchor jump — same
+     offset ArticleToc's ACTIVE_OFFSET is tuned against. */
+  scroll-margin-top: 96px;
+  margin-top: 48px;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
+.body > *:first-child {
+  margin-top: 0;
+}
+
+.paragraph {
+  margin-top: 20px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+}
+
+.list {
+  margin-top: 20px;
+  display: grid;
+  gap: 12px;
+}
+
+.list li {
+  position: relative;
+  padding-left: 24px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+}
+
+.list li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 11px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.quote {
+  margin: 32px 0;
+  padding-left: 24px;
+  border-left: 3px solid var(--brand);
+}
+
+.quote p {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--fg);
+}
+
+.cite {
+  display: block;
+  margin-top: 12px;
+  font-style: normal;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg-muted);
+}
+
+@media (max-width: 480px) {
+  .heading {
+    font-size: 22px;
+  }
+
+  .quote p {
+    font-size: 18px;
+  }
+}

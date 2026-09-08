@@ -1,0 +1,172 @@
+.section {
+  background: var(--bg);
+  padding-block: 88px 0;
+}
+
+.header {
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding-inline: 20px;
+  border-radius: var(--radius-pill);
+  background: #ececec;
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.title {
+  margin-top: 24px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.card {
+  margin-top: 48px;
+  max-width: 1180px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  overflow: hidden;
+  background: #f7f7f7;
+  border-radius: 0;
+}
+
+.thumb {
+  position: relative;
+  min-height: 340px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding: 48px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  height: 32px;
+  padding-inline: 16px;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.excerpt {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.stat {
+  padding: 20px;
+  background: #fff;
+  text-align: center;
+}
+
+.statNumber {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 36px;
+  color: var(--brand);
+  line-height: 1;
+}
+
+.statLabel {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: fit-content;
+  height: 52px;
+  padding-inline: 24px;
+  border-radius: var(--radius-btn);
+  background: var(--brand);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.cta:hover {
+  background: var(--brand-hover);
+}
+
+.cta svg {
+  transition: transform var(--dur) var(--ease);
+}
+
+.cta:hover svg {
+  transform: translateX(4px);
+}
+
+.crossSell {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 15px;
+  color: var(--fg);
+}
+
+.crossSellLink {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .card {
+    grid-template-columns: 1fr;
+  }
+
+  .thumb {
+    min-height: 260px;
+  }
+
+  .body {
+    padding: 32px 28px;
+  }
+}
+
+@media (max-width: 560px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-block: 64px 0;
+  }
+
+  .body {
+    padding: 28px 20px;
+  }
+}
