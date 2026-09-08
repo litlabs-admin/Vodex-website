@@ -1,0 +1,149 @@
+.section {
+  background: var(--bg);
+  padding-block: 88px 0;
+}
+
+.header {
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding-inline: 20px;
+  border-radius: var(--radius-pill);
+  background: #ececec;
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.title {
+  margin-top: 24px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.lead {
+  margin-top: 20px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+}
+
+/* Measured against the reference: 3 equal cards in a 1344px band, ~14px
+   gaps — same inset-band convention as WhyItWorks/ResearchTts. */
+.grid {
+  margin-top: 56px;
+  max-width: 1344px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 8 / 5;
+  border-radius: 0;
+  transition: transform var(--dur) var(--ease);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card[data-tone="dark"] {
+  background: var(--ink);
+}
+
+.card[data-tone="brand"] {
+  background: var(--brand);
+}
+
+.copy {
+  position: relative;
+  z-index: 1;
+  padding: 28px 24px 0;
+  max-width: 62%;
+}
+
+.name {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.description {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* The supplied portraits are already alpha-cutout PNGs, so the card's own
+   solid background shows through the transparent edges — no CSS mask
+   needed. */
+.portrait {
+  position: absolute !important;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  width: auto;
+  max-width: 55%;
+  object-fit: contain;
+  object-position: bottom right;
+}
+
+.arrow {
+  position: absolute;
+  z-index: 1;
+  left: 24px;
+  bottom: 24px;
+  width: 20px;
+  height: 20px;
+  color: #fff;
+}
+
+.closing {
+  margin-top: 56px;
+  padding-block: 32px 40px;
+  text-align: center;
+  font-size: 15px;
+  color: var(--fg);
+}
+
+.closingLink {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .section {
+    padding-block: 64px 0;
+  }
+
+  .grid {
+    margin-top: 40px;
+    grid-template-columns: 1fr;
+    max-width: 420px;
+    gap: 16px;
+  }
+
+  .card {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-block: 48px 0;
+  }
+}

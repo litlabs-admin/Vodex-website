@@ -1,0 +1,82 @@
+/* Full-bleed strip with hairline rules, sitting directly below the hero —
+   same border-block + cell-divider mechanics as TrustStrip.module.css. */
+.strip {
+  border-block: 1px solid var(--hairline);
+  background: var(--bg);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  min-height: 145px;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+/* Hairline separators between cells only. */
+.cell + .cell {
+  box-shadow: inset 1px 0 0 var(--hairline-strong);
+}
+
+.item {
+  display: grid;
+  gap: 6px;
+  text-align: center;
+}
+
+.number {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 40px;
+  color: var(--brand);
+  line-height: 1;
+}
+
+.label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-height: 0;
+  }
+
+  .cell {
+    padding-block: 20px;
+  }
+
+  .cell:nth-child(odd) {
+    box-shadow: none;
+  }
+
+  .cell:nth-child(n + 3) {
+    box-shadow: inset 0 1px 0 var(--hairline-strong);
+  }
+
+  .number {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cell {
+    box-shadow: none !important;
+  }
+
+  .cell + .cell {
+    box-shadow: inset 0 1px 0 var(--hairline-strong) !important;
+  }
+}

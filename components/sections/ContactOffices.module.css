@@ -1,0 +1,156 @@
+.section {
+  background: var(--bg);
+  padding-block: 64px 72px;
+}
+
+.header {
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding-inline: 20px;
+  border-radius: var(--radius-pill);
+  background: #ececec;
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.title {
+  margin-top: 24px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.lead {
+  margin-top: 20px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+}
+
+.grid {
+  margin-top: 48px;
+  max-width: 1344px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0;
+  aspect-ratio: 660 / 330;
+  background: #0d1013;
+}
+
+.card img {
+  object-fit: cover;
+}
+
+/* Plain black scrim on the left edge only, where the title/address/Learn
+   More all sit (top-to-bottom on this side, unlike SolutionWorkflows'
+   always-on bottom-only scrim this is adapted from) — no color tint, so
+   most of the photo (including the flag) shows its real, untouched colors,
+   per direct user feedback. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.28) 28%,
+    transparent 52%
+  );
+}
+
+.copy {
+  position: absolute;
+  left: 28px;
+  top: 28px;
+  right: 28px;
+  color: #fff;
+}
+
+.cardTitle {
+  font-size: 22px;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.address {
+  margin-top: 14px;
+  max-width: 280px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.learnMore {
+  position: absolute;
+  left: 28px;
+  bottom: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.learnMore svg {
+  transition: transform var(--dur) var(--ease);
+}
+
+.learnMore:hover svg {
+  transform: translate(2px, -2px);
+}
+
+.contactLine {
+  margin-top: 32px;
+  text-align: center;
+  font-size: var(--fs-body);
+  color: var(--fg-muted);
+}
+
+.contactLine a {
+  color: var(--fg);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.contactLine a:hover {
+  color: var(--brand);
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+  }
+
+  .card {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-block: 48px 56px;
+  }
+}

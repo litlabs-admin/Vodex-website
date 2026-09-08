@@ -444,3 +444,59 @@ export function MailIcon(props: IconProps) {
     </svg>
   );
 }
+
+/* -------------------------------------------------------------------------- */
+/* Contact page icons                                                         */
+/* -------------------------------------------------------------------------- */
+
+/** Small bar chart — Sales. */
+export function ChartBarIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 24 24" strokeLinejoin="round" {...props}>
+      <rect x="3.5" y="12" width="5" height="9" />
+      <rect x="9.5" y="7" width="5" height="14" />
+      <rect x="15.5" y="3" width="5" height="18" />
+    </svg>
+  );
+}
+
+/** Megaphone — Marketing. */
+export function MegaphoneIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 28 24" strokeLinejoin="round" {...props}>
+      <path d="M2 9v6h4l8 6V3L6 9Z" />
+      <path d="M14 3a11 11 0 0 1 0 18" />
+      <path d="M10.5 15v5a2 2 0 0 1-2 2h-.5a2 2 0 0 1-2-2v-4" />
+    </svg>
+  );
+}
+
+/** Linked heart — Partnership. */
+export function HandshakeIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 28 26" {...props}>
+      <path d="M14 23.5 3.4 13.2a6 6 0 0 1 0-8.5 5.9 5.9 0 0 1 8.4 0L14 6.9l2.2-2.2a5.9 5.9 0 0 1 8.4 0 6 6 0 0 1 0 8.5Z" />
+      <path d="m9.5 12.5 3 3 6-6" />
+    </svg>
+  );
+}
+
+/** Cloud with a padlock — Data Protection Officer. */
+export function CloudLockIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 32 26" strokeLinejoin="round" {...props}>
+      <path d="M9 20.5a6.5 6.5 0 0 1-1.2-12.9A7.5 7.5 0 0 1 22 6.6a5.6 5.6 0 0 1-1 11.1" />
+      <rect x="12.5" y="13.5" width="10" height="8" rx="1.6" />
+      <path d="M14.7 13.5v-2a2.8 2.8 0 0 1 5.6 0v2" />
+    </svg>
+  );
+}
+
+/** Chevron down — dropdown/select triggers. */
+export function ChevronDownIcon(props: IconProps) {
+  return (
+    <svg {...strokeIcon} viewBox="0 0 16 10" {...props}>
+      <path d="m2 2.5 6 5 6-5" />
+    </svg>
+  );
+}

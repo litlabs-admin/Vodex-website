@@ -1,0 +1,136 @@
+.section {
+  background: var(--bg);
+  padding-block: 88px 96px;
+}
+
+.banner {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  max-width: 1327px;
+  margin-inline: auto;
+  border-radius: 0;
+  padding: 56px 64px;
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+}
+
+.bg {
+  z-index: 0;
+  object-fit: cover;
+}
+
+.eyebrow {
+  position: absolute;
+  z-index: 1;
+  top: 32px;
+  left: 40px;
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding-inline: 18px;
+  border-radius: var(--radius-pill);
+  background: rgba(20, 8, 0, 0.55);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  gap: 40px;
+  width: 100%;
+  align-items: center;
+}
+
+.title {
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: #fff;
+}
+
+.lead {
+  margin-top: 20px;
+  max-width: 460px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.cta {
+  margin-top: 28px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.stat {
+  padding: 24px 20px;
+  background: #fff;
+  text-align: center;
+}
+
+.statNumber {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 40px;
+  color: var(--brand);
+  line-height: 1;
+}
+
+.statLabel {
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--fg);
+}
+
+@media (max-width: 900px) {
+  .banner {
+    padding: 88px 40px 40px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .stats {
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 560px) {
+  .section {
+    padding-block: 56px 64px;
+  }
+
+  .banner {
+    padding: 80px 24px 32px;
+  }
+
+  .eyebrow {
+    top: 24px;
+    left: 24px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stat {
+    padding: 20px;
+  }
+}

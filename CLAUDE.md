@@ -884,6 +884,9 @@ components/
                     BlogFeaturedPost, BlogExplorer (client)          [Blog — §16]
                     VideoFeatured, VideoExplorer (client)          [Videos — §17]
                     CaseStudyFeatured, CaseStudyGrid          [Case Studies — §19]
+                    FaqTopics (client), FaqHumanSupport            [FAQ — §20]
+                    ComplianceCertifications, ComplianceSecurityPractices,
+                    ComplianceDpoBanner                        [Compliance — §21]
   ui/               Logo (+ Wordmark), Button, Entrance, icons,
                     AudioWaveform, useWaveformData, BlogPostCard      [Blog — §16]
                     VideoCard                                     [Videos — §17]
@@ -902,6 +905,8 @@ app/resources/blog/[slug]/page.tsx       Blog post route (§16)
 app/resources/videos/page.tsx            Videos listing route (§17)
 app/resources/call-samples/page.tsx      Call Samples route — composes existing sections (§18)
 app/resources/case-studies/page.tsx      Case Studies route (§19)
+app/resources/faq/page.tsx               FAQ route (§20)
+app/resources/compliance/page.tsx        Compliance route (§21)
 ```
 
 ---
@@ -2367,6 +2372,166 @@ block in this file).
 
 ---
 
+## 20. Resources — FAQ (`/resources/faq`)
+
+> Reference: `Vodex - Resources -_ FAQ.pdf`, unlike §16-§19 an actual PDF
+> this time, not a screenshot mockup — same non-artboard-measured treatment
+> as the other Resources pages though (no pixel-bbox extraction, just read
+> for structure/copy). `Footer.tsx` and `ResourcesMegaMenu.tsx` both already
+> pointed "FAQ" at `/#faq-title` (the landing page's embedded FAQ section
+> anchor) before this page existed — same pre-declared-then-built pattern
+> as every other Resources route.
+
+### What was asked, and what the answers resolved to
+
+Three rounds of `AskUserQuestion`, all answered before any code was written,
+per the user's explicit "if unclear, doubt, ask, do not assume":
+
+1. **FAQ content**: the PDF's 10 questions are generic SaaS template
+   boilerplate ("lead generation", "small businesses", "system
+   requirements") — the same class of issue the landing page's *original*
+   FAQ copy had before §13 rewrote it. Recommended rewriting again;
+   **the user's answer was the opposite of the recommendation**: *"use the
+   mock content for now, can be replaced later."* So unlike every other
+   piece of copy this project has rewritten from a mismatched PDF/mockup,
+   this page's FAQ answers are **intentionally** generic placeholder text,
+   not deeply Vodex-grounded — flagged with a `⚠️` code comment in
+   `FaqTopics.tsx` specifically so a future pass doesn't mistake it for
+   already-reviewed content.
+2. **Tabs**: the PDF shows 4 tabs (Overview / Tutorials / Product / Podcasts
+   & Interviews), but this project has no tutorial or podcast content
+   system — literally building them would leave 2 of 4 tabs permanently
+   empty. **Confirmed with the user: functional tabs with real categories**
+   — swapped "Tutorials"/"Podcasts & Interviews" for **Compliance &
+   Security** and **Pricing** (both named explicitly in the hero's own lead
+   copy: "platform basics to collections-specific compliance, performance,
+   and pricing"), and made selecting a tab actually filter the accordion
+   list below — a real behavior the existing `IndustryTabs` component
+   doesn't have (confirmed via exploration: `IndustryTabs` only slides a
+   visual indicator, nothing re-renders — see its own doc comment).
+3. **"Help Center" card link**: the PDF's own text literally reads
+   **"Medical & Healthcare →"** for this card's link — an industry link,
+   not a help-center destination, same class of Figma-copy-paste mismatch
+   already caught and fixed on §16-§19 (mismatched eyebrows, duplicate
+   leads, a leftover "Videos" badge on three different pages in a row).
+   **Confirmed with the user: fixed** to "Visit Help Center →" → `/help`
+   (matches the destination `Footer.tsx` already declares for its own
+   "Help Center" link — still a 404 today, a pre-existing gap, not a new
+   one).
+
+### Implementation decisions
+
+- **`components/sections/FaqTopics.tsx`** (`"use client"`) is one component
+  owning two independent pieces of state: `activeIndex` (which category tab
+  is selected) and `openIndex` (which accordion item is expanded).
+  **Selecting a new tab resets `openIndex` to `-1`** — without this, an open
+  item's index could point at a completely different question after the
+  list re-filters (e.g. item 2 is open under "Overview", user clicks
+  "Pricing" which only has 2 items — index 2 wouldn't exist, or worse,
+  would silently point at the wrong question).
+- **Category tabs are a mechanical adaptation of `IndustryTabs.tsx`**, not a
+  reuse — same `useLayoutEffect` + `getBoundingClientRect` sliding-indicator
+  measurement, same `ArrowLeft`/`ArrowRight`/`Home`/`End` keyboard handling,
+  copied because `IndustryTabs` takes a plain `string[]` with no
+  content-switching hook at all (confirmed via its own doc comment: *"Only
+  visual state changes on click — there's no per-industry copy yet."*).
+  This is the **first tab control in the project that actually switches
+  content** — if `IndustryTabs` itself ever needs this same behavior later
+  (e.g. once Solutions' industry tabs get real per-industry copy), extend
+  it the same way rather than starting over.
+- **Accordion open/close mechanics are a mechanical adaptation of
+  `FaqAccordion.tsx`**, not a reuse — same `grid-template-rows: 0fr → 1fr`
+  CSS trick (no `max-height` magic number), same single-open
+  `useState(-1)` pattern, same plus-icon-rotates-45°-to-X treatment. Not
+  imported directly because `FaqAccordion.tsx` hardcodes `import styles
+  from "./Faq.module.css"` (confirmed via exploration) — it's coupled to
+  that one CSS module's class names, and this page doesn't want
+  `Faq.module.css`'s 2-column grid/side-card rules along with it. Same
+  "copy-adapt, don't force a shared component" precedent used throughout
+  this project (`SolutionBlogCards` vs. `Resources`/`SeeItInAction`, §12;
+  `VideoExplorer` vs. `BlogExplorer`, §17).
+- **The 10 PDF questions were redistributed across the 4 new categories**
+  (Overview 5, Product 4) **and topped up with new placeholder items** for
+  Compliance & Security (2) and Pricing (2) — the source PDF simply doesn't
+  have enough questions naturally aligned with those two topics to give
+  either tab more than one item otherwise. All 13 answers are short and
+  intentionally generic (no fabricated specific numbers, certifications not
+  already established elsewhere on the site, or pricing figures) — this is
+  placeholder copy, not a researched FAQ.
+- **One PDF lead line was flagged but kept verbatim, unlike the Help Center
+  link** — the "Answer by topic" section's lead ("Security certifications
+  held by Vodex and the collection regulations the platform enforces on
+  every conversation.") really only describes the Compliance & Security
+  tab, not the other three, but the user was only asked about (and only
+  confirmed a fix for) the Help Center link, not this line — per "use the
+  mock content for now," it was left as-is rather than silently rewritten,
+  with a code comment explaining why it's inconsistent.
+- **Hero background: `results-bg.jpg`**, reused directly via import (no new
+  file copied) — not yet used as any page's hero (only inside
+  `SolutionResults`'s full-bleed stat band and as the Blog featured post's
+  thumbnail), picked for visual variety and its moody/serious tone fitting
+  the "Compliance & Security" badge. Per the user's own "use any pic for
+  hero bg for now" instruction — easily swappable later, same as every
+  other hero background in this project.
+- **`Footer.tsx`'s Resources-column "FAQ" link and `ResourcesMegaMenu.tsx`'s
+  "FAQ" item both updated** from `/#faq-title` to `/resources/faq` — same
+  "point the nav at the real page once it exists" follow-up already done
+  for "Call Samples" in §18.
+
+### ⚠️ Round 2 fix — active tab was invisible
+
+The user screenshotted the tabs immediately after this shipped: "Overview"
+(the default-active tab) rendered as plain unstyled text with no pill at
+all, while the other three showed correctly as dark pills. Root cause:
+`.tabActive`/`.indicator` were copied verbatim from `IndustryTabs.module.css`,
+which sets a **white** active-pill background — correct there because
+`IndustryTabs` only ever lives inside `Solutions.tsx`'s dark section, so a
+white pill reads clearly against a dark background. `FaqTopics`'s own
+section is light (`background: var(--bg)`), so that same white-on-white
+pill was rendering with zero visible contrast. Fixed by changing both
+`.indicator` and `.tabActive`/`.tabActive:hover` from `background: #fff` to
+`background: var(--brand)` (with white text) — matching this project's
+already-established convention for an active filter/tab chip on a *light*
+background (`BlogExplorer`/`VideoExplorer`'s `.chip[data-active]`, §16/§17)
+rather than inventing a new color choice. **If `IndustryTabs.module.css`'s
+white-pill styling is ever copy-adapted into another light-background
+section in this project, apply this same fix up front** — don't assume the
+donor component's colors transfer unchanged just because the layout
+mechanism (sliding indicator, keyboard nav) does; check what background the
+new section actually sits on first, same lesson as several other
+copy-adapted components in this file.
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` (22 routes,
+`/resources/faq` included). Curl smoke-test confirmed `/`, `/resources/faq`,
+`/resources/case-studies`, and `/resources/call-samples` all return 200 on
+a fresh `next dev` server with no dev-log errors (re-checked `/` and the
+other Resources pages specifically since `Footer`/`ResourcesMegaMenu` are
+shared and were edited this round); server stopped cleanly. Initial build
+had no Playwright visual pass (same environment friction noted in
+§16-§19) — the Round 2 tab-color bug above is exactly the kind of thing
+that check would have caught, and was only found because the user
+screenshotted it. The Round 2 fix itself **was** verified with a targeted
+Playwright screenshot (a single bounded `waitUntil: "load"` navigation, not
+the `networkidle` strategy that hung previously) confirming the active tab
+now renders as a filled brand-orange pill — zero console errors, dev
+server and browser both stopped cleanly afterward.
+
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off.
+
+**Next:** Wait for the user's review, in particular of (1) the functional-
+tabs reinterpretation (Compliance & Security / Pricing in place of
+Tutorials / Podcasts & Interviews — a real information-architecture
+change, not just a copy fix), and (2) whether the mock FAQ content is
+worth replacing with real, grounded copy sooner rather than later, since
+this page's own hero explicitly promises depth ("platform basics to
+collections-specific compliance, performance, and pricing") that the
+current placeholder answers don't really deliver on yet.
+
+---
+
 ## 13. Solutions Page 2 — Promise-to-Pay Capture
 
 > Reference: `D:\litlabs\Vodex\Vodex - Solutions_Page (0.2).pdf` — 4548 ×
@@ -3156,3 +3321,1446 @@ now resolves instead of 404ing. The `/solutions` parent hub page itself
 (linked by the mega-menu's "View all solutions" and the plain navbar link)
 is still not built — a pre-existing gap carried forward from §12–§15, not
 introduced here.
+
+---
+
+## 20. Resources — Research (`/resources/research`)
+
+> Reference: `Vodex - Resources -_ Research.pdf` — 4548 × 28091pt = a 3×
+> export of a **1516 × 9364px** artboard, same convention as every other
+> PDF in this project. Both `Footer.tsx` and `ResourcesMegaMenu.tsx`
+> already declared `Research → /resources/research` before this page
+> existed (previously a 404) — same situation every other Resources page
+> was in before being built.
+
+### Current progress
+
+Full page built end to end: Hero → "Where this work began" (timeline) →
+"Why we built our own TTS" (4 cards) → "Voices that feel human" (3 cards)
+→ "Fast enough to interrupt" (latency banner) → "What comes next"
+(Roadmap, reused `SolutionWorkflows`) → `EnterpriseBand` → `FinalCta` →
+`Footer`. **This is the first Resources page with no FAQ section** —
+confirmed by reading the full `pdftotext -layout` dump top to bottom; the
+PDF genuinely skips from the Roadmap cards straight to Enterprise Band.
+
+Analyzed with this project's established method (`pdftoppm -r 24` full
+render, `pdftotext -bbox` for exact y-coordinates, `pdftoppm -r 96`
+section crops, plus pixel-level bounding-box analysis via a Python/PIL
+script for the two genuinely new layouts — the timeline and the voice
+cards — rather than eyeballing proportions off a crop) before writing any
+component.
+
+### Implementation decisions
+
+- **Three sections are copy-adapts of existing patterns, one is reused
+  verbatim, two are genuinely new** — same mix-of-strategies precedent
+  already established across the Resources/Solutions family (§16-§19):
+  - `ResearchTts.tsx` is `WhyItWorks.tsx`/`.module.css` (Product Page,
+    §11) copy-adapted almost 1:1 — confirmed via crop to be a
+    near-pixel-exact match (same header pattern, same 1344px 4-column
+    grid, same photo/`#f7f7f7`-body/divider/dark-pill-"Read More" card
+    shape). Only the header copy, card content, and `Read More` hrefs
+    (`/resources/research#<slug>` in-page anchors — no per-topic detail
+    page exists) differ.
+  - `ResearchLatency.tsx` is `SolutionIntegration.tsx`/`.module.css`
+    (Solutions Page 4, §15) copy-adapted: same `max-width:1327px` inset
+    banner, same absolute eyebrow pill, same
+    `grid-template-columns: minmax(0,1fr) minmax(0,420px)` split. The one
+    real structural difference: the right column renders **2 white stat
+    cards** (italic serif brand-orange number + label, reusing
+    `CaseStudyFeatured`/`CaseStudyCard`'s `.statNumber` treatment — the
+    crop's numerals are visibly italic/slanted, not `SolutionResults`'
+    plain bold sans) instead of `SolutionIntegration`'s pill-list
+    `items: string[]`. `title` is a single string/`ReactNode`, not
+    `SolutionIntegration`'s two-line `titleLines: [string,string]` tuple —
+    this reference's heading is genuinely one line ("Fast enough to
+    interrupt").
+  - The Roadmap section (`"What comes next"`) is **`SolutionWorkflows`
+    reused verbatim with zero new code** — confirmed via crop and a
+    direct text/asset diff against `app/solutions/debt-collection/page.tsx`
+    that this section is byte-identical to that page's first 3 Industries
+    cards (same titles, same descriptions word-for-word, same photos:
+    shopping/mastercard phone, surgeon, cash handoff). Passed as
+    `variant="scrim"` (default), `columns={3}`, custom `eyebrow`/`heading`/
+    `lead`, and the 3 workflow entries duplicated locally in
+    `app/resources/research/page.tsx` (the source `INDUSTRIES` array lives
+    in a page file and isn't/shouldn't be exported) — same "duplicate a
+    small array locally rather than import across page boundaries"
+    precedent as §12's Comparison closing line and §13's shared Comparison
+    lead. No `closing` prop — confirmed the PDF has no cross-sell line
+    after this section (unlike the 3 sections before it, which each do).
+  - `ResearchTimeline.tsx` and `ResearchVoices.tsx` are genuinely new
+    patterns — no existing component in the codebase matches either.
+- **`ResearchTimeline`'s geometry was measured with a Python/PIL
+  bounding-box script against the reference crop, not eyeballed** — a
+  first pass estimating proportions by reading pixel coordinates off the
+  *displayed* (scaled-down) crop image produced a rough 578px image-width
+  estimate; re-measuring by detecting the actual non-white pixel runs in
+  the source PNG (excluding the header text band) gave image width ≈599px
+  and a photo aspect ratio of ≈1.7-1.76 across all three timeline photos —
+  used `aspect-ratio: 7/4` (1.75) as the clean fraction closest to the
+  measured average. Same script located the central vertical line at
+  artboard x≈751, confirming it's centered in the existing 1344px
+  inset-band convention (`WhyItWorks`/`ResearchTts`), not a bespoke width.
+  **If a future section in this project needs precise proportions from a
+  busy or low-contrast crop, prefer this bounding-box-detection approach
+  over reading coordinates off a scaled preview image** — the preview-based
+  estimate was off by ~30% here.
+  - Structure: a `.rows::before` pseudo-element draws the single vertical
+    line; each `.row` is a 2-column grid (`media`/`content`) with a
+    dedicated `<span className={styles.dot}>` as a third, absolutely
+    -centered child (`left:50%; top:50%`) — not nested inside `.content`,
+    so its centering is independent of which side holds the photo.
+    Alternation uses the same `data-reverse` attribute + CSS grid-column
+    override technique `Solutions.module.css` already established for its
+    alternating use-case rows (§8) — media/content are always rendered
+    media-first in JSX; `data-reverse="true"` (row 2 only) swaps their
+    grid columns.
+  - **⚠️ Mobile bug hit and fixed during verification, not left latent**:
+    the desktop reversed-row rule pins both `.media` and `.content` to
+    `grid-row: 1` (needed for the 2-column single-row desktop layout). The
+    first mobile media query only reset `grid-column` back to `1` for the
+    single-column stack, not `grid-row` — so on the reversed row (2021),
+    both children stayed pinned to the same `grid-row: 1` and rendered
+    literally on top of each other (confirmed via a 430px Playwright
+    screenshot showing the "2021" tag pill overlapping the cube-render
+    photo). Fixed by adding `grid-row: auto` alongside the mobile
+    `grid-column: 1` override. **If any future alternating-row component
+    sets an explicit `grid-row` on its reversed variant for a multi-column
+    desktop layout, the mobile single-column override must reset that
+    `grid-row` too, not just `grid-column`** — resetting only the axis
+    that changes between desktop/mobile is exactly what caused this bug.
+    Re-verified post-fix with a fresh 430px screenshot: all three rows
+    stack image-then-tag-then-title-then-description cleanly, no overlap.
+- **`ResearchVoices`' three portrait assets are already alpha-cutout
+  transparent PNGs** (confirmed by opening each file — no flat background
+  to mask or crop), so the "photo bleeding into a solid color panel" look
+  needed no CSS masking: each `next/image` is absolutely positioned to the
+  card's bottom-right with `object-fit: contain`, and the card's own solid
+  `var(--ink)`/`var(--brand)` background shows straight through the
+  transparent edges. Card row measured via the same PIL bounding-box
+  method: full **1440px container** (not the 1344px inset band the other
+  new sections use), 3 columns, ~14px gaps, card `aspect-ratio: 8/5`
+  (measured ≈1.58, closest clean fraction).
+  - **Card mapping required opening each portrait file and matching it
+    against the crop — the user's listed file order did not match the
+    PDF's Shreya/Shweta/Aastha order.** Confirmed by inspection:
+    `pexels-kindelmedia-7688183` → Shreya, `pexels-rdne-7648321` → Shweta,
+    `pexels-mikhail-nilov-9159682` → Aastha (the user's message listed
+    kindelmedia/mikhail-nilov/rdne, in that order — not the correct
+    per-person mapping).
+  - **Cards are not clickable links** — same reasoning as `VideoCard`'s
+    documented precedent (§17): there is no real per-voice detail page, so
+    the diagonal arrow (`ExternalLinkIcon`, reusing the exact glyph
+    `SolutionWorkflows` already uses) is a decorative affordance only
+    (rendered outside any `<Link>`), not a fake link to nowhere.
+- **Two mismatched/reused-looking eyebrows, built verbatim per this
+  project's established "measure, don't invent" rule** (same treatment as
+  every prior mismatched-eyebrow case in §12/§15): Section 2's eyebrow
+  reads **"Debt Collection"** despite the content being company history,
+  not debt collection. (Section 6's "Roadmap" eyebrow, by contrast,
+  actually fits its own content here — noted only for completeness, not a
+  correction.)
+- **"Learn More About Integerations" typo fixed to "Integrations"** in
+  `ResearchLatency`, per this project's established typo-correction
+  convention (§12/§13/§15's own precedents). The button links to
+  `/solutions/collection-software` — a real, already-built page about
+  API/integrations, not a placeholder.
+- **Latency banner background image confirmed by direct visual
+  comparison, not the user's suggested first option**: the user offered a
+  choice of `lu-KEYuGr18XE4-unsplash 1.jpg` or
+  `michael-bourgault-aHetdmuNoO4-unsplash 1.jpg`; only the latter's fence-
+  post line across the field matches the reference crop pixel-for-pixel —
+  `lu-KEYuGr18XE4` has no fence and different hills. Copied as a fresh,
+  page-specific `research-latency-bg.jpg` rather than referencing the
+  existing `lead-qualification-hero-bg.jpg` copy of the same source file,
+  per the established "independently swappable" precedent (§14/§15).
+- **Hero background is a placeholder, per explicit user instruction**
+  ("use any hero bg for now") — reuses `results-bg.jpg` directly via
+  import (already used once before as the FAQ page's hero bg), no new file
+  copied. Same placeholder-pending-real-art status as Section 9's call
+  sample audio elsewhere in this project.
+- **No `lib/research.ts` data module** — unlike Blog/Videos/Case Studies
+  (§16-§19), which need `getFeatured`/`getGrid`/`getBySlug` helpers for
+  filtering and per-item detail pages, this page has neither: content
+  arrays live inline in each new component, matching the
+  `WhyItWorks`/`SolutionWorkflows`/`CoreFeatures` precedent for single-use
+  static content.
+
+### Asset → component map
+
+| Source (`vodex assets/`) | Destination | Slot |
+| --- | --- | --- |
+| *(reused, no new file)* `results-bg.jpg` | — | Hero bg (placeholder) |
+| `pexels-cottonbro-7858287 1.jpg` | `public/assets/research-timeline-1.jpg` | Timeline — 2020 |
+| `pexels-googledeepmind-25630343 1.jpg` | `public/assets/research-timeline-2.jpg` | Timeline — 2021 |
+| `Signbaord_Mockup 1.png` | `public/assets/research-timeline-3.png` | Timeline — Today |
+| `image 1030.jpg` | `public/assets/research-tts-1.jpg` | TTS — Orpheus core architecture (GitHub screenshot, confirmed by opening the file) |
+| `image 1025.jpg` | `public/assets/research-tts-2.jpg` | TTS — 21,000+ hours (cube render) |
+| `pexels-egorkomarov-27141312 1.jpg` | `public/assets/research-tts-3.jpg` | TTS — Zen-Tokenizer inside (orange waveform) |
+| `jumping-jax--TfwQjOWEp8-unsplash 2.jpg` | `public/assets/research-tts-4.jpg` | TTS — Narrowband and wideband (magenta/orange waveform) |
+| `pexels-kindelmedia-7688183 1.png` | `public/assets/research-voice-shreya.png` | Voices — Shreya |
+| `pexels-rdne-7648321 1.png` | `public/assets/research-voice-shweta.png` | Voices — Shweta |
+| `pexels-mikhail-nilov-9159682 1.png` | `public/assets/research-voice-aastha.png` | Voices — Aastha |
+| `michael-bourgault-aHetdmuNoO4-unsplash 1.jpg` | `public/assets/research-latency-bg.jpg` | Latency banner bg |
+| *(reused, no copy)* `debt-collection-industry-{1,2,3}.{png,jpg}` | — | Roadmap cards (via `SolutionWorkflows`) |
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` (`/resources/research`
+included in the route list). Playwright-verified at 1516px and 430px
+(scroll-and-wait-for-`img.complete` method, per the gotcha documented in
+§12) — zero console errors, zero horizontal overflow at either width. The
+mobile timeline overlap bug (above) was caught by this same 430px pass and
+fixed, then re-verified with a fresh screenshot. Every new section's live
+screenshot compared directly against its own PDF crop (produced during
+planning: full-page render, plus dedicated crops of the timeline, TTS
+cards, voice cards, and latency banner) — layout, spacing, card treatment,
+and the fence-post background match all confirmed.
+
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off.
+
+**Next:** Wait for the user's review of the full page, in particular: (1)
+the placeholder hero background (real art still pending), (2) the invented
+`Read More` anchor hrefs on the TTS cards (no per-topic detail pages
+exist yet), and (3) the non-clickable Voices cards (same "no detail page
+yet" reasoning as Videos, §17 — revisit if per-voice pages get built
+later). This is the 5th of 5 Resources routes the mega menu/Footer
+declared — `Blog`, `Videos`, `Call Samples`, `Case Studies`, and now
+`Research` — all resolve instead of 404ing. `/resources` itself (the bare
+hub the Navbar link points at) still 404s — a pre-existing gap carried
+forward from §16-§19, not introduced here.
+
+---
+
+## 21. Resources — Compliance (`/resources/compliance`)
+
+> Reference: `Vodex - Resources -_ compliance.pdf` — 4548 × 20150pt = a 3×
+> export of a **1516 × 6716.7px** artboard, same convention as every other
+> PDF in this project. `Footer.tsx` already declared a "Compliance" link
+> before this page existed — but in its **Product** column pointing at
+> `/compliance` (matching this PDF's own footer render, which also places
+> it there, not under Resources). Built at the route the user specified,
+> **`/resources/compliance`**, with the nav wiring updated per the user's
+> explicit choice (see below) rather than left at the PDF-literal
+> `/compliance`.
+
+### What was measured before building
+
+Rendered at 24dpi (1:1 with the artboard) plus pixel-scanned card/gap
+boundaries via a Python/PIL script, same "measure, don't eyeball" method as
+every other page in this file. Confirmed section-by-section from the render
+that this page is **7 sections, no Comparison/Security-chip pattern reused
+from the Solutions pages** — it has its own two new card grids instead:
+
+```
+Hero → Certifications & frameworks (6-card grid) → Security practices
+  (4-card grid) → Data protection questions (DPO banner) → Built for
+  enterprises (EnterpriseBand) → Ready to supercharge... (FinalCta) → Footer
+```
+
+### Implementation decisions
+
+- **Hero reuses `SolutionHero` verbatim** (no component changes). Badge
+  "Compliance & Security", H1 "Every call inside the `rules`" (one italic
+  accent word), lead verbatim, CTA priority "Talk To Our Expert"
+  (primary/filled) / "Schedule a Demo" (secondary/outline) — confirmed from
+  the PDF crop, matching the Lead Qualification/Promise-to-Pay/FAQ priority,
+  not the landing/product hero's inverted one.
+  - **Hero background was changed mid-build from the initially-planned
+    `security-1.jpg` to `debt-collection-hero-bg.jpg`.** The PDF itself is
+    flat black here (no photo) — the user said "use any hero bg for now" —
+    but a first pass with `security-1.jpg` (the Zoom H1 recorder photo)
+    put the recorder's bright LCD screen directly behind the H1/lead text,
+    visibly hurting contrast (confirmed via a Playwright screenshot crop,
+    not just suspected). Swapped to `debt-collection-hero-bg.jpg` (a dark,
+    tonally flat dusk field photo, already used for the Debt Collection
+    page's own hero and reused again for Call Samples, §18) specifically
+    because its uniform darkness reads cleanly under white text at any crop
+    position — re-verified via the same screenshot-crop method after the
+    swap. **If a future placeholder hero photo is ever flagged as low-
+    contrast, check a real screenshot crop of the rendered text over it
+    before shipping** — this is the first time in the project a placeholder
+    hero background needed correcting for readability rather than just
+    "any photo will do."
+- **`components/sections/ComplianceCertifications.tsx`** — new 6-card grid
+  (3 columns × 2 rows), its own measured container (**≈1311px**, centred —
+  doesn't match any existing container token in this project, e.g. not the
+  1344px WhyItWorks convention or the 1327px inset-band family), ≈418px
+  cards, ≈28px gap, **sharp corners** (confirmed by a 10x corner-pixel zoom
+  crop — no rounding). Cards are a genuinely new shape, not a copy of any
+  existing card pattern: a large circular certification badge (measured
+  ≈96px) sits above a bold title and description, with **no photo, no
+  divider, no "Read More" button** — unlike every other card grid in this
+  project, which pairs a photo with a divider+button.
+  - Badges are **the same 6 assets already in `public/assets/`** —
+    `footer-cert-{iso,soc2,hipaa,fdcpa,regf,tcpa}.png`, today rendered at
+    48px in `Footer.tsx`'s dense badge row — sized up to 96px here per the
+    user's explicit "make sure the logos are big and readable," since this
+    section is their own visual anchor rather than a dense supporting row.
+    Order matches both the PDF and `Footer.tsx`'s existing `CERTIFICATIONS`
+    array order already (ISO, SOC2, HIPAA / FDCPA, Reg F, TCPA) — no
+    reordering needed this time (unlike the Debt Collection page's cert
+    row, §15, which needed a different order against the same asset set).
+  - Closing cross-sell line ("Running a collections operation? See Vodex
+    for Debt Collection" → `/solutions/debt-collection`) duplicated locally,
+    same precedent as every other Solutions/Resources page.
+- **`components/sections/ComplianceSecurityPractices.tsx`** — new 4-card
+  grid, copy-adapted from `WhyItWorks.tsx` (Product Page, §11) almost
+  1:1 (photo top, `#f7f7f7` body, title, description, hairline divider,
+  dark "Read More" pill + `ArrowRight`) — confirmed via crop to be the same
+  card shape. Container **1344px** matches `WhyItWorks`/`SolutionSecurity`'s
+  existing convention exactly; gap **12px** matches `SolutionSecurity`'s own
+  measured value (tighter than `WhyItWorks`' 24px) — both pixel-scanned off
+  this page's own PDF crop, not assumed from either donor.
+  - 4 cards: **Encryption everywhere** (`image 1030.png`, a GitHub repo
+    screenshot, pixel-confirmed exact match), **Role-based access control**
+    (`image 1025.jpg`, an abstract 3D cube/sphere render — **intentional
+    reuse**, already used elsewhere as the Product Page's "Configure
+    flows" panel and the Collection Software page's step-2/workflow-2,
+    §16; also, coincidentally, the same source file `/resources/research`'s
+    own TTS section reuses for a different caption, §20 — two Resources
+    pages built independently both reached for the same supplied photo
+    pool, not a conflict), **Multi-factor authentication**
+    (`pexels-egorkomarov-27141312 1.png`, an orange waveform on a DJ/audio
+    device screen, pixel-confirmed exact match), **Audit-ready records**
+    (`jumping-jax--TfwQjOWEp8-unsplash 2.jpg`, a magenta/orange soundwave
+    graphic — **intentional reuse**, already the Promise-to-Pay page's "PTP
+    Negotiation Paths" workflow card background, §13). All 4 copied as
+    fresh, page-specific files (`compliance-security-{1,2,3,4}.{png,jpg}`)
+    rather than referencing another page's copy directly, same
+    "independently swappable" precedent as every other cross-page asset
+    reuse in this project.
+  - Same closing cross-sell line as the Certifications section, duplicated
+    locally again.
+- **`components/sections/ComplianceDpoBanner.tsx`** — new one-off
+  component (not prop-driven — only one instance needed, per this
+  project's "prop-drive only once a second real instance exists" rule): a
+  dark (`var(--ink)`) inset banner, **≈1184px wide, sharp corners**
+  (confirmed by zooming into both the top and bottom corners at 8x — no
+  rounding, verified independently at both edges), centred eyebrow pill +
+  H2 (one italic accent word) + lead + a single dark pill CTA with a
+  `MailIcon` + `dpo@vodex.ai` as a `mailto:` link. Closest existing
+  relative for the mailto-button idiom is `FaqHumanSupport.tsx`'s "Email
+  us" card, but the single-centred-banner shape here (vs. a 2-card grid)
+  is new.
+  - **⚠️ Eyebrow corrected from the PDF's literal "Named Voices" to "Data
+    Protection"**, per explicit user confirmation (asked rather than
+    assumed, since this project's default for a mismatched eyebrow is to
+    leave it verbatim — e.g. Industries' "Core features," Comparison/
+    Results' "Comparison," Security's "Resources," all documented in
+    §12/§15/§16 — but "Named Voices" has no plausible connection to a DPO
+    contact section at all, unlike those, which were at least generic
+    enough to leave alone). This is the first mismatched eyebrow in the
+    project actually rewritten rather than reproduced-and-flagged — treat
+    it as a one-off exception, not a precedent to silently apply to the
+    still-verbatim mismatches on the Solutions pages.
+- **EnterpriseBand and FinalCta reused verbatim**, same "Sections 8-9"
+  precedent used on every other page in this project — confirmed
+  byte-identical copy via the render crop.
+- **Nav wiring, per the user's explicit answers** (asked via
+  `AskUserQuestion` before writing any code, since Footer's pre-existing
+  link and the requested route disagreed on which nav group "Compliance"
+  belongs to):
+  - `Footer.tsx`'s existing Product-column "Compliance" link had its `href`
+    repointed from `/compliance` to `/resources/compliance` — **stays in
+    the Product column**, matching the PDF's own footer render, only the
+    destination changed (same "point the nav at the real page once it
+    exists" precedent as Call Samples §18 and FAQ §20).
+  - **Also added** to `ResourcesMegaMenu.tsx`'s `RESOURCES_ITEMS` array
+    (`LockIcon`, already existing — added originally for the Collection
+    Software page's compliance chips, §16, reused here for a strong
+    semantic fit) — the user chose to wire it into both places rather than
+    only repointing Footer's existing link.
+
+### Asset → component map
+
+| Source (`vodex assets/`) | Destination | Slot |
+| --- | --- | --- |
+| *(reused, no new file)* `debt-collection-hero-bg.jpg` | — | Hero bg (placeholder, swapped in for contrast — see above) |
+| `image 1030.png` | `public/assets/compliance-security-1.png` | Security practices — Encryption everywhere |
+| `image 1025.jpg` | `public/assets/compliance-security-2.jpg` | Security practices — Role-based access control (reused source) |
+| `pexels-egorkomarov-27141312 1.png` | `public/assets/compliance-security-3.png` | Security practices — Multi-factor authentication |
+| `jumping-jax--TfwQjOWEp8-unsplash 2.jpg` | `public/assets/compliance-security-4.jpg` | Security practices — Audit-ready records (reused source) |
+| *(reused, no copy)* `footer-cert-{iso,soc2,hipaa,fdcpa,regf,tcpa}.png` | — | Certifications & frameworks badges |
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` (`/resources/compliance`
+included in the route list, 25 routes total). Curl smoke-test confirmed
+`/`, `/resources/compliance`, and `/resources/faq` all return 200 on a
+fresh `next dev` server with no dev-log errors (re-checked `/` and FAQ
+specifically since `Footer`/`ResourcesMegaMenu` are shared and were edited
+this round). Playwright-verified at 1516/1280/900/430px using the
+established scroll-and-wait-for-`img.complete` method (§12/§15 gotcha) —
+zero console errors, zero horizontal overflow at every width, both before
+and after the hero background swap. A dedicated Playwright hover/click
+check confirmed both the Footer's repointed link and the new
+ResourcesMegaMenu item resolve to `/resources/compliance` (not just
+grepped). Every new section's live screenshot compared directly against
+its own PDF crop (cert grid badge size/order/sharp corners, security-
+practices card photos/container/gap, DPO banner width/corners) — all
+confirmed matching. Dev server stopped cleanly after verification.
+
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off.
+
+**Next:** Wait for the user's review of the full page, in particular: (1)
+the placeholder hero background (`debt-collection-hero-bg.jpg`, its third
+use in the project — real art still pending), (2) the "Named Voices" →
+"Data Protection" eyebrow rewrite (a deliberate exception to this
+project's usual "leave mismatched eyebrows verbatim" default — flag if the
+user would rather see the literal PDF text reproduced instead, for
+consistency with every other mismatched eyebrow left alone), and (3) the
+invented `Read More` anchor hrefs on the Security practices cards (no
+per-topic detail pages exist yet, same placeholder-link convention used
+throughout this project).
+
+---
+
+## 21. Company — News (`/company/news`)
+
+> Reference: a mockup screenshot (`Vodex -  -_ News.png`), supplied **"just
+> for ref"** — the user explicitly asked for this page to be built with the
+> **Blog page's own design** (§16) instead of replicating the mockup's
+> literal layout, per direct instruction: "we will use the blog page design
+> instead." `Footer.tsx` already declared `News → /company/news` (Company
+> column) before this page existed — previously a 404, same pre-declared-
+> then-built pattern as every other Company/Resources route in this file.
+> `ResourcesMegaMenu.tsx`'s own "News" item (Company group, §17) already
+> pointed at the same URL — no menu changes needed.
+
+### What the mockup showed vs. what was built
+
+The mockup's own layout (badge "Newsroom" → H1 "Vodex in the news" → lead →
+CTA pair → a "Browse by category" eyebrow/heading → 6 category chips [All /
+Press Releases / Funding / Events / Partnerships / Featured In] → a plain
+grid of cards with no featured/hero card treatment → a cross-sell line →
+Enterprise Band → Final CTA → Footer) was read for structure and category
+naming only. Per the user's explicit override, the page was **not** built
+to match that flat single-grid layout — it reuses Blog's actual, already-
+shipped two-part pattern instead: a two-column **featured** card
+(`NewsFeatured`, copy-adapted from `BlogFeaturedPost`) followed by a
+filterable **search + category-chip grid** (`NewsExplorer`, copy-adapted
+from `BlogExplorer`) — the mockup has neither a distinct featured card nor
+a search field, both are intentional additions carried over from the Blog
+design per the user's own instruction. `EnterpriseBand` + `FinalCta` were
+kept, since the mockup does show both and that matches the established
+`CaseStudyFeatured`/`CaseStudyGrid` page shape (§19) already used for a
+Resources-family listing page with EnterpriseBand under it (Blog itself
+only uses `FinalCta`, no `EnterpriseBand` — deliberately still matched to
+what this specific mockup shows for News, since the user only asked to
+borrow Blog's *component pattern*, not to drop the Enterprise Band the
+reference clearly includes).
+
+### Implementation decisions
+
+- **New, dedicated components — not a generic reuse of the Blog ones** (same
+  "copy-adapt, don't force a shared generic component" rule as
+  `VideoExplorer`-vs-`BlogExplorer`, §17, and `CaseStudyCard`-vs-
+  `BlogPostCard`, §19): `lib/news.ts` (`NewsPost` type, `NEWS_POSTS`,
+  `CATEGORIES`, `getFeaturedPost`/`getGridPosts`/`formatDate`),
+  `components/ui/NewsCard.tsx` (+ `.module.css`),
+  `components/sections/NewsFeatured.tsx` (+ `.module.css`),
+  `components/sections/NewsExplorer.tsx` (+ `.module.css`). CSS is a direct
+  copy of `BlogPostCard.module.css`/`BlogFeaturedPost.module.css`/
+  `BlogExplorer.module.css` — no visual changes, since the user asked for
+  Blog's design specifically.
+- **`NewsPost` drops Blog's `readMinutes`/`body`/`slug`-detail-page fields**
+  — a press item doesn't have a "read time," and no per-article detail page
+  was asked for this round (`NewsCard`/`NewsFeatured` link to a plausible,
+  not-yet-built `/company/news/[slug]` href, same placeholder-link
+  convention as `CaseStudyCard`/the landing page's `Resources.tsx` before
+  their own detail routes existed, if ever). `date` is kept and shown via
+  its own `formatDate` (no "X min read" suffix, unlike Blog's `.meta` line).
+- **Categories are the mockup's own 5 chips** — Press Releases / Funding /
+  Events / Partnerships / Featured In — a deliberately different taxonomy
+  from Blog's subject-based categories (Debt Collection / AI & Technology /
+  Voice Technology, §16), since news items are grouped by announcement
+  type, not topic. `NewsExplorer`'s filter logic is otherwise identical to
+  `BlogExplorer`'s (AND-combined category + substring title/excerpt/
+  category match, `aria-live` result count, dashed-border empty state).
+- **Content is explicitly placeholder, per direct user instruction** ("i
+  will swap the content later") — 1 featured + 6 grid items across the 5
+  categories in `lib/news.ts`. Invented, but grounded where a real fact
+  already exists in this codebase rather than fabricated from nothing: the
+  featured "funding" item names the actual backers already shown in
+  `Footer.tsx`'s "Backed By" row (Unicorn India Ventures, Pentathlon
+  Ventures, 100X) instead of inventing new investor names; the
+  "Partnerships" item references the real tool integrations already listed
+  in the Product Page's `WorksWithTools` section (HubSpot, Twilio,
+  VICIdial, §11) instead of claiming an unverifiable new partnership.
+  Deliberately did **not** name any real third-party publication for the
+  "Featured In" item or any real named conference for the "Events" items —
+  unlike a grounded internal fact, a specific outside outlet/event name
+  would be an unverifiable claim about a third party, so those two stay
+  generic ("an industry roundup," "an upcoming collections industry
+  summit") pending the user's real content.
+- **All 7 thumbnails reuse existing `public/assets/` photos** — no new
+  files copied, consistent with this project's established pattern of
+  reusing an existing asset when a page is explicitly a placeholder/mock
+  round (e.g. the Videos and FAQ heroes, §17/§20): `results-bg.jpg`
+  (featured/funding), `engagement-queue-bg.jpg` (DROS launch),
+  `security-4.jpg` (SOC 2/ISO cert announcement), `feature-6.jpg` (industry
+  summit), `debt-collection-integration-bg.jpg` (integrations expansion),
+  `why-vodex-1.jpg` (webinar), `product-hero-bg.jpg` (press roundup). Hero
+  background: `enterprise-bg.jpg`, reused directly via import — not
+  previously used as any page's own hero (only inside `EnterpriseBand`'s
+  full-bleed photo band), picked for visual variety among this project's
+  now-large set of reused hero backgrounds.
+- **Hero badge label "Newsroom"** (not "News") and H1 "Vodex in the `news`"
+  — taken directly from the mockup's own copy, the one place its literal
+  text was kept, since the user's "use blog design instead" note was about
+  layout/components, not about discarding the mockup's actual heading
+  copy.
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` (`/company/news` included,
+23 routes total). Curl smoke-test confirmed `/` and `/company/news` both
+return 200 on a fresh `next dev` server; server stopped cleanly immediately
+after (no hanging process), per the user's explicit "do not keep any
+process hanging" instruction this round — no Playwright visual pass was
+attempted this round as a result.
+
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off.
+
+**Next:** Wait for the user's review, in particular of (1) the decision to
+layer Blog's featured-card + search/filter pattern and the Enterprise Band
+on top of the mockup's own simpler single-grid layout, (2) the invented-
+but-grounded placeholder news items pending real press content, and (3)
+whether `/company/news/[slug]` detail pages should be built next (none
+exist yet, same "cards link to a plausible but not-yet-real URL" status as
+several other listing pages in this project).
+
+---
+
+## 22. Company — About (`/company/about`) + Company navbar mega-menu
+
+> Reference: `Vodex -  -_ About.pdf` — 4548 × 26483pt = a 3× export of a
+> **1516 × 8828px** artboard, same convention as every other PDF in this
+> project. Alongside the page itself, the user asked for a real **Company**
+> mega-menu in the navbar (same CSS-only hover mechanics as
+> `SolutionsMegaMenu`/`ResourcesMegaMenu`) so "About" — previously only
+> reachable via `ResourcesMegaMenu`'s ad-hoc "Company" sub-group — gets a
+> proper home alongside News/Investors/Careers/Contact, consistent with how
+> Solutions and Resources already work. `Footer.tsx`'s "About Us" link
+> already pointed at `/company/about` from an earlier round — no Footer
+> change was needed.
+
+### Three PDF/instruction conflicts, resolved by asking rather than guessing
+
+Per this project's standing "ask, do not assume" rule, three real mismatches
+were put to the user directly (`AskUserQuestion`, all three answered before
+any code was written) rather than silently resolved either way:
+
+1. **Hero background** — pixel-sampled the reference hero at multiple
+   points and confirmed it is genuinely flat `#000000` with **zero**
+   texture/gradient (mean/std both ≈0 over a large clean patch), not a
+   photo. But the user's own asset instructions said "use any hero bg for
+   now," implying a photo. **User's answer: use a photo anyway** — deviates
+   from the PDF on purpose. First built with `why-main.jpg` (the "A Team
+   that never sleep" photo already used on the landing page's Why bento
+   grid, §10) reused as `about-hero-bg.jpg`. **Swapped in a follow-up round**
+   to `pexels-szymon-shields-1503561-10178729 2.jpg` per the user's explicit
+   pick — a dark, moody institutional-building photo, already reused
+   elsewhere in this project as `solution-payment-reminders-hero-bg.jpg`
+   (§13) and `blog-hero-bg.jpg` (§16). Copied over the same
+   `about-hero-bg.jpg` destination file (no import/code change needed,
+   since `app/company/about/page.tsx` already referenced that filename via
+   `SolutionHero`'s `bgImage` prop) — a third reuse of this same source
+   photo across the site.
+2. **Stat #2's duplicate label** — the reference's 4-stat strip reads
+   "$3.5M Funding," "**5+ Funding**" (literal duplicate of stat 1's label),
+   "30+ Customers & Partners," "25M+ Calls Made." The Vodex-timeline section
+   elsewhere on the same PDF says "5+ investor backing," suggesting the
+   real intended label is "Investors." **User's answer: keep "Funding"
+   verbatim** — reproduce the duplicate as-is, per this project's general
+   "measure, don't invent" default (same class of decision as the
+   Comparison/Results/Security eyebrow-label mismatches left verbatim in
+   §12/§15, not "corrected" like the Impact section's duplicate group label
+   in §15 — this project doesn't apply one rule uniformly to every
+   mismatch, it asks per case).
+3. **Locations section header** — a whole section duplicates "Why we
+   exist" / "Our mission and vision" (eyebrow + heading + lead) **verbatim**
+   from the real Mission/Vision section above it, but its actual content is
+   2 office-location cards (USA/India) with addresses — a clear Figma
+   copy-paste of an entire header block onto unrelated content, not just a
+   mismatched single word. **User's answer: replace with "Where we are" /
+   "Our global offices"** — a new, minimal heading grounded in the actual
+   card content below it, plus a new short lead line.
+
+A 4th gap (no dedicated timeline photos were supplied for the 4-entry
+"Vodex timeline" story) was resolved the same way: **user's answer: reuse
+existing office/team-toned photos** already in `public/assets/` rather than
+wait for new ones or invent placeholders.
+
+### Implementation decisions
+
+- **`components/layout/CompanyMegaMenu.tsx` + `.module.css` — new,
+  structural copy of `SolutionsMegaMenu`** (single flat 2-column item grid,
+  not `ResourcesMegaMenu`'s old two-group layout) — same
+  padding-not-margin gap trick, delayed-visibility transition, Escape-blur
+  + pathname-change-blur `useEffect` pair, `position: relative` anchor on
+  the `<li>`, `z-index: 1` panel. 5 items mirror `Footer.tsx`'s existing
+  "Company" column exactly (no new routes invented): About Us
+  (`/company/about`, `InfoIcon`), News (`/company/news`, `NewsIcon`),
+  Investors & Partners (`/company/investors`, `TrendingUpIcon`), Careers
+  (`/careers`, reusing the existing `CaseStudyIcon` — already a literal
+  briefcase glyph, see below), Contact Us (`/contact`, `MailIcon`). Panel
+  width `460px` (not Solutions' `420px`) — same width `ResourcesMegaMenu`
+  needed while it carried this exact "Investors & Partners" label (§17), to
+  avoid cramped 2-column wrapping.
+  - **No new `BriefcaseIcon` was added, on purpose.** A first draft added
+    one for "Careers," but its shape (rounded rect + handle arc + top
+    divider line) turned out near-identical to the existing `CaseStudyIcon`
+    (`icons.tsx`, doc-commented "Briefcase — case studies") — reusing an
+    icon under a new semantic label (same pattern as `PhoneCallIcon` in
+    both the Solutions mega-menu and the Solutions-page Industries cards)
+    beats shipping two visually-indistinguishable briefcase glyphs under
+    different names. If Careers ever needs a visually distinct icon later,
+    design one deliberately different from `CaseStudyIcon`, not a near-copy.
+- **`components/layout/ResourcesMegaMenu.tsx` simplified back to a single
+  flat "Resources" list** — its old `COMPANY_ITEMS` sub-group (About/News/
+  Investors & Partners/Contact Us, added in §17 when Company had no menu of
+  its own) was removed, along with the `groupDivider` rule in
+  `ResourcesMegaMenu.module.css`, and its panel width reverted `460px` →
+  `420px` (no longer carries the long "Investors & Partners" label). This
+  is a direct, necessary consequence of Company getting its own dedicated
+  menu — without it, those 4 destinations would appear in two different
+  mega-menus at once.
+- **`Navbar.tsx`** — one new dispatch branch in the existing
+  `NAV_LINKS.map()` loop (`if (item.label === "Company") return
+  <CompanyMegaMenu .../>`), mirroring the Solutions/Resources branches
+  exactly. `NAV_LINKS` itself needed no change (`Company → /company` was
+  already declared as the trigger href). The mobile hamburger panel needed
+  no change either — it already renders every `NAV_LINKS` entry as a flat
+  link regardless of desktop mega-menu status.
+- **Reused `SolutionHero` verbatim** (no new hero component) — badge
+  "About" (default `Waveform` icon), H1 "The team behind the `voice`",
+  lead verbatim from the PDF, CTAs "Talk To Our Expert" (primary) /
+  "Schedule a Demo" (secondary) both → `/demo`, `bgImage={aboutHeroBg}`.
+  Same structural precedent as `app/company/news/page.tsx` (§21).
+- **`components/sections/AboutStats.tsx` + `.module.css` — new, copy-adapted
+  from `components/hero/TrustStrip.tsx`/`.module.css`**, not from
+  `SolutionStatBand` (wrong shape — requires a `bgImage` and renders boxed
+  white cards over a photo) or `SolutionImpact` (wrong shape — a grouped,
+  dark inset box). Same full-bleed `border-block: 1px solid var(--hairline)`
+  strip + `box-shadow: inset 1px 0 0 var(--hairline-strong)` cell-divider
+  mechanics as `TrustStrip`, but 4 plain number+label cells instead of 3
+  icon+title+note cells — big number styled like `FeaturedCaseStudy`'s
+  `.statNumber` (serif italic, brand-orange). Stat #2's "Funding" duplicate
+  kept verbatim per the user's confirmed decision above.
+- **`components/sections/AboutMissionVision.tsx` + `.module.css` — new,
+  prop-driven two-card band, used twice on this page** (`{ eyebrow,
+  heading, lead?, cards: [Card, Card] }`, `Card` = `{ title, description,
+  href, background: "solid" | "image", bgImage? }`). Built as one shared
+  component rather than two near-duplicate ones because the PDF's Mission/
+  Vision and Locations sections produce **identical** card-grid pixel
+  extents on measurement — same ~1344px inset band, same card proportions —
+  confirming they're the same layout pattern with different content, not
+  two different designs. Used once for Mission (solid `#000` card) / Vision
+  (`about-vision-bg.jpg` — the magicpattern texture, already established
+  elsewhere in this project as `comparison-vodex-bg.jpg`/
+  `promise-to-pay-comparison-bg.jpg`, §12/§13), and again for the corrected
+  "Where we are" / "Our global offices" Locations section (both cards photo
+  -backed: `about-location-usa.jpg`/`about-location-india.jpg`, the two
+  flag photos). Card "Learn More" arrow reuses the existing
+  `ExternalLinkIcon` (the same diagonal-arrow glyph `SolutionWorkflows`/
+  `SeeItInAction` already use for overlay-card links), not `ArrowRight`.
+- **`components/sections/AboutTimeline.tsx` + `.module.css` — new,
+  copy-adapted from `ResearchTimeline.tsx`/`.module.css`** (§20's Research
+  page), same "duplicate a small closing-line/whole-section pattern locally
+  rather than parameterize the donor component" precedent used throughout
+  this project (`ResearchTimeline` itself is zero-props/hardcoded, so this
+  follows its exact structure — `.rows::before` center line, `.dot`,
+  `.tag` pill, the documented mobile `grid-row: auto` reset fix for
+  reversed rows — with its own 4-entry `ENTRIES` array, own eyebrow "Our
+  story," own heading "The Vodex `timeline`," own cross-sell line to
+  `/solutions/debt-collection`). Unlike `ResearchTimeline`'s entries (which
+  pair a short title + longer description), the PDF's 4 timeline entries
+  here are each a single bold sentence with no separate description — the
+  component reflects that (one `entryTitle` per row, no second text block).
+  Alternates `data-reverse` on odd indices (`i % 2 === 1`), matching the
+  reference's row-1/row-3 pattern.
+- **`components/sections/AboutLeadership.tsx` + `.module.css` — new**, 4-card
+  grid, `background: var(--brand)` per card, a small `<Logo height={18}
+  className={styles.mark} />` watermark absolute-positioned top-left
+  (renders white since `Logo`'s SVG uses `fill="currentColor"` and
+  `.mark`'s CSS sets `color: #fff`), circular headshot (`border-radius:
+  50%` on a `next/image fill` frame), name (bold white) + role (translucent
+  white) below. **Yash Kotak has no supplied photo** — renders a plain
+  `rgba(0,0,0,.45)` placeholder circle with no `<Image>`, matching the
+  reference PDF itself, which also has no visible photo for him (confirmed
+  by inspecting the PDF render directly — not an asset-sourcing gap on this
+  project's side).
+- **⚠️ Grid-overflow bug found and fixed during verification, not shipped
+  latent**: all three new grids (`AboutStats`, `AboutMissionVision`,
+  `AboutLeadership`) were first built with plain `grid-template-columns:
+  repeat(N, 1fr)`. A Playwright pass at 430px flagged real horizontal
+  overflow — `AboutLeadership`'s 2-column mobile grid measured 219.6px per
+  card against a 390px available width (2×219.6+16 gap = 455px, well past
+  the container). Root cause: a bare `1fr` grid track's automatic minimum
+  width is `auto` (its content's min-content size), not `0` — so a track
+  whose content is wider than its fair `1fr` share won't shrink below that
+  content width, and the grid overflows its container instead. **Fixed by
+  changing every `repeat(N, 1fr)` in all three new components to `repeat(N,
+  minmax(0, 1fr))`**, the same defensive pattern this project already uses
+  elsewhere for exactly this reason (`IntroducingDros`'s
+  `minmax(0,1fr) minmax(0,610px)` grid, §8). Re-verified with a
+  Playwright DOM scan (`getBoundingClientRect()` against
+  `document.documentElement.clientWidth`) confirming zero elements exceed
+  the viewport at 430px afterward. **If a future grid in this project ever
+  overflows at a narrow breakpoint despite looking correct in the CSS,
+  check for a bare `1fr` track holding wide unbreakable/near-unbreakable
+  content before assuming the bug is elsewhere** — this is a recurring
+  CSS-Grid gotcha, not specific to this page.
+- **`app/company/about/page.tsx`** composes: `AnnouncementBar` → `Navbar` →
+  `SolutionHero` → `AboutStats` → `AboutMissionVision` (mission/vision) →
+  `AboutTimeline` → `AboutLeadership` → `AboutMissionVision` (locations) →
+  `EnterpriseBand` → `FinalCta` → `Footer`, following the
+  `app/company/news/page.tsx` structural precedent (`metadata` export,
+  `<header className="siteHeader">` wrapper).
+
+### Asset → component map
+
+| Source | Destination | Slot |
+| --- | --- | --- |
+| `magicpattern-iAR6yhCkrxc-unsplash 1.jpg` | `public/assets/about-vision-bg.jpg` | Vision card bg |
+| `image 1035.jpg` | `public/assets/about-leader-anshul.jpg` | Anshul Shrivastava headshot |
+| `image 1036.jpg` | `public/assets/about-leader-kumar.jpg` | Kumar Saurav headshot |
+| `image 1037.jpg` | `public/assets/about-leader-deb.jpg` | Deb Biswas headshot |
+| `Frame 2147226753.jpg` (USA flag, confirmed by opening the file) | `public/assets/about-location-usa.jpg` | USA office card |
+| `Frame 2147226754.jpg` (India flag, confirmed by opening the file) | `public/assets/about-location-india.jpg` | India office card |
+| `pexels-szymon-shields-1503561-10178729 2.jpg` (3rd reuse — also `solution-payment-reminders-hero-bg.jpg`/`blog-hero-bg.jpg`) | `public/assets/about-hero-bg.jpg` | Hero backdrop |
+| `public/assets/feature-3.jpg` (existing — reused) | `public/assets/about-timeline-2016.jpg` | Timeline 2016 |
+| `public/assets/why-tile-1.jpg` (existing — reused) | `public/assets/about-timeline-2021.jpg` | Timeline 2021 |
+| `public/assets/why-works-1.jpg` (existing — reused) | `public/assets/about-timeline-2022.jpg` | Timeline 2022 |
+| `public/assets/resources-2.jpg` (existing — reused) | `public/assets/about-timeline-2024.jpg` | Timeline 2024 |
+
+All copied as fresh, page-specific files (never referencing another page's
+copy of a shared source directly), same "independently swappable"
+precedent as every other asset-reuse case in this file.
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` (`/company/about` included).
+Playwright-verified at 430/900/1280/1516px on a scratch `next dev` server —
+zero console errors at every width; the 430px grid-overflow bug above was
+caught by this same pass and fixed, then re-verified clean. Live
+1516px screenshot visually compared against the intended design —
+hero/stats/mission-vision/timeline/leadership/locations all read correctly
+top to bottom. `CompanyMegaMenu` interaction-tested: mouse-hover (shows all
+5 items with correct hrefs), and — since Playwright's synthetic
+`element.focus()` proved unreliable in this dev-overlay environment (focus
+silently reverted to `<body>` within ~100ms, reproduced identically on the
+pre-existing `SolutionsMegaMenu` too, confirming it's a test-methodology
+quirk and not a component regression) — a **real sequential Tab-key**
+walk from `<body>` was used instead, which correctly reached links inside
+the open Company panel (`href="/company/about"` reachable via Tab) and
+confirmed `Escape` closes the panel afterward (`opacity: 0`). Home page
+(`/`) re-verified unaffected (zero console errors/overflow at 1516px)
+since `ResourcesMegaMenu`/`icons.tsx` are shared. Dev server was stopped
+immediately after each verification pass (process explicitly killed via
+its PID, confirmed down via a failed curl) — no hanging process left
+running, per the user's explicit instruction this round.
+
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off.
+
+**Next:** Wait for the user's review, in particular of the three
+confirmed-but-real deviations from the PDF (photo hero instead of flat
+black, "Funding" duplicate kept verbatim, "Where we are" / "Our global
+offices" replacing the duplicated Mission/Vision header) and of the 4
+reused (not dedicated) timeline photos. `/company` itself (the bare hub
+the mega-menu trigger and plain navbar link both point at) still 404s —
+pre-existing gap, not introduced here, same situation `/solutions` and
+`/resources` were in before their own hub pages (still not built either).
+
+---
+
+## 22. Company — Contact Us (`/company/contact`)
+
+> Reference: `C:\Users\Aashutosh\Downloads\Vodex -  -_ Contact US.png` — a
+> flat mockup screenshot, not a PDF, but at 4548×22805px it follows the same
+> 3× convention as every PDF in this project (4548 / 3 = 1516px artboard),
+> so it was cropped and read at 1× scale the same way. `CompanyMegaMenu.tsx`
+> and `Footer.tsx` already linked "Contact Us" at `/contact` before this
+> page existed (previously a 404) — per the user's explicit request, moved
+> under Company to match the `/company/about` / `/company/news` pattern.
+> Route: **`/company/contact`**.
+
+### Current progress
+
+Full page built end to end: Hero ("Let's talk") → Departments (6
+email-routing cards) → Send us a message (form + photo) → Offices (USA/
+India) → `EnterpriseBand` → `FinalCta` → `Footer`, all reused/composed the
+same way every other page in this file is.
+
+### Two template-artifact fixes (confirmed, not silently guessed)
+
+Same class of issue this project has caught repeatedly (a leftover "Videos"
+badge on three different Resources pages, "Learn More About Integerations"
+typo, etc.):
+1. The hero badge read **"Newsroom"** — a leftover from a different page's
+   mockup. Fixed to **"Contact"**.
+2. The form's two buttons read **"SIGN UP"** / **"BACK TO LOGIN"** —
+   leftover from an unrelated login/signup template, nonsensical on a
+   contact form. Fixed to a single **"Send Message"** submit button.
+
+One lead line under the Offices heading ("The platform drives intelligent,
+personalized conversations...") is generic product copy that doesn't
+describe visiting an office — flagged per this project's "measure, don't
+invent" default, but kept verbatim like every other mismatched-but-
+plausible lead in this project (not dropped — it doesn't break the page the
+way the login buttons did, just reads generic).
+
+**The India office address was truncated in the reference itself** (the
+card's own text overflowed past its photo column: "WeWork, Salarp…",
+"Arakere Banner…", "Bengaluru, KA 5…") — a real bug in the mockup, not
+reproduced or guessed at. Confirmed with the user; full address used:
+**"WeWork, Salarpuria Symbiosis, Arakere Bannerghatta Rd, Bengaluru, KA
+560076, India"**.
+
+### Implementation decisions
+
+- **`ContactDepartments.tsx`** is a copy-adapt of `SolutionWhyUs.tsx`/
+  `.module.css` (icon-in-title 3-column card, 1344px band, 24px gap,
+  `#f7f7f7` body, sharp corners — same donor already used for the Debt
+  Collection page's "Why Vodex" cards) — 6 cards (2 rows) instead of 3, and
+  the card's bottom control is a `mailto:` pill (email address +
+  `ArrowRight`) instead of a "Read More" `Link`. All 6 titles/descriptions/
+  addresses (`contact@`, `sales@`, `marketing@`, `partnership@`,
+  `careers@`, `dpo@vodex.ai`) are verbatim from the reference. 4 new icons
+  added to `icons.tsx` (`ChartBarIcon`, `MegaphoneIcon`, `HandshakeIcon`,
+  `CloudLockIcon`) matched to the mockup's own glyphs, same generic-redraw
+  convention as every other icon in that file; `PhoneCallIcon` and
+  `CaseStudyIcon` (briefcase) already existed and cover General
+  Enquiries/Careers.
+- **`ContactOffices.tsx`** is a copy-adapt of `SolutionWorkflows.module.css`'s
+  always-on scrim-card pattern — 2 cards instead of 3, and the scrim is a
+  **colored** gradient (pixel-sampled directly from the reference: USA ≈
+  `#004E64`→`#005E77` teal, India ≈ `#004486`→`#005BA6` blue) covering the
+  whole card, not a bottom-only black scrim, since the copy sits top-left
+  here rather than bottom-left. Both "Learn More ↗" links point at
+  `/company/about` — the only real, relevant existing destination (no
+  dedicated office pages exist or are planned).
+- **`ContactForm.tsx`** is a new client component — this project's first
+  real form beyond the non-functional Footer newsletter input. Confirmed
+  with the user: **no backend exists anywhere in this project yet**, so
+  submission is client-side only (full validation + a real success/error
+  UI, a `setTimeout` standing in for a network call) with one code comment
+  marking exactly where a real POST/email-service call goes once the user
+  picks a backend — do not wire up a network call without asking first.
+  - Controlled React state, no form library (this project has zero
+    dependencies beyond next/react) — one `validate(values)` function
+    returns per-field error strings, checked against a single `values`
+    object. First name required (letters/spaces/hyphens/apostrophes),
+    last name optional (same charset if provided), email required +
+    format-checked, company name required, country required (defaults to
+    "United States" to match the reference's shown state), phone optional
+    but loosely pattern-checked if non-empty, message required with a
+    10-character minimum and a live `n/500` counter.
+  - On a failed submit, every field is marked touched (so every error
+    shows at once), the first invalid field's wrapper is scrolled into
+    view, and its field shell gets a brief CSS shake — no attempt to
+    forward a literal DOM focus through `FloatingField`/`Select`, which
+    would need ref-forwarding plumbing this single form doesn't otherwise
+    need.
+  - On success, the button shows a spinner + "Sending…", then the form
+    area swaps for a success panel ("Thanks — we'll be in touch shortly."
+    + a "Send another message" reset) — never claims the message was
+    actually delivered anywhere.
+- **New `components/ui/FloatingField.tsx` + `.module.css`** — the shared
+  "outlined, notched floating label" field chrome used for every text/
+  email/tel/textarea input on the form. Reproduces both states actually
+  visible in the reference as one consistent control (not two different
+  field designs): label sits as plain placeholder-style text when empty,
+  floats to a small notch overlapping the top border once focused or
+  filled. Float/error/valid state is driven by React (`data-focused`/
+  `data-invalid`/`data-float` attributes), not a CSS-only
+  `:placeholder-shown` trick — the form already needs per-field
+  touched/valid tracking for inline error messages and a green `CheckIcon`
+  fade-in on a validated field, so driving the label the same way keeps
+  one source of truth instead of two. Error color uses new `--error`/
+  `--success` tokens added to `globals.css` (this project's first form, so
+  no semantic validation colors existed yet).
+- **New `components/ui/Select.tsx` + `.module.css`** — this project's
+  first click/keyboard-driven listbox popover. `SolutionsMegaMenu`/
+  `ResourcesMegaMenu`/`CompanyMegaMenu` are hover-only, and
+  `IndustryTabs`/`FaqTopics` are tab-lists — neither fits a real form
+  control, so this is a genuinely new pattern: a button trigger sharing
+  `FloatingField`'s exact field-shell chrome (via CSS Modules `composes`,
+  not duplicated CSS), a search input to filter the list, `role="listbox"`/
+  `role="option"`, full keyboard support (Arrow Up/Down, Home/End, Enter,
+  Escape, type-ahead via the search field), and click-outside-closes.
+  Backing data: new `lib/countries.ts` (`{ name, iso2, dial }[]`, ~55
+  common countries — generic reference data, not fabricated
+  project-specific content). New `ChevronDownIcon` added to `icons.tsx`
+  for the trigger.
+- **Hero background was swapped mid-build, caught by screenshot review, not
+  shipped as first tried.** `case-study-bg.jpg` (a bright orange sunset
+  photo) was tried first since the user said "use any hero bg for now" —
+  a live screenshot showed the H1's own `.accent` word ("talk", rendered in
+  `--brand` orange) was nearly unreadable against the equally-orange
+  background. Swapped to `debt-collection-hero-bg.jpg` (dark, tonally flat,
+  already used successfully for this exact reason on the Compliance page,
+  §21) and re-verified via a fresh screenshot — same "check a real
+  screenshot crop of the rendered text before shipping a placeholder hero
+  photo" lesson already documented for Compliance, now hit a second time.
+  **If a future placeholder hero background is ever picked for a page
+  whose H1 has an orange accent word, rule out bright orange/red
+  backgrounds specifically before shipping.**
+- **Nav wiring**: `Footer.tsx`'s Company-column "Contact Us" and
+  `CompanyMegaMenu.tsx`'s "Contact Us" item both repointed from `/contact`
+  to `/company/contact` (confirmed via a repo-wide grep that these were the
+  only two references before changing either).
+
+### Asset → component map
+
+Every one of the 9 supplied photos was opened and visually matched to its
+mockup slot individually (not grid-batched — see the Solutions Page 5
+gotcha in §16 about grid-sourced mislabeling); several are intentional
+reuses of files already used elsewhere in the project.
+
+| Source (`vodex assets/`) | Destination | Slot |
+| --- | --- | --- |
+| `pexels-roberto-hund-5356720 3.jpg` | `public/assets/contact-dept-general.jpg` | General Enquiries (already `why-vodex-1.jpg` elsewhere) |
+| `pexels-cottonbro-6116892 1.jpg` | `public/assets/contact-dept-sales.jpg` | Sales |
+| `pexels-anthonyshkraba-production-8278855 1.jpg` | `public/assets/contact-dept-marketing.jpg` | Marketing |
+| `mina-rad-qFSQFSmfZkA-unsplash 2.jpg` | `public/assets/contact-dept-partnership.jpg` | Partnership (already a Promise-to-Pay workflow photo elsewhere) |
+| `pexels-shkrabaanthony-7144260 1.jpg` | `public/assets/contact-dept-careers.jpg` | Careers |
+| `pexels-divinetechygirl-1181335 1.jpg` | `public/assets/contact-dept-dpo.jpg` | Data Protection Officer |
+| `pexels-liuguangxi-9045043 1.jpg` | `public/assets/contact-form-image.jpg` | Send-message side photo (desert dunes) |
+| `Frame 2147226753.jpg` | `public/assets/contact-office-usa.jpg` | USA office card (US flag) |
+| `Frame 2147226754.jpg` | `public/assets/contact-office-india.jpg` | India office card (India flag) |
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` (`/company/contact`
+included in the route list). Verified on a scratch `next dev` server via
+Playwright at 1516/1280/900/430px — zero console errors, zero horizontal
+overflow at every width (scroll-and-wait-for-`img.complete` method, per
+the established gotcha in §12). The hero-background contrast issue above
+was caught by this same pass and fixed, then re-verified with a fresh
+screenshot. Dev server was stopped immediately after verification (process
+killed by PID, confirmed down via a failed curl) — no hanging process left
+running, per the user's explicit instruction this round.
+
+**Approved:** Nothing yet — not reviewed by the user (explicit "just build
+clean, I will verify manually" instruction this round), same pending-review
+status every section in this file uses before explicit sign-off.
+
+**Next:** Wait for the user's manual review, in particular of: (1) the
+form's placeholder (no-backend) submit behavior — swap in a real endpoint/
+email service once one is chosen; (2) the generic/mismatched Offices lead
+line, kept verbatim per this project's default rather than rewritten; and
+(3) both "Learn More ↗" office links pointing at `/company/about` rather
+than a dedicated office page (none exists or is planned). `/terms` and
+`/privacy` (linked from the form's legal line) are placeholder links, same
+not-yet-built-page convention used throughout this project. `ContactOffices`
+is now also reused verbatim on `/pricing` (§23) — it was already
+zero-prop/page-agnostic, so nothing below required a second change there.
+
+### Round 2 — 3 user-reported fixes
+
+The user reviewed on their own already-running `next dev` session and
+pasted two screenshots, flagging three things directly:
+
+1. **Offices cards: "don't use any overlay color, use original image."**
+   The colored teal/blue duotone scrim (`.scrimUsa`/`.scrimIndia`,
+   pixel-sampled from the reference) was replaced with a plain **black**
+   scrim confined to the left edge only (`linear-gradient(to right,
+   rgba(0,0,0,.6) 0%, rgba(0,0,0,.28) 28%, transparent 52%)`), where the
+   title/address/"Learn More" all sit — the right ~48% of each card (the
+   flag itself) now shows the source photo's real, untouched colors. Text
+   legibility is kept via a small `text-shadow` on the copy instead of a
+   full-card tint. `ContactOffices.tsx`'s per-office `scrim` field
+   (`styles.scrimUsa`/`styles.scrimIndia`) was removed along with the CSS
+   classes — the scrim is now identical for both cards. Since `/pricing`
+   (§23) reuses `<ContactOffices />` with zero props, this fix applies
+   there automatically too.
+2. **"Learn More" was wrapping to two lines** — `.learnMore` was missing
+   `white-space: nowrap`; fixed.
+3. **"Assets... not high quality, looks pixelated."** Diagnosed rather than
+   guessed: the source `Frame 2147226753/754.jpg` files are genuinely sharp
+   at full resolution (confirmed by cropping a region at native res), and a
+   direct `curl` of the Next.js image-optimizer endpoint confirmed it was
+   correctly serving a full `1920×953` JPEG, not an undersized one — the
+   optimizer pipeline was never the problem. The real cause was the
+   **heavy semi-opaque color scrim** (0.82–0.88 alpha) sitting over the
+   whole photo: crushing local contrast that way makes ordinary AVIF/WebP
+   compression banding far more visible, which reads as "pixelated."
+   Fixing #1 above (dropping the full-card color tint) resolves this too.
+   As an independent safety margin, `quality={90}` (this project's
+   existing convention for prominent photography, e.g. `SolutionHero`'s
+   backdrop) was added to the office, department, and form-side images —
+   they were shipping at the Next.js default of `75`.
+4. **Not explicitly asked for, but caught in the same review pass**: the
+   send-message photo (`.imageFrame`) used a fixed `aspect-ratio: 2/3`,
+   which let it run shorter than the form column and end well above the
+   "Send Message" button/legal links — visibly mismatched bottoms.
+   `.layout`'s explicit `align-items: start` was removed (grid's default is
+   `stretch`) and `.imageFrame` switched from a fixed aspect ratio to
+   `height: 100%` (with a `min-height: 480px` floor) so it stretches to
+   whatever height the form naturally takes — verified via bounding-box
+   measurement that the image's bottom edge lands within ~2.5px of the
+   "Terms and conditions" line's bottom edge. The `<900px` stacked layout
+   resets `height: auto` + its own fixed `aspect-ratio: 16/9` (stretch has
+   no meaning once the columns collapse to one).
+5. **Same `.next`-directory collision documented independently in §23**
+   was hit again here first: a second `next dev`/`next build` process
+   (mine, on a different port) writing to the same `.next` directory as
+   the user's own already-running dev server was corrupting both sessions'
+   build caches (`ENOENT`/`MODULE_NOT_FOUND` on manifests). Re-verification
+   for this round used a temporary `distDir: ".next-verify"` override in
+   `next.config.ts` on a separate port instead, reverted immediately after
+   (confirmed via `git status`/`git diff` showing zero net change to
+   `next.config.ts`) with `.next-verify` deleted afterward — never touched
+   the shared `.next` directory a second time.
+
+Re-verified after all four fixes via the isolated `distDir` server:
+`tsc --noEmit` clean, zero console errors and zero horizontal overflow at
+1516/900/430px, office-card images visually confirmed sharp/vivid with the
+color tint gone, "Learn More" on one line, and the form image's bottom edge
+matching the form column's within ~2.5px.
+
+---
+
+## 23. Pricing Page (`/pricing`)
+
+> Reference: `C:\Users\Aashutosh\Downloads\Vodex -  -_ Pricing.png` — a flat
+> mockup screenshot, not a PDF, 4548×19877px = a 3× export of a
+> **1516×6626px artboard**, same convention as every PDF/PNG reference in
+> this project (confirmed via `PIL.Image.size` before cropping). Analyzed by
+> cropping/zooming regions with Python/PIL (no `pdftoppm`/`pdftotext -bbox`
+> available for a flat PNG) rather than eyeballing a thumbnail — same
+> "measure, don't guess" standard as every PDF-sourced page, including
+> corner-pixel zooms to settle rounded-vs-sharp corners per section.
+> `Navbar.tsx`'s `NAV_LINKS` and `Footer.tsx`'s Product column both already
+> pointed "Pricing" at `/pricing` before this page existed (previously a
+> 404) — confirmed by reading `Navbar.tsx` directly rather than assumed.
+
+### Current progress
+
+Full page built end to end: Hero → Pricing Plans (5-card grid) → `Faq`
+(reused verbatim) → Offices (`ContactOffices`, reused verbatim — see
+below) → `EnterpriseBand` → `FinalCta` → `Footer`. Only **one** genuinely
+new component was needed — `PricingPlans` — everything else on this page
+already existed.
+
+### Two confirmed deviations from the reference (asked, not assumed)
+
+Per this project's "ask, don't assume" rule, both resolved via
+`AskUserQuestion` before writing any code:
+1. The 5-item feature checklist under every plan card was identical across
+   all 5 tiers and read as generic website-builder template copy ("10 Web
+   Components", "5 Web Templates", "Component Properties") — the same
+   class of leftover-template issue this project has caught repeatedly
+   (mismatched "Videos" badges, "Learn More About Integerations" typo,
+   etc.). **Rewritten** with real, differentiated, Vodex-grounded features
+   per tier (call/agent counts, real integrations already named elsewhere
+   on the site — HubSpot/Twilio/Make/VICIdial/HighLevel — RPC verification,
+   auto re-dial, compliance tiering). See `PLANS` in `PricingPlans.tsx` for
+   the exact 25 bullets (5 tiers × 5 features).
+2. The hero badge read **"Newsroom"** — the same mismatched-leftover-badge
+   bug already hit on 3+ other pages (Call Samples, Case Studies, News,
+   Contact). Fixed to **"Pricing"**.
+
+### ⚠️ A real duplicate-build mistake, caught and fixed before shipping
+
+The Offices section (eyebrow "Offices", H2 "Visit us in *person*", the
+exact same lead line, USA/India cards with the exact same addresses, a
+"Prefer email…" contact line) was initially built as a **new** component,
+`PricingOffices.tsx` — reasoned as new because no such section appeared
+anywhere in the portion of CLAUDE.md loaded into context at the start of
+this session. Partway through writing this progress note, reading the
+**live** CLAUDE.md (which had grown since the session started) surfaced
+`ContactOffices.tsx` — built minutes earlier for `/company/contact` — with
+byte-identical eyebrow/heading/lead/office data/contact line, and the two
+supplied flag assets (`Frame 2147226753/754.jpg`) already copied in as
+`contact-office-usa.jpg`/`contact-office-india.jpg`. Confirmed **not** a
+coincidental resemblance by screenshotting the live `/company/contact`
+page directly and comparing pixel-for-pixel against both the Pricing
+reference crop and the just-built `PricingOffices` output — all three
+matched. **Fix:** deleted `PricingOffices.tsx`/`.module.css` and the
+freshly-copied `pricing-office-usa.jpg`/`pricing-office-india.jpg`
+(redundant with the already-existing `contact-office-*.jpg`), and
+`app/pricing/page.tsx` now imports `<ContactOffices />` directly — same
+zero-prop, page-agnostic reuse already established for
+`Faq`/`EnterpriseBand`/`FinalCta`. **If a future page's reference shows a
+section that looks close to something already on the site, grep/read
+CLAUDE.md's actual current content (not just what loaded into context at
+session start) and, ideally, screenshot the candidate existing page before
+building a new component — text descriptions alone (e.g. "colored
+gradient... copy sits top-left") can read as a different design even when
+the rendered result is identical.**
+
+### Implementation decisions
+
+- **`components/sections/PricingPlans.tsx` + `.module.css`** — the only new
+  component this page needed. 5-card grid (Free/Starter/Standard/Premium/
+  Enterprise), `repeat(5, 1fr)` desktop → `repeat(2, 1fr)` ≤1200px →
+  1-column ≤640px.
+  - **Rounded corners (~16px)** — a deliberate exception to this project's
+    usual sharp-corner cards, confirmed by an 8× corner-pixel zoom of the
+    reference (same "measure every card grid on its own terms" rule
+    already applied throughout this file — Why/Featured Case Study/
+    Resources/ComplianceCertifications are sharp, WhatYourTeamGets and now
+    this are the exceptions).
+  - **"Popular" / "Best Value" ribbons are the literal supplied images**
+    (`Frame 2147227644.jpg` / `Frame 2147227677.jpg` → `pricing-badge-
+    popular.jpg` / `pricing-badge-best-value.jpg`) — the gradient, grain
+    texture and text are already baked into the asset, so they render as
+    plain `next/image`s (natural ~3.6:1 aspect, fixed 30px height) rather
+    than being recreated in CSS, per this project's established "the
+    supplied asset already bakes in the design" precedent (§8: Section 5's
+    dashboard mockup, Section 8's auto-redial banner).
+  - **Enterprise card CTA required a new `Button` variant.** `Button.tsx`
+    only had `primary`/`secondary`/`light` before this page — added
+    `variant="dark"` (`var(--ink)` bg, white text) since a dark pill CTA is
+    a genuinely reusable primitive, not a one-off. On the Enterprise card
+    itself (also `var(--ink)` background), plain `--ink` would be
+    invisible — overridden via a `.cardDark .cta` two-class descendant
+    selector in `PricingPlans.module.css`, which reliably outranks
+    `Button.module.css`'s single-class `.dark` rule regardless of
+    stylesheet bundling order (no `!important` needed).
+  - **Green checkmarks are a new, locally-scoped color** — no green token
+    exists anywhere else in this project's design system (checkmarks
+    elsewhere are always brand-orange or white-on-dark), but the reference
+    genuinely uses green here, so `#16a34a` is scoped to
+    `PricingPlans.module.css`'s `.checkIcon` only, not promoted to
+    `globals.css`.
+  - **Micro-interactions/animations, per explicit user request** — all
+    plain CSS (`--dur`/`--ease` tokens), consistent with this project's
+    "no animation library" stack rule: staggered `Entrance` reveal per
+    card (0/70/140/210/280ms); card hover lift (`translateY(-6px)`) +
+    shadow + border-color shift to `var(--brand)`; each feature row's
+    checkmark scales up with a per-row stagger on card hover
+    (`transition-delay: calc(var(--i) * 30ms)`, `--i` set inline per
+    `<li>`, same idea as `AudioWaveform`'s per-bar `--i` stagger); a
+    continuous diagonal sheen sweep across each ribbon image (reuses the
+    exact `sheenSweep` keyframe technique already established in
+    `EngagementQueueIllustration` for its active-row treatment).
+    Deliberately **no JS price count-up** — this project's stated animation
+    policy (§3: "Plain CSS… no library") rules that out for one section.
+  - **⚠️ Real bug hit and fixed before shipping: hover transforms silently
+    did nothing.** First version put `.card`'s hover-lift `transform` and
+    `Entrance`'s reveal animation on the *same* `<article>` element.
+    `Entrance`'s `.enter` class runs `animation: rise 700ms var(--ease)
+    both` — the `both` fill-mode keeps pinning `transform` to the
+    animation's final keyframe value indefinitely after it finishes, which
+    silently overrides any `:hover`-triggered transition on `transform`
+    targeting that same element (animations take precedence over
+    transitions for a property they still hold under a forwards/both fill
+    mode). Card `:hover` styles compiled fine and even matched
+    (`el.matches(':hover')` was `true` in a Playwright check), but
+    `getComputedStyle(el).transform` never changed. **Fix:** split the
+    element — `Entrance` now wraps a plain `.cardWrap` (no visual styling
+    beyond `height: 100%` to fill the stretched grid cell), and a *nested*
+    `<div className={styles.card}>` owns the border/radius/hover-lift
+    styling. Same "two animations fighting over one property on one
+    element → split into an outer gate + an inner effect" lesson this
+    project already documents for `EngagementQueueIllustration`'s
+    `sheenWindow`/`sheen` split, just hit here in its `:hover`-vs-`Entrance`
+    form for the first time. **If a future component ever pairs
+    `Entrance` with a `:hover` transform/opacity/etc. on the exact same
+    element, split it the same way up front** — this is generalizable to
+    any property `Entrance`'s `rise` keyframe animates (`transform`,
+    `opacity`), not just this card.
+  - Cross-sell closing line ("Running a collections operation?…") is
+    duplicated locally, same precedent as every other Solutions/Resources
+    page.
+- **Offices section reuses `<ContactOffices />` verbatim** — see the
+  duplicate-build mistake writeup above. No prop changes; `ContactOffices`
+  was already fully page-agnostic (hardcoded content, no props) the moment
+  it was built for `/company/contact`.
+- **`Faq`, `EnterpriseBand`, `FinalCta` reused verbatim** — same
+  established "Sections 8-9" precedent used on every other page in this
+  file. `Faq`'s shipped Q&A content was confirmed genuinely Vodex-relevant
+  (not template junk) by reading `Faq.tsx` directly before reusing it.
+- **`app/pricing/page.tsx`** follows the exact shell/composition pattern
+  every other page in this project uses (`AnnouncementBar`/`Navbar` under
+  `<header className="siteHeader">`, then `<main>`, then `<Footer />`,
+  static `export const metadata`, no `generateMetadata`). Hero CTAs
+  ("Talk To Our Expert" / "Schedule a Demo", both → `/demo`) match the
+  exact convention already used identically on all 12 other `SolutionHero`-
+  based pages — confirmed by grepping every existing usage before writing
+  this page's hero, not assumed.
+- **Hero background: `collection-software-hero-bg.jpg`**, reused directly
+  via import (no new file), per the user's explicit "use any hero bg for
+  now" — picked for being one of the less-reused hero photos in the
+  project at the time.
+
+### Asset → component map
+
+| Source (`vodex assets/`) | Destination | Slot |
+| --- | --- | --- |
+| `Frame 2147227644.jpg` | `public/assets/pricing-badge-popular.jpg` | Standard card ribbon |
+| `Frame 2147227677.jpg` | `public/assets/pricing-badge-best-value.jpg` | Premium card ribbon |
+| *(reused, no new copy)* `contact-office-usa.jpg` / `contact-office-india.jpg` | — | Offices (via `ContactOffices`) |
+| *(reused, no new copy)* `collection-software-hero-bg.jpg` | — | Hero background (placeholder) |
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` (`/pricing` in the route
+list) both before and after the `ContactOffices` consolidation fix.
+Verified via Playwright at 1516/1280/900/430px on a live `next dev`
+server — zero console errors, zero horizontal overflow at every width
+(the only console noise observed was pre-existing site-wide `<Link>`
+RSC-prefetch 404s for not-yet-built routes like `/demo`/`/contact`/
+`/solutions`, confirmed present identically on the already-shipped landing
+page too, so not a regression from this page). The hover-lift bug above
+was caught by a dedicated Playwright interaction check (not just a visual
+screenshot pass — `getComputedStyle().transform` before/after a real
+`locator.hover()`), fixed, and re-verified the same way, along with the
+checkmark-stagger and ribbon-sheen micro-interactions and a
+`reducedMotion: "reduce"` emulation (entrance opacity settles at 1, ribbon
+sheen's `animation-duration` collapses to ~0, one coherent static frame —
+no half-revealed cards). Mobile 430px pass confirmed the 5-card grid
+stacks to one column cleanly and the ribbon stays centered.
+
+**⚠️ Environment note, not a code issue:** mid-verification, running this
+project's own `next build` + `next start` against the default `.next`
+directory while a pre-existing `next dev` server (not started by this
+session) was also running against the same directory corrupted that dev
+server's build cache (`Cannot find module './611.js'`-type errors). Fixed
+by clearing `.next` and restarting the affected dev server cleanly: no
+data or code was lost, but **if a `next dev` server is already running
+against this project, don't run a separate `next build`/`next start`
+against the same default `.next` output directory** — either verify
+against the already-running dev server instead, or point a one-off
+production check at an isolated `distDir`.
+
+**Approved:** Nothing yet — not reviewed by the user (explicit "just build
+clean, I will verify manually" instruction this round), same pending-review
+status every section in this file uses before explicit sign-off.
+
+**Next:** Wait for the user's manual review, in particular of: (1) the 25
+rewritten, Vodex-grounded plan features (invented but grounded, pending
+review like every other invented-but-grounded content block in this
+project); (2) the new `Button` `dark` variant and whether it should be
+reused elsewhere; and (3) the micro-interactions (hover lift, checkmark
+stagger, ribbon sheen) — built per explicit request but not yet seen by
+the user in a real browser.
+
+---
+
+## 24. Company — Investors & Partners (`/company/investors`)
+
+> Reference: `C:\Users\Aashutosh\Downloads\Vodex -  -_ Investors.png`, a flat
+> mockup export (not a PDF), 4548×25452px = a 3× export of a **1516×8484px**
+> artboard, same convention as every other page in this project.
+> `Footer.tsx` and `CompanyMegaMenu.tsx` **already declared** "Investors &
+> Partners" → `/company/investors` (added when the Company mega-menu was
+> built, §22) — the route was already wired into navigation before this
+> page existed; it just 404'd. No nav/menu changes were needed for this
+> round — the user's request to "move this under Company" was already
+> satisfied by existing code.
+
+### Current progress
+
+Full page built end to end: Hero → Timeline of our milestones (5 entries) →
+Meet our investors (3 logos) → Our tech partners (3 logos) → Questions
+about investing in Vodex? (dark banner) → `EnterpriseBand` → `FinalCta` →
+`Footer`. Every section maps onto an existing pattern already in this
+project — no section here is a wholly new design:
+
+- **Hero** — `SolutionHero`, reused directly (already prop-driven).
+- **Timeline of our milestones** — new `InvestorTimeline.tsx`/`.module.css`,
+  copy-adapted from `AboutTimeline.tsx`/`.module.css` almost 1:1 (same
+  `.rows::before` center spine, `data-reverse` alternating mechanism, and
+  the documented mobile `grid-row: auto` reset preserved verbatim).
+- **Meet our investors / Our tech partners** — new prop-driven
+  `InvestorLogoRow.tsx`/`.module.css`, copy-adapted from
+  `WorksWithTools.tsx`'s per-logo intrinsic-sizing pattern but made
+  prop-driven (`eyebrow`/`heading`/`lead`/`logos[]`) since this page needs
+  two real instances on one page — the same "prop-drive once a second real
+  instance exists" precedent already used for `SolutionIndustries`/
+  `SolutionWorkflows` (§13/§15).
+- **Questions about investing in Vodex?** — new
+  `InvestorContactBanner.tsx`/`.module.css`, copy-adapted from
+  `ComplianceDpoBanner.tsx`/`.module.css` (dark banner, sharp corners,
+  mailto pill CTA), extended with a background photo + scrim (see below).
+- **Built for enterprises / Final CTA / Footer** — reused verbatim, same as
+  every other page in this project.
+
+### Decisions confirmed with the user before building (all via `AskUserQuestion`)
+
+1. **Hero badge** reads "Newsroom" in the reference — a leftover from the
+   News page mockup, the same class of mismatch already caught and fixed
+   on About/Videos/Case Studies/FAQ (§17/§19/§20). Built as **"Investors"**
+   per the user's confirmed choice.
+2. **Timeline duplicate**: the reference's 4th and 5th entries are
+   word-for-word identical ("Launched Vodex 2.0 with 5+ investor backing
+   including Google Cloud, MongoDB, and Krisp.", both tagged 2024) — the
+   same duplication-artifact class already seen elsewhere in this project
+   (AboutStats' "5+ Funding" duplicate, §22). **Kept both verbatim** per the
+   user's confirmed choice, matching this project's general "measure,
+   don't invent" default rather than inventing a distinct 5th milestone.
+3. **Dark banner eyebrow** reads "Named Voices" in the reference — the
+   *exact same* mismatched placeholder text already found (and fixed to
+   "Data Protection") on `ComplianceDpoBanner`'s near-identical banner,
+   where the user explicitly called that fix a one-off, not a precedent.
+   **Fixed here too, to "Partnerships"**, per the user's confirmed choice —
+   grounded in the section's own content (partnership/investment
+   enquiries), not applied automatically just because the earlier fix
+   existed.
+4. **Google Cloud / MongoDB / Krisp logos**: no usable assets were supplied
+   for these three (the reference only shows faint gray outline
+   placeholders, confirmed not a rendering artifact — see below) — user
+   asked directly whether to fetch these or wait for real files. **Fetched
+   official brand logos** from each company's own public brand/press
+   assets, per the user's confirmed choice.
+
+### Findings from direct pixel inspection (not eyeballed)
+
+- **Hero background is flat `#000000`** in the reference (confirmed by
+  sampling a grid of pixels across the hero band — uniformly `(0,0,0)`
+  except the announcement bar/badge/CTA elements), not a photo. The user's
+  own instruction ("use any hero ... bg for now") asked for a photo anyway
+  — same precedent already set on the About page's hero (§22, "user's
+  answer: use a photo anyway") — so the hero uses
+  `debt-collection-hero-bg.jpg` (copied as `investors-hero-bg.jpg`) via
+  `SolutionHero`'s existing `bgImage` prop. That specific asset was picked
+  deliberately (not just "any" photo): it's the same uniformly-dark photo
+  already chosen once before *specifically* for text-contrast reasons
+  (§21's Compliance hero swap, after a brighter photo there visibly hurt
+  legibility) — reused here for the same guaranteed-readable-under-white-
+  text property, now its 4th use across the project for that reason.
+- **The "Questions about investing" banner is also flat solid color** in
+  the reference — confirmed by pixel-sampling a grid across the banner:
+  uniformly `(34,29,29)`, no gradient or texture, structurally identical to
+  `ComplianceDpoBanner`'s flat `--ink` fill. The user's own instruction
+  ("named voice \[bg\]... use any scenic bg from existing") asked for a
+  photo here too, so — unlike its donor component, which has never needed
+  one — `InvestorContactBanner` adds a background photo
+  (`product-hero-bg.jpg`, copied as `investors-contact-bg.jpg`, picked as a
+  *different* dark photo from the hero's for variety within one page) layered
+  under a `rgba(10,8,8,0.6)` scrim (`.banner::before`) for guaranteed
+  contrast — a deliberate new addition to the copy-adapted component, not
+  present in `ComplianceDpoBanner` itself.
+- **Timeline images are black placeholder rectangles** in the reference
+  (no real photos) — filled with 5 existing photos reused from elsewhere in
+  `public/assets/` (`feature-1.jpg`, `why-tile-1.jpg`, `action-2.jpg`,
+  `results-bg.jpg`, `security-3.jpg`, copied fresh as
+  `investor-timeline-1.jpg` … `-5.jpg`), per the user's "use any...
+  milestones... bg from existing" instruction.
+- **Investor logos**: the user supplied 3 files (`image 1021.png` — Unicorn
+  India Ventures, opaque white background baked in, not transparent, but
+  harmless since the target section background is also white;
+  `image 1022.png` — Pentathlon Ventures, transparent, ~57px of padding
+  trimmed off; `image 1023.png` — a hollow/outline wordmark). Cross-checked
+  `image 1023.png` against `public/assets/footer-backers.png` (already live
+  in the Footer today, §8) via alpha-channel column-run detection — it
+  contains the **exact same three logos in the exact same outline style**,
+  confirming the outline look is this backer's real, already-shipped brand
+  mark, not a placeholder needing a fix. Cross-referencing
+  `Footer.tsx`/`lib/news.ts` (§21's News page, which already names Vodex's
+  3 backers), this third investor is **"100X"**. Used `image 1021.png`/
+  `image 1022.png` directly (copied as `investor-unicorn-india-ventures.png`
+  / `investor-pentathlon-ventures.png`); cropped the third logo out of the
+  existing `footer-backers.png` instead of reusing `image 1023.png`
+  verbatim (`investor-100x.png`, gives a standalone per-logo asset
+  consistent with the other two rather than a differently-cropped
+  duplicate of the same source). **Superseded in the same round**: the
+  user asked to fetch a better 100X logo too, same as the tech partners —
+  `100x.vc`'s own homepage source references `/assets/100x-logo.svg`,
+  which turned out to be an SVG wrapper around one embedded base64 PNG
+  (a `<pattern>`+mask construction that renders blank through `sharp`/
+  librsvg, so the PNG was extracted directly from the base64 payload with
+  a small Node script instead of rasterizing the SVG). The extracted PNG
+  (516×175, full canvas is content, no padding to trim) is the real 100X.VC
+  mark in their actual brand red — `investor-100x.png` was overwritten with
+  it and the page's `width`/`height` props updated to 516×175 to match.
+- **Google Cloud / MongoDB / Krisp**: fetched each company's official SVG
+  logo from a public source (Google Cloud and MongoDB from Wikimedia
+  Commons' official-logo files — confirmed genuine by their exact brand
+  hex codes, `#EA4335`/`#4285F4`/`#34A853`/`#FBBC05` for Google's 4-color
+  palette and `#10AA50` for MongoDB's green, plus the MongoDB file's own
+  `<title>MongoDB_Logo_FullColorBlack_RGB</title>`; Krisp's from
+  `krisp.ai`'s own site source, `img_logo_main.svg`, the file their own
+  homepage loads as its logo). Rasterized to PNG via `sharp` (already a
+  transitive dependency of `next`) at ~4x the SVG's intrinsic size for
+  crispness, since `next.config.ts` has no `dangerouslyAllowSVG` and this
+  project has never fed `next/image` a raw SVG before — safer to rasterize
+  once at build time than to change a shared config for one page.
+- **Closing cross-sell line** under the timeline ("Running a collections
+  operation? See Vodex for Debt Collection") is present in the reference —
+  reproduced verbatim, matching the standing convention used after every
+  other timeline/grid section in this project (§12 onward).
+- **Hairline dividers** bracket both logo-row sections in the reference
+  (confirmed visually, a thin rule directly above and below each) — same
+  `border-block: 1px solid var(--hairline)` convention `TrustStrip` already
+  uses for a full-bleed hairline strip; `InvestorLogoRow.module.css` applies
+  it per-instance, so the two adjacent rows' shared boundary shows as one
+  continuous rule rather than a doubled line.
+
+### New files
+
+- `components/sections/InvestorTimeline.tsx` + `.module.css`
+- `components/sections/InvestorLogoRow.tsx` + `.module.css` (prop-driven,
+  rendered twice in the page — investors, then tech partners)
+- `components/sections/InvestorContactBanner.tsx` + `.module.css`
+- `app/company/investors/page.tsx`
+
+### Asset → component map
+
+| Asset | Destination | Notes |
+| --- | --- | --- |
+| `image 1021.png` | `public/assets/investor-unicorn-india-ventures.png` | opaque white bg, used as-is |
+| `image 1022.png` | `public/assets/investor-pentathlon-ventures.png` | padding trimmed to content bbox |
+| *(cropped from `footer-backers.png`)* | `public/assets/investor-100x.png` | alpha-preserved crop of the 3rd already-shipped backer logo |
+| Google Cloud official SVG (Wikimedia) | `public/assets/partner-google-cloud.png` | rasterized via `sharp` |
+| MongoDB official SVG (Wikimedia) | `public/assets/partner-mongodb.png` | rasterized via `sharp` |
+| Krisp official SVG (krisp.ai) | `public/assets/partner-krisp.png` | rasterized via `sharp` |
+| `feature-1.jpg`, `why-tile-1.jpg`, `action-2.jpg`, `results-bg.jpg`, `security-3.jpg` | `investor-timeline-1.jpg` … `-5.jpg` | existing photos, copied fresh, page-specific |
+| `debt-collection-hero-bg.jpg` | `investors-hero-bg.jpg` | reused for contrast (4th use for this reason) |
+| `product-hero-bg.jpg` | `investors-contact-bg.jpg` | reused for the contact banner's new photo+scrim |
+
+### A build gotcha hit and fixed this round (worth keeping)
+
+Ran `next build` once to verify, then started `next dev` against the same
+default `.next` output directory without cleaning it first — this is
+**exactly** the gotcha already documented at the end of §23 (Pricing):
+mixing a production build and dev server in one `.next` dir corrupts dev's
+manifests (`ENOENT: app-paths-manifest.json` / `routes-manifest.json`),
+surfacing as a 500 on every route. Also hit a stale process still holding
+the dev port after an earlier `pkill` didn't catch it (Windows child
+process not matched by the pattern) — found and killed by PID via
+`netstat -ano` + `taskkill /F` instead. Fixed both by killing the stale
+port-holder, deleting `.next`, and starting a single fresh `next dev`.
+**If `next build` and `next dev` are ever both run in the same session,
+always `rm -rf .next` before switching between them** — this is the second
+time in this project's history this exact failure mode has been hit.
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit` + `next build` (`/company/investors`
+compiles and is listed in the route output). Playwright-verified at
+1516/430px on a clean `next dev` server (scroll-through-then-screenshot,
+waiting on every visible `<img>` to finish loading) — zero console errors,
+zero horizontal overflow at either width. Live screenshots visually
+compared against the reference PNG's own crops: hero contrast, timeline
+alternating rows (desktop) and single-column stack with image-first order
+(mobile), both logo rows at the larger "big and readable" size, and the
+dark banner's new photo+scrim treatment with sharp corners — all confirmed
+matching the intended design. Dev server and its port were confirmed
+stopped (no hanging process) after verification, per the user's explicit
+instruction this round.
+
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off. User said
+"just build clean ... I will verify result manually" this round — treat as
+pending their review, same status as every other "build clean" round in
+this project.
+
+**Next:** Wait for the user's review, in particular of: (1) the two
+scenic-background additions that deviate from the reference's flat-color
+hero and banner (both explicitly requested, not assumed); (2) the fetched
+Google Cloud/MongoDB/Krisp logos (official brand assets, not supplied
+files — confirm they're an acceptable source); and (3) the "Partnerships"
+eyebrow fix and the kept-verbatim duplicate 2024 timeline entry, both
+already confirmed choices but worth a final look in context.

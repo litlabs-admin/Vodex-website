@@ -1,0 +1,83 @@
+.section {
+  background: var(--bg);
+  padding-block: 0 96px;
+}
+
+/* Measured off the PDF crop: ~1184px wide, centred, sharp corners (verified
+   by zooming into both the top and bottom corners at 8x — no rounding,
+   unlike a couple of other dark banners on this site). */
+.banner {
+  max-width: 1184px;
+  margin-inline: auto;
+  border-radius: 0;
+  background: var(--ink);
+  padding: 64px 40px;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding-inline: 20px;
+  border-radius: var(--radius-pill);
+  background: #ececec;
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.title {
+  margin-top: 24px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: #fff;
+}
+
+.lead {
+  margin-top: 20px;
+  max-width: 560px;
+  margin-inline: auto;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--on-dark-muted);
+}
+
+.cta {
+  margin-top: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding-inline: 24px;
+  border-radius: var(--radius-pill);
+  background: #000;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.cta:hover {
+  background: #1a1a1a;
+}
+
+.cta svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 640px) {
+  .banner {
+    padding: 48px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-block: 0 64px;
+  }
+}

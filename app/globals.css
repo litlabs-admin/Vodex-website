@@ -16,6 +16,8 @@
   --hairline: #e6e6e6;     /* full-bleed rules                               */
   --hairline-strong: #d9d9d9;
   --stroke-on-photo: rgba(255, 255, 255, 0.85);
+  --error: #d92d20;        /* form validation only                           */
+  --success: #1a9f5c;      /* form validation only                           */
 
   /* --- Layout ------------------------------------------------------------ */
   --container: 1440px;     /* content grid inside the 1516px artboard        */

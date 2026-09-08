@@ -83,6 +83,17 @@
   background: #f0f0f0;
 }
 
+/* Dark pill CTA — used on light-card surfaces (e.g. pricing plan cards)
+   where a plain filled button needs to read as "neutral", not "primary". */
+.dark {
+  background: var(--ink);
+  color: #fff;
+}
+
+.dark:hover {
+  background: #2a2a2a;
+}
+
 @media (max-width: 720px) {
   .lg {
     height: 48px;

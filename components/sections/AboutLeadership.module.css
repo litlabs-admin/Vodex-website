@@ -1,0 +1,111 @@
+.section {
+  background: var(--bg);
+  padding-block: 88px;
+}
+
+.header {
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding-inline: 20px;
+  border-radius: var(--radius-pill);
+  background: #ececec;
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.title {
+  margin-top: 24px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.lead {
+  margin-top: 20px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+}
+
+.grid {
+  margin-top: 56px;
+  max-width: 1344px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.card {
+  position: relative;
+  background: var(--brand);
+  padding: 28px 24px;
+  aspect-ratio: 316 / 413;
+  display: flex;
+  flex-direction: column;
+}
+
+.mark {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  color: #fff;
+}
+
+.photoFrame {
+  position: relative;
+  margin-top: auto;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.photo {
+  object-fit: cover;
+}
+
+.photoPlaceholder {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.name {
+  margin-top: 18px;
+  font-size: 19px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.role {
+  margin-top: 4px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-block: 64px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+}

@@ -6,7 +6,7 @@ import styles from "./Button.module.css";
 type ButtonProps = {
   href: string;
   children: ReactNode;
-  variant?: "primary" | "secondary" | "light";
+  variant?: "primary" | "secondary" | "light" | "dark";
   size?: "lg" | "sm";
   /** Appends the long right arrow used throughout the design. */
   withArrow?: boolean;

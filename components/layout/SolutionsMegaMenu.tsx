@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import {
-  ArrowRight,
   BellIcon,
   CheckIcon,
   FunnelIcon,
@@ -66,14 +65,6 @@ export function SolutionsMegaMenu({ href }: { href: string }) {
               </li>
             ))}
           </ul>
-          <hr className={styles.footerDivider} />
-          <div className={styles.footerRow}>
-            <p>Don&apos;t see what you need?</p>
-            <Link href="/solutions" className={styles.viewAll}>
-              View all solutions
-              <ArrowRight />
-            </Link>
-          </div>
         </div>
       </div>
     </li>

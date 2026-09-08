@@ -1,0 +1,169 @@
+.section {
+  background: var(--bg);
+  padding-block: 88px 96px;
+}
+
+.header {
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding-inline: 20px;
+  border-radius: var(--radius-pill);
+  background: #ececec;
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.title {
+  margin-top: 24px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.lead {
+  margin-top: 20px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+}
+
+/* Container matches the existing WhyItWorks/SolutionSecurity 1344px
+   convention exactly; gap matches SolutionSecurity's own measured 12px
+   (tighter than WhyItWorks' 24px) — both pixel-scanned off this page's own
+   PDF crop, not assumed from either donor. */
+.grid {
+  margin-top: 56px;
+  max-width: 1344px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #f7f7f7;
+  border-radius: 0;
+  transition: transform var(--dur) var(--ease);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.thumb {
+  position: relative;
+  aspect-ratio: 5 / 4;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 24px;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--fg);
+}
+
+.description {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+
+.divider {
+  width: 100%;
+  margin-top: auto;
+  border: none;
+  border-top: 1px solid var(--hairline-strong);
+}
+
+.readMore {
+  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding-inline: 16px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.readMore:hover {
+  background: #000;
+}
+
+.readMore svg {
+  transition: transform var(--dur) var(--ease);
+}
+
+.readMore:hover svg {
+  transform: translateX(4px);
+}
+
+.closing {
+  margin-top: 48px;
+  text-align: center;
+  font-size: var(--fs-body);
+  color: var(--fg);
+}
+
+.closingLink {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.closingLink:hover {
+  color: var(--brand-hover);
+}
+
+@media (max-width: 1100px) {
+  .section {
+    padding-block: 64px 72px;
+  }
+
+  .grid {
+    margin-top: 40px;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 640px;
+  }
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-block: 48px 56px;
+  }
+
+  .closing {
+    margin-top: 36px;
+  }
+}

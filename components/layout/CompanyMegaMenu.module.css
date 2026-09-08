@@ -1,0 +1,125 @@
+.companyItem {
+  position: relative;
+}
+
+/* Mirrors Navbar.module.css's .link exactly (same hover underline) — copied
+   locally rather than shared, same as SolutionsMegaMenu/ResourcesMegaMenu. */
+.link {
+  position: relative;
+  padding-block: 4px;
+  color: #fff;
+  transition: color var(--dur) var(--ease);
+}
+
+.link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1.5px;
+  background: var(--brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur) var(--ease);
+}
+
+.link:hover::after {
+  transform: scaleX(1);
+}
+
+/* --- Panel ------------------------------------------------------------ */
+
+.panel {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  /* Gap is padding, not a margin/offset on .panelInner — keeps the hoverable
+     box contiguous from the link down through the panel (see
+     SolutionsMegaMenu.module.css for the full rationale). */
+  padding-top: 14px;
+  transform: translateX(-50%) translateY(-6px);
+  /* 460px (not Solutions' 420px) — same width Resources' menu needed while
+     it carried this same "Investors & Partners" label, to avoid cramped
+     wrapping in the 2-column grid. */
+  width: 460px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease),
+    visibility 0s var(--dur);
+  z-index: 1;
+}
+
+.companyItem:hover .panel,
+.companyItem:focus-within .panel {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease),
+    visibility 0s;
+}
+
+.panelInner {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+  padding: 24px;
+  color: var(--fg);
+}
+
+.colLabel {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.item:hover {
+  background: #f4f4f4;
+}
+
+.iconBox {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  border: 1px solid var(--hairline-strong);
+  color: var(--fg);
+}
+
+.iconBox svg {
+  width: 18px;
+  height: 18px;
+}
+
+.itemTitle {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--fg);
+}

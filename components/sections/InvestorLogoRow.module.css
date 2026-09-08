@@ -1,0 +1,78 @@
+/* Reference shows a hairline rule directly above and below each of the two
+   logo-row sections (Backers / Technology) — same border-block convention
+   TrustStrip already uses for a full-bleed hairline-bordered strip. */
+.section {
+  background: var(--bg);
+  border-block: 1px solid var(--hairline);
+  padding-block: 72px;
+}
+
+.header {
+  max-width: 640px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding-inline: 20px;
+  border-radius: var(--radius-pill);
+  background: #ececec;
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.title {
+  margin-top: 24px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.lead {
+  margin-top: 16px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+}
+
+/* Larger gap and logo height than WorksWithTools' donor pattern — per
+   explicit user request that these logos read "big and readable". */
+.row {
+  margin-top: 48px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 48px 96px;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  height: 60px;
+  width: auto;
+}
+
+@media (max-width: 720px) {
+  .section {
+    padding-block: 56px;
+  }
+
+  .row {
+    margin-top: 36px;
+    gap: 32px 48px;
+  }
+
+  .logo {
+    height: 44px;
+  }
+}

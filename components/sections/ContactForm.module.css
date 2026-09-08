@@ -1,0 +1,247 @@
+.section {
+  background: var(--bg);
+  padding-block: 88px 64px;
+}
+
+.header {
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding-inline: 20px;
+  border-radius: var(--radius-pill);
+  background: #ececec;
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.title {
+  margin-top: 24px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.lead {
+  margin-top: 20px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+}
+
+/* align-items stretch (the grid default) so the photo column matches the
+   form column's own natural height exactly, bottom edge to bottom edge —
+   the form has no fixed height (it grows with validation error text), so a
+   fixed-aspect-ratio image would drift out of sync with it. */
+.layout {
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 460px);
+  gap: 56px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.submit {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 52px;
+  border-radius: var(--radius-btn);
+  background: var(--brand);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  transition: background-color var(--dur) var(--ease), transform var(--dur) var(--ease),
+    opacity var(--dur) var(--ease);
+}
+
+.submit:hover:not(:disabled) {
+  background: var(--brand-hover);
+}
+
+.submit:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.submit:disabled {
+  opacity: 0.75;
+  cursor: default;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.legal {
+  margin-top: 4px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
+.legal a {
+  color: var(--fg);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.legal a:hover {
+  color: var(--brand);
+}
+
+.legalDot {
+  margin-inline: 8px;
+  color: var(--hairline-strong);
+}
+
+.counter {
+  margin-top: 4px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.imageFrame {
+  position: relative;
+  height: 100%;
+  min-height: 480px;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.imageFrame img {
+  object-fit: cover;
+}
+
+.closing {
+  margin-top: 40px;
+  text-align: center;
+  font-size: var(--fs-body);
+  color: var(--fg-muted);
+}
+
+.closingLink {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.closingLink:hover {
+  color: var(--brand-hover);
+}
+
+/* --- Success state --------------------------------------------------------- */
+
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 40px 32px;
+  background: #f7f7f7;
+}
+
+.successIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--success);
+  color: #fff;
+}
+
+.successIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.successTitle {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.successBody {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+
+.resetLink {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.resetLink:hover {
+  color: var(--brand-hover);
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .imageFrame {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+    order: -1;
+  }
+}
+
+@media (max-width: 1100px) {
+  .section {
+    padding-block: 64px 48px;
+  }
+}
+
+@media (max-width: 560px) {
+  .row2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-block: 48px 40px;
+  }
+}

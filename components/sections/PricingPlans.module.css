@@ -1,0 +1,303 @@
+.section {
+  background: var(--bg);
+  padding-block: 80px 88px;
+}
+
+.header {
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding-inline: 20px;
+  border-radius: var(--radius-pill);
+  background: #ececec;
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.title {
+  margin-top: 24px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.lead {
+  margin-top: 20px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+}
+
+.grid {
+  margin-top: 64px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+/* `Entrance` (`.cardWrap`) owns the mount/scroll reveal animation; the
+   inner `.card` owns the hover lift. They must be different elements —
+   `Entrance`'s `animation: rise ... both` pins `transform` on whatever
+   element it's applied to (fill-mode "both" keeps the animation's final
+   value in force indefinitely), which silently blocks any `:hover`
+   transition on `transform` targeting that same element. Same "two
+   animations fighting over one property" lesson as
+   EngagementQueueIllustration's sheenWindow/sheen split. `.cardWrap`
+   needs no styling of its own beyond filling the stretched grid cell;
+   `.card` needs `height: 100%` to fill it in turn (same pattern
+   CallSamples' `.card` uses for the same reason). */
+.cardWrap {
+  height: 100%;
+}
+
+/* Rounded corners are a deliberate exception to this project's usual
+   sharp-corner cards — confirmed by an 8x corner-pixel zoom of the
+   reference, the same "measure, don't assume a site-wide convention"
+   rule already applied to every other card grid in this project. */
+.card {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 16px;
+  padding: 32px 24px 28px;
+  background: #fff;
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px -20px rgba(0, 0, 0, 0.22);
+  border-color: var(--brand);
+}
+
+.cardDark {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.cardDark:hover {
+  border-color: var(--brand);
+}
+
+/* --- "Popular" / "Best Value" ribbon --------------------------------- */
+/* The reference bakes the ribbon's gradient + grain + text into a supplied
+   image asset — rendered as-is via next/image rather than recreated in
+   CSS, per this project's "the supplied asset already bakes in the
+   design" precedent. The wrapper clips it to rounded top corners and lets
+   it straddle the card's own top edge. */
+.ribbon {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 10px 10px 3px 3px;
+}
+
+.ribbonImage {
+  display: block;
+  height: 30px;
+  width: auto;
+}
+
+.ribbonSheen {
+  position: absolute;
+  inset: -2px;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  transform: translateX(-140%) skewX(-12deg);
+  animation: ribbonSheenSweep 2.8s linear infinite;
+}
+
+@keyframes ribbonSheenSweep {
+  to {
+    transform: translateX(260%) skewX(-12deg);
+  }
+}
+
+.planName {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--fg-muted);
+}
+
+.cardDark .planName {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.price {
+  margin-top: 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+
+.cardDark .price {
+  color: #fff;
+}
+
+.priceSuffix {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--fg-muted);
+}
+
+.cardDark .priceSuffix {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.description {
+  margin-top: 12px;
+  min-height: 40px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg-muted);
+}
+
+.cardDark .description {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.cta {
+  margin-top: 20px;
+  width: 100%;
+}
+
+/* Two-class descendant selector always outranks Button.module.css's
+   single-class `.dark` rule regardless of stylesheet bundling order, so
+   this reliably overrides it without `!important`. Plain `--ink` would be
+   invisible against the Enterprise card's own `--ink` background. */
+.cardDark .cta {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.cardDark .cta:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.divider {
+  margin-top: 24px;
+  border-top: 1px dashed var(--hairline-strong);
+}
+
+.cardDark .divider {
+  border-top-color: rgba(255, 255, 255, 0.18);
+}
+
+.features {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--fg);
+}
+
+.cardDark .feature {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* Green is used nowhere else in this project's design system — scoped
+   locally to this "included feature" checklist rather than promoted to a
+   global token, since the reference genuinely uses green here and no
+   other section needs it. */
+.checkIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: #fff;
+  transition: transform var(--dur) var(--ease);
+  transition-delay: calc(var(--i, 0) * 30ms);
+}
+
+.checkIcon svg {
+  width: 10px;
+  height: 10px;
+}
+
+.cardDark .checkIcon {
+  background: #fff;
+  color: var(--ink);
+}
+
+.card:hover .checkIcon {
+  transform: scale(1.15);
+}
+
+.closing {
+  margin-top: 48px;
+  text-align: center;
+  font-size: var(--fs-body);
+  color: var(--fg);
+}
+
+.closingLink {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.closingLink:hover {
+  color: var(--brand-hover);
+}
+
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1100px) {
+  .section {
+    padding-block: 64px 72px;
+  }
+
+  .grid {
+    margin-top: 48px;
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-block: 48px 56px;
+  }
+
+  .closing {
+    margin-top: 36px;
+  }
+}

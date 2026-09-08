@@ -7,6 +7,7 @@ import { Logo } from "@/components/ui/Logo";
 import { LoginIcon } from "@/components/ui/icons";
 import { SolutionsMegaMenu } from "./SolutionsMegaMenu";
 import { ResourcesMegaMenu } from "./ResourcesMegaMenu";
+import { CompanyMegaMenu } from "./CompanyMegaMenu";
 import styles from "./Navbar.module.css";
 
 const NAV_LINKS = [
@@ -34,6 +35,9 @@ export function Navbar() {
             }
             if (item.label === "Resources") {
               return <ResourcesMegaMenu key={item.label} href={item.href} />;
+            }
+            if (item.label === "Company") {
+              return <CompanyMegaMenu key={item.label} href={item.href} />;
             }
             return (
               <li key={item.label}>
