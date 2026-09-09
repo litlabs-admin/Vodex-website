@@ -149,6 +149,31 @@ svg {
   display: contents;
 }
 
+/* Set on <html> by one of three paths — a live click's transitionend, the
+   root-layout beforeInteractive script (app/layout.tsx) on a hard reload,
+   or AnnouncementBar's own layout effect on a client-side route change —
+   so every full-viewport section anchored to --header-h (Hero, ProductHero,
+   SolutionHero, ArticleHeader, not-found pages) shrinks to match the
+   now-shorter (nav-only) header instead of leaving a gap the size of the
+   collapsed announcement bar. */
+html[data-announcement-dismissed="true"] {
+  --header-h: var(--nav-h);
+}
+
+/* Companion to the rule above: hides the bar itself with zero transition
+   at first paint, for the hard-reload/soft-nav paths where the attribute
+   is already present before AnnouncementBar's own React state/CSS-module
+   .dismissed class has caught up. CSS Modules class names are hashed and
+   unreachable from this global sheet, so AnnouncementBar.tsx also carries
+   this plain, stable class. Values must stay identical to .dismissed in
+   AnnouncementBar.module.css — first-paint style resolution isn't a CSS
+   transition (no prior painted state to animate from), so this is instant
+   regardless of prefers-reduced-motion. */
+html[data-announcement-dismissed="true"] .js-announcement-bar {
+  max-height: 0;
+  opacity: 0;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

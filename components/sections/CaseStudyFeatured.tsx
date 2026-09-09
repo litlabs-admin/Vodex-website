@@ -6,11 +6,13 @@ import type { CaseStudy } from "@/lib/case-studies";
 import styles from "./CaseStudyFeatured.module.css";
 
 /**
- * Self-contained section: header + the one featured case study card +
- * cross-sell line — mirrors the layout the reference mockup shows, but
- * built as a new component rather than editing the shared
- * FeaturedCaseStudy (used on the landing page) to match it. See CLAUDE.md
- * §19 for why.
+ * Self-contained section: header + the one featured case study banner +
+ * cross-sell line. Rebuilt to match the reference mockup's literal
+ * full-bleed-photo-with-overlay layout (per direct user request, reversing
+ * the earlier "build it like Blog instead" decision — see CLAUDE.md §19):
+ * a dark-scrim photo banner with the CTA copy overlaid bottom-left and a
+ * stats + "Learn More" column overlaid on the right, rather than a
+ * side-by-side photo/white-card split.
  */
 export function CaseStudyFeatured({ study }: { study: CaseStudy }) {
   return (
@@ -21,40 +23,55 @@ export function CaseStudyFeatured({ study }: { study: CaseStudy }) {
           <h2 id="featured-case-study-title" className={styles.title}>
             Debt recovery, <span className="accent">improved by 3X</span>
           </h2>
+          <p className={styles.lead}>
+            Three conversation flows our agents run every day for collections
+            teams, from friendly reminders to payment negotiation.
+          </p>
         </Entrance>
 
-        <Entrance delay={80} as="article" className={styles.card}>
-          <div className={styles.thumb}>
-            <Image
-              src={study.thumb}
-              alt=""
-              fill
-              sizes="(max-width: 900px) 100vw, 620px"
-              style={{ objectFit: "cover" }}
-              priority
-            />
-          </div>
-          <div className={styles.body}>
-            <span className={styles.tag}>{study.industry}</span>
-            <p className={styles.excerpt}>{study.description}</p>
+        <Entrance delay={80} className={styles.banner}>
+          <Image
+            src="/assets/case-study-featured-bg.jpg"
+            alt=""
+            fill
+            sizes="1327px"
+            className={styles.bg}
+          />
+          <div className={styles.scrim} />
 
-            <div className={styles.stats}>
-              <div className={styles.stat}>
-                <p className={styles.statNumber}>{study.statNumber}</p>
-                <p className={styles.statLabel}>{study.statLabel}</p>
-              </div>
-              {study.secondStatNumber && (
-                <div className={styles.stat}>
-                  <p className={styles.statNumber}>{study.secondStatNumber}</p>
-                  <p className={styles.statLabel}>{study.secondStatLabel}</p>
-                </div>
-              )}
+          <div className={styles.grid}>
+            <div className={styles.content}>
+              <span className={styles.tag}>{study.industry}</span>
+              <h3 className={styles.cardTitle}>{study.title}</h3>
+              <p className={styles.excerpt}>{study.description}</p>
+              <Link
+                href={`/resources/case-studies/${study.slug}`}
+                className={styles.cta}
+              >
+                Read Case Study
+                <ArrowRight />
+              </Link>
             </div>
 
-            <Link href={`/resources/case-studies/${study.slug}`} className={styles.cta}>
-              Read Case Study
-              <ArrowRight />
-            </Link>
+            <div className={styles.side}>
+              <div className={styles.stats}>
+                <div className={styles.stat}>
+                  <p className={styles.statNumber}>{study.statNumber}</p>
+                  <p className={styles.statLabel}>{study.statLabel}</p>
+                </div>
+                {study.secondStatNumber && (
+                  <div className={styles.stat}>
+                    <p className={styles.statNumber}>{study.secondStatNumber}</p>
+                    <p className={styles.statLabel}>{study.secondStatLabel}</p>
+                  </div>
+                )}
+              </div>
+
+              <Link href="/products" className={styles.learnMore}>
+                Learn More About Vodex AI
+                <ArrowRight />
+              </Link>
+            </div>
           </div>
         </Entrance>
 

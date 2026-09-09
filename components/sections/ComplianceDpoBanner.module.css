@@ -5,14 +5,36 @@
 
 /* Measured off the PDF crop: ~1184px wide, centred, sharp corners (verified
    by zooming into both the top and bottom corners at 8x — no rounding,
-   unlike a couple of other dark banners on this site). */
+   unlike a couple of other dark banners on this site). Extended with a
+   photo background + scrim in place of the flat `--ink` fill, same
+   treatment as InvestorContactBanner's own copy-adapted version. */
 .banner {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   max-width: 1184px;
   margin-inline: auto;
   border-radius: 0;
-  background: var(--ink);
   padding: 64px 40px;
   text-align: center;
+}
+
+.bg {
+  z-index: -2;
+  object-fit: cover;
+}
+
+.banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(10, 8, 8, 0.6);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
 }
 
 .eyebrow {

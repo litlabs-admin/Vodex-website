@@ -2350,25 +2350,76 @@ sentence — that one **was** kept verbatim in `CaseStudyGrid`.
   `/resources/case-studies`** (set in §17, before this page existed) — no
   change needed there; it now resolves.
 
+### Round 2 — `CaseStudyFeatured` rebuilt to match the mockup's literal overlay layout
+
+The user reversed the round-1 decision above: pasted the original mockup
+screenshot again alongside a screenshot of the shipped "blog-style"
+`CaseStudyFeatured` and asked for the two to match, i.e. **the literal
+full-bleed-photo-with-overlay banner from the mockup is now what's built**,
+not the Blog-page side-by-side card shape. This directly supersedes bullet
+2 under "What was asked" above — kept in place for history, but no longer
+what's live.
+
+- **`CaseStudyFeatured.tsx`/`.module.css` rebuilt**: the photo is now a
+  full-bleed `next/image fill` background behind a dark left-to-right
+  gradient scrim (same `isolation: isolate` pattern as
+  `FeaturedCaseStudy`/`EnterpriseBand`), with content overlaid in a
+  2-column grid instead of sitting in a separate white/gray panel beside
+  the photo: left column is a dark pill tag (`study.industry`), a white
+  `study.title` heading, `study.description`, and an orange "Read Case
+  Study" button, all bottom-aligned over the photo; right column stacks
+  the 2 stat cards (`study.statNumber`/`secondStatNumber`) above a new
+  full-width white "Learn More About Vodex AI" link bar (→ `/products`,
+  reusing the `ArrowRight` icon) — this bar has no equivalent anywhere else
+  in the codebase; it's new, modeled on `FeaturedCaseStudy.module.css`'s
+  `.cta` bar (space-between layout, arrow nudge on hover).
+- **The header's dropped lead line is back**, per this same reversal — "The
+  one line that was NOT reproduced, and why" above is also superseded: the
+  user's own reference for this round shows that exact sentence present
+  and asked to match it, so `CaseStudyFeatured`'s header now renders
+  eyebrow + heading + the "Three conversation flows…" lead again. Treat
+  this as the user overriding the earlier template-artifact judgment call
+  for this specific line, not a correction of a mistake.
+- **New background asset**: `public/assets/case-study-featured-bg.jpg`,
+  copied fresh from `vodex assets/Frame 2147227676.jpg` per explicit user
+  instruction — the same source file already used as the Debt Collection
+  solutions page's `debt-collection-integration-bg.jpg` (§15), copied again
+  here as an independently-swappable, page-specific file rather than
+  importing that page's copy directly, same precedent as every other
+  cross-page asset reuse in this project. `case-study-bg.jpg` (the old
+  background, still referenced by `lib/case-studies.ts`'s featured entry
+  thumbnail metadata, unused by the component itself now) was left in
+  place, not deleted.
+
 ### Status / Approved / Next
 
-**Status:** clean `tsc --noEmit` + `next build` (21 routes,
-`/resources/case-studies` included). Curl smoke-test confirmed `/` and all
-4 Resources routes (`call-samples`, `case-studies`, `blog`, `videos`)
-return 200 on a fresh `next dev` server with no dev-log errors; server
-stopped cleanly. No Playwright visual pass this round either (same
-environment friction noted in §16/§17/§18) — not yet visually confirmed.
+**Status:** clean `tsc --noEmit`. Production build verified against an
+isolated `distDir: ".next-verify"` override in `next.config.ts` (reverted
+immediately after, confirmed via `git diff` showing zero net change to
+that file, `.next-verify` deleted afterward) rather than against the
+default `.next` — a `next dev` server owned by a different session/process
+was already running against the project's real `.next` directory, and this
+project has hit the "production build + dev server sharing one `.next`
+dir corrupts dev's manifests" gotcha (§23/§24) enough times that it's now
+standard practice here to never risk it. Build succeeded cleanly, all 25
+routes including `/resources/case-studies` compiled. No Playwright visual
+pass this round — the already-running dev server's own `.next` was found
+mid-session to be in exactly that corrupted state (500s on every route,
+pre-existing, not caused by this round's isolated build) and was
+deliberately left untouched rather than deleted/restarted, since it
+belongs to a different process than this one. Per the user's explicit
+"just build clean, I will verify manually" instruction, no dev server was
+started or stopped by this round, and nothing was left running afterward.
 
 **Approved:** Nothing yet — not reviewed by the user, same pending-review
 status every section in this file uses before explicit sign-off.
 
-**Next:** Wait for the user's review — in particular of the "built like the
-blog page" reinterpretation of the featured banner (a real deviation from
-the mockup's literal layout, chosen because it was explicitly requested
-over both original options), and of the 5 invented grid case studies
-(grounded in the Debt Collection page's industries, but still new copy
-pending review, same status as every other invented-but-grounded content
-block in this file).
+**Next:** Wait for the user's review of the rebuilt overlay layout and the
+new background photo. If the existing `/resources/case-studies` dev server
+is still returning 500s, it needs a manual `.next` clear + restart by
+whoever owns that process (same fix this exact corruption has needed
+twice before, per §23/§24) — this session did not do it, to avoid touching
+a process it didn't start.
 
 ---
 
@@ -4764,3 +4815,435 @@ Google Cloud/MongoDB/Krisp logos (official brand assets, not supplied
 files — confirm they're an acceptable source); and (3) the "Partnerships"
 eyebrow fix and the kept-verbatim duplicate 2024 timeline entry, both
 already confirmed choices but worth a final look in context.
+
+---
+
+## 25. Global 404 Page
+
+> Reference: a supplied flat illustration,
+> `C:\Users\Aashutosh\Downloads\404-concept-with-desert.png` (2000×1614,
+> genuine RGBA alpha — confirmed via PIL, not a flat white canvas) — a
+> desert scene (orange sun, dark-maroon "404" numerals, cacti, a floating
+> sand-island platform) with "Oops! Seems like something went wrong…"
+> baked into the artwork as pixels. No PDF, no mockup — user-supplied
+> asset only, first genuinely new page in this project with no reference
+> document at all beyond the one image.
+
+`app/not-found.tsx` did not exist before this round — confirmed via glob
+before building (only route-scoped precedent was
+`app/resources/blog/[slug]/not-found.tsx`). Since the root `app/layout.tsx`
+renders no chrome of its own (every page composes
+`AnnouncementBar`/`Navbar`/`Footer` itself), the new global 404 follows
+that one existing precedent's composition exactly:
+`<header className="siteHeader"><AnnouncementBar /><Navbar /></header>` →
+`<main>` → `<Footer />`.
+
+### Implementation decisions
+
+- **Background is `var(--ink)`, not `var(--bg)`** — a deliberate deviation
+  from the blog page's own (light-bg) `not-found.tsx`. The supplied
+  artwork's entire palette is warm (orange sun/sand, dark-maroon numerals,
+  orange cacti) against a transparent canvas; `var(--ink)` is this
+  project's own established "make imagery pop" dark-section token (`Why`,
+  `Solutions`, `FinalCta`, `Footer` all use it) and is the genuine
+  contrasting choice here — a light background would nearly match the
+  PNG's own white canvas and wash the artwork out.
+- **`.section` is close to full-viewport height**
+  (`min-height: calc(100vh - var(--header-h))`, flex-centered) rather than
+  the blog 404's plain `padding-block` block — makes the dark/orange
+  contrast the whole point of the page instead of a small text block.
+- **⚠️ The supplied image was cropped before use — its own baked-in "Oops!
+  Seems like something went wrong…" caption is dark-maroon text, and on
+  this page's dark `--ink` background that caption was nearly invisible**
+  (confirmed by a real Playwright screenshot showing it as a barely-visible
+  smudge, not by eyeballing). Row-gap detection via PIL found the
+  illustration itself spans rows 281–1385 of the 1614px-tall source, with
+  the caption living in two separate text blocks below that (1487–1533,
+  1547–1592) — cropped to just the illustration (`public/assets/
+  404-desert-illustration.png`, 2000×1134, with a 15px pad) and dropped the
+  caption entirely, since a real, accessible `<h1>Page not found</h1>` +
+  lead paragraph already carry that message in legible on-dark text (see
+  next bullet) — keeping the baked-in caption too would have been both
+  illegible and redundant.
+  - **Renamed rather than overwritten in place** (`404-desert.png` →
+    `404-desert-illustration.png`) specifically to dodge a stale
+    `next/image` optimizer cache entry: the first crop was saved over the
+    original filename, and the already-running dev server kept serving the
+    old cached optimized image (keyed on url+width+quality, not file
+    content) — the ghost caption text was still faintly visible in a
+    second screenshot even after the source file was fixed. A fresh
+    filename sidesteps the cache entirely; **if a supplied image asset
+    ever needs correcting after `next/image` has already served it once
+    from a running dev server, rename rather than overwrite the same
+    path** — don't assume touching the file content alone invalidates the
+    Next.js image cache.
+- **A real `<h1>Page not found</h1>` + short lead paragraph were added
+  even though the image already says "Oops!…" baked in as pixels** — that
+  text isn't selectable or screen-reader-accessible, so the page still
+  needs genuine semantic content. Kept deliberately short/different
+  wording from the image's own caption (now cropped out anyway) rather
+  than restating it.
+- **CTA**: `<Button href="/" variant="light" withArrow>Back to Home</Button>`
+  — `Button.tsx`'s `light` variant (white pill, `--ink` text) is this
+  codebase's established on-dark-section button choice (confirmed against
+  `Button.module.css`'s actual variant list: `primary | secondary | light
+  | dark`), not `primary` (orange-on-orange would fight the sun/cacti) or
+  `secondary` (documented as the "on photography" outline variant, not
+  right for a solid `--ink` background).
+- **`Entrance`** (`components/ui/Entrance.tsx`) staggers image → h1 → lead
+  → CTA at 0/140/200/260ms, same hero-reveal convention used elsewhere
+  (e.g. `Hero.tsx`'s badge→H1→lead→CTA stagger) — pure CSS, respects
+  `prefers-reduced-motion` via the existing global rule, no new motion
+  code needed.
+- No new reusable component was extracted — matches the blog `not-found.tsx`
+  precedent of a self-contained page + colocated `.module.css`, since this
+  is (so far) the only global-scope 404 in the project.
+
+### Status / Approved / Next
+
+**Status:** clean `tsc --noEmit`. Verified against an already-running
+`next dev` server (owned by a different process — not started or stopped
+by this round, per this project's established "don't touch a dev server
+you didn't start" caution) rather than running a separate `next build`,
+specifically to avoid the `.next`-directory collision documented at the
+end of §23/§24. Hit an unmatched route directly and confirmed a real
+`404` HTTP status. Playwright-verified at 1516/430px (scroll-and-wait-for-
+`img.complete` method) — zero horizontal overflow at either width, image
+renders with genuine transparency against `--ink` (no white box), "Back to
+Home" resolves to `/`. One console warning surfaced during verification
+(a hydration mismatch on the Footer's newsletter `<input>`'s
+`caret-color`) — traced to a browser-injected style with no matching code
+anywhere in `Footer.tsx`/the app (grepped, zero matches) and reproduced
+only when Playwright's `fullPage` screenshot scrolled through the whole
+page, not on a plain page load of the homepage; treated as a Chromium
+autofill-heuristic artifact, not a real regression, and not something this
+round's code could have caused. No process was left running after
+verification (browser closed by the script itself; no separate dev/build
+server was started this round).
+
+**Approved:** Nothing yet — not reviewed by the user, same pending-review
+status every section in this file uses before explicit sign-off. User
+said "just build clean … I will verify result manually" this round.
+
+**Next:** Wait for the user's review of the desert-illustration crop (the
+baked-in caption is now gone, replaced by real `<h1>`/lead text) and the
+dark-background choice.
+
+---
+
+## 26. Global — Announcement Bar dismiss
+
+> No PDF/mockup — a direct functional fix, prompted by the user flagging
+> the shared announcement bar (`components/layout/AnnouncementBar.tsx`,
+> rendered identically at the top of every one of the 24+ pages in this
+> project) as "not doing the job of banner/announcement" since it had no
+> way to close it.
+
+### Implementation
+
+- **`AnnouncementBar.tsx` converted to a client component** (`"use
+  client"`) owning `dismissed: boolean` state. A new close `<button>`
+  (plain `XIcon` from `icons.tsx`, `aria-label="Dismiss announcement"`)
+  sits as a sibling of `.inner`, absolutely positioned at
+  `right: var(--page-x)` — the same page-edge inset every other section
+  aligns to — rather than inline in the centered flex row, since the
+  reference screenshot shows it pinned to the bar's far right edge, not
+  next to "Learn More".
+- **Dismissal persists via `localStorage`** (`vodex-announcement-dismissed`
+  key), confirmed with the user directly (asked rather than assumed:
+  persist-across-visits vs. session-only) — this is the project's first
+  use of `localStorage` anywhere. Both the read (on mount, in a `useEffect`)
+  and the write (on click) are wrapped in try/catch, since private
+  browsing / blocked storage can throw; a failed read just leaves the bar
+  visible, a failed write just means the dismissal doesn't survive reload
+  — no user-facing error either way.
+- **SSR still always renders the bar** (`dismissed` starts `false`) — the
+  `useEffect` check runs after hydration, so a returning user who
+  previously dismissed it sees a brief flash of the bar before it
+  collapses. Accepted as standard/expected for this pattern rather than
+  engineered around (e.g. no inline anti-flash `<script>`), consistent
+  with this project not having any other pre-hydration state-read
+  mechanism.
+- **Collapse is a plain CSS `max-height`/`opacity` transition** on `.bar`
+  (`var(--dur)`/`var(--ease)`, a `.dismissed` modifier class sets both to
+  `0`) rather than an abrupt unmount — no JS animation, consistent with
+  §3's "plain CSS, no library" rule. Governed by the existing global
+  `prefers-reduced-motion` override in `globals.css` with no new
+  component-level handling needed — verified via Playwright
+  `reducedMotion: "reduce"` emulation that the collapse lands on the final
+  0/0 state almost immediately after click rather than animating.
+  `Navbar`'s `position: sticky; top: 0` needed no change: sticky
+  positioning is computed from the scroll container, not a fixed offset,
+  so once the bar collapses out of normal flow the nav simply sits at the
+  top of the viewport — confirmed via a real bounding-box check
+  (`nav.getBoundingClientRect().top === 0`) immediately after dismiss.
+- At the ≤480px breakpoint, `.inner` gained `padding-right: 32px` (close
+  button width + clearance) so the centered tag+link content never runs
+  under the absolutely-positioned close button at narrow widths, even for
+  unusually long text — belt-and-braces on top of the fact that the
+  centered content is already narrower than the available space at every
+  tested width.
+- **A real timing gotcha hit during verification, not a code bug**: an
+  early Playwright check waited only 300ms after `page.reload()` before
+  reading the bar's computed style and saw it still mid-transition
+  (`max-height` partway between 44px and 0) — misread at first as "the
+  dismissed flag isn't being read on mount." Adding a temporary
+  `console.log` inside the mount effect confirmed `localStorage.getItem`
+  *was* returning the persisted value correctly on every reload; the
+  effect was just firing later than 300ms post-`load` in this dev-mode
+  environment (React DevTools + HMR client overhead). Increasing the
+  post-reload wait to ~1s resolved it — not a race condition in the
+  shipped code, just an under-provisioned test wait. **If a future
+  Playwright check in this project reads computed style/state
+  immediately after a reload and gets an unexpected mid-value, suspect
+  the wait being too short for hydration/mount effects before suspecting
+  the component logic.**
+
+### Status
+
+Clean `tsc --noEmit`. Playwright-verified on a scratch `next dev` server
+(started and stopped cleanly by this round, no hanging process): fresh
+visit shows the bar; clicking or Enter-keying the close button collapses
+it and pins `Navbar` to the viewport top; a reload in the same browser
+context stays dismissed (`localStorage` persisted); a fresh browser
+context (simulating a new visitor / cleared storage) shows the bar again;
+`reducedMotion: "reduce"` emulation collapses near-instantly with no janky
+animation; 430px and 900px screenshots confirm no overlap between the
+close button and the tag/message/link at any width. The one console
+message observed (`Failed to load resource: 404`) is the already-
+documented, pre-existing `/dros` route not existing yet (same class of
+RSC-prefetch 404 noise already flagged as non-regression in §23) — the
+"Learn More" link's destination, unrelated to this round's change.
+
+**Approved:** Not yet reviewed by the user.
+
+**Next:** Wait for the user's review of the dismiss placement/behavior.
+
+### Round 2 — full-viewport hero sections left a gap after dismiss
+
+The user reported (with a screenshot) that dismissing the banner left a
+blank white strip at the bottom of a full-viewport hero. Root cause:
+`--header-h` (`globals.css`, `calc(var(--announce-h) + var(--nav-h))` =
+108px) is a **static** token, baked in at CSS-parse time — every
+full-viewport section anchored to it (`Hero.module.css`, `ProductHero
+.module.css`, `SolutionHero.module.css` — all `min-height: calc(100vh -
+var(--header-h))` — plus `ArticleHeader.module.css` and both
+`not-found.module.css` files, which use it in `padding-block`) kept
+subtracting the full 108px even after the announcement bar visually
+collapsed to 0px, so the section's `min-height` stayed short by exactly
+the bar's 44px — the blank strip the user saw.
+
+**Fix, not a per-component patch**: `AnnouncementBar.tsx` now sets
+`data-announcement-dismissed="true"` on `<html>` once the collapse is
+visually done, and `globals.css` gained one rule —
+`html[data-announcement-dismissed="true"] { --header-h: var(--nav-h); }`
+— right after `.siteHeader` (`app/globals.css`). Every section above
+reads `--header-h` via `var()`, so they all shrink to fill the newly-
+available space automatically; nothing in `Hero`/`ProductHero`/
+`SolutionHero`/`ArticleHeader`/either `not-found` page needed touching.
+**If a future section anchors its own sizing to `--header-h`, it gets
+this fix for free — no new wiring needed.**
+
+- **Timed to the actual collapse, not a magic duration.** The attribute is
+  set from an `onTransitionEnd` handler on `.bar` itself (checked against
+  `e.target === barRef.current && e.propertyName === "max-height"`, so the
+  simultaneous `opacity` transition firing its own `transitionend` doesn't
+  double-fire the logic) rather than a `setTimeout(fn, 220)` guessing
+  `--dur`'s value — if `--dur` or the easing ever change, this still fires
+  at exactly the right moment, and it fires correctly-fast under
+  `prefers-reduced-motion` too (verified: attribute flips to `true` and
+  `--header-h` reads `64px` within ~300ms of a reduced-motion click, vs.
+  the normal ~220ms + a hair of scheduling overhead otherwise).
+- **The mount-effect's cleanup removes the attribute on unmount.**
+  `AnnouncementBar` isn't hoisted into `app/layout.tsx` — every page
+  composes its own copy inside its own `<header className="siteHeader">`
+  (confirmed by checking `app/layout.tsx`, which renders only
+  `{children}`) — so a client-side route change unmounts the old page's
+  `AnnouncementBar` and mounts a fresh one. Without the cleanup, a
+  previously-dismissed session's `--header-h: 64px` override would still
+  be sitting on `<html>` for a split second before the new page's own
+  mount effect re-derives it, which is harmless in practice (the new
+  page's effect always resolves the same way within one more
+  collapse-transition), but removing it on unmount keeps the attribute
+  from ever describing a page that isn't actually rendering a collapsed
+  bar.
+- **Confirmed via bounding-box math, not just the CSS variable's raw
+  value**: on `/products` at a 1516×900 viewport, before dismiss the hero
+  section's bottom edge sits at `y=900` because `min-height: calc(100vh -
+  108px)` plus the 108px header above it already summed to the full
+  viewport; after dismiss, `--header-h` reads `64px`, the hero's own
+  `min-height` recomputes to `836px` (`900 - 64`), and — critically — its
+  bottom edge **still** lands at exactly `y=900`, i.e. the gap that used
+  to be 44px of blank space is now 0. Re-confirmed the same way after a
+  `localStorage`-persisted reload (mount → read → collapse → transitionend
+  → attribute set, all over again, landing on the same `64px`/`0px gap`
+  result) and under `reducedMotion: "reduce"`.
+- **Broader regression pass**: `/`, `/products`,
+  `/solutions/payment-reminders`, `/resources/faq`, `/pricing` at
+  1516px/430px, banner dismissed on each — zero console errors (excluding
+  the pre-existing, unrelated `/dros`/`/demo`-style RSC-prefetch 404 noise
+  already documented as non-regressions elsewhere in this file), zero
+  horizontal overflow, `--header-h` correctly reads `64px` post-dismiss on
+  every one of the 10 checks.
+
+**Status:** Clean `tsc --noEmit`. Dev server started and stopped cleanly
+this round (verified down via a failed `curl` on its port afterward) —
+no hanging process.
+
+**Approved:** Not yet reviewed by the user — same pending-review status as
+the dismiss feature itself above.
+
+### Round 3 — the reload itself still looked "shaky"
+
+The user reported, after Round 2 shipped: *"when i close the banner and
+reload again, the banner shows for 1 sec, it closes, the white space is
+shown and then it is gone... it looks shaky."* Root cause: SSR has no
+knowledge of `localStorage`, so a hard reload always server-renders the
+bar fully visible; only after hydration did the (then-`useEffect`-based)
+mount logic read `localStorage` and trigger the real collapse animation —
+so a returning, already-dismissed visitor watched a flash → an animated
+collapse → a gap (until `--header-h` caught up) → a snap, all inside
+~1s. Each piece worked correctly in isolation; strung together on load it
+read as janky. **This reverses Round 1's explicit decision** ("no inline
+anti-flash `<script>`... consistent with this project not having any
+other pre-hydration state-read mechanism") — flagged directly rather than
+leaving that paragraph stale, since the user's concrete complaint outranks
+the earlier hypothetical.
+
+A Plan subagent validated the fix approach before it was built (confirmed
+against the actual Next.js docs, not assumed) — two things from that
+review were load-bearing, not optional polish:
+
+- **The blocking-script mechanism had to change mid-implementation, caught
+  by testing, not assumed correct from docs alone.** First built with
+  `next/script strategy="beforeInteractive"` (the officially documented
+  primitive for this). Verified via `curl` against the raw served HTML
+  (`next dev` **and** an isolated production build, `next.config.ts`'s
+  `distDir` temporarily pointed at `.next-verify` per the established
+  §23/§24 collision-avoidance method, reverted immediately after with a
+  `git diff` confirming zero net change) that Next.js's own
+  `beforeInteractive` implementation streams the actual `<script>` tag in
+  via a `self.__next_s.push(...)` call physically placed just before the
+  trailing webpack chunk loader — near the **end** of `<body>`, not
+  literally in `<head>` as the name suggests. It still runs before
+  hydration, but a Playwright filmstrip proved that isn't the same
+  guarantee as "before first paint": on `next dev` specifically (extra
+  HMR/DevTools scripts ahead of it in the stream widen the window), a real
+  mid-transition `max-height` value (e.g. `19.6px`) was captured
+  immediately after `page.reload()` — i.e. the browser painted the
+  undismissed bar at least once, `.bar`'s own always-on `transition`
+  property then animated the correction, reproducing the exact flash the
+  fix was supposed to remove. **The isolated production build, tested the
+  same way, showed zero flash** — so this was a real but dev-mode-only
+  gap, not a fabricated one; still worth closing, since dev mode is what
+  gets manually reviewed. **Fix:** dropped `next/script` entirely in favor
+  of a hand-written `<script id="announcement-dismissed-init">` placed as
+  the literal first child of `<body>` in `app/layout.tsx` (before
+  `{children}`) — an ordinary parser-blocking inline script always
+  executes synchronously exactly where the parser encounters it, so as
+  the *first* thing in `<body>`, it now runs before literally anything
+  else there, including whatever Next.js injects itself, regardless of
+  dev vs. prod. Re-verified with the same filmstrip method: 7/7 samples
+  across the first ~200ms of a reload already showed the bar collapsed and
+  `--header-h` already at `64px`, first sample at 9ms. **If a future
+  anti-flash script in this project ever needs a stronger guarantee than
+  `next/script beforeInteractive` provides, don't assume the strategy name
+  means what it sounds like — verify the actual served HTML's script
+  placement via `curl` first**, the same lesson as several other
+  "measure, don't assume" findings elsewhere in this file, just applied to
+  Next.js's own tooling instead of a PDF/mockup this time.
+  - Duplicates the same `localStorage` key / `data-*` attribute literal
+    strings `AnnouncementBar.tsx` uses, on purpose rather than imported —
+    this script has to be a plain string reachable before any client JS
+    module graph loads, and `AnnouncementBar.tsx` is a `"use client"`
+    component. Comment cross-references both files so the two don't
+    silently drift if the key/attribute ever changes.
+  - **A genuine new hydration-mismatch warning surfaced once the script
+    ran early enough to matter** — with the *old*, late-executing
+    `next/script` version, the attribute often landed on `<html>` only
+    *after* React had already hydrated/compared that node, so the
+    mismatch went unnoticed; once the script reliably ran before
+    hydration, React correctly started flagging that `<html>`'s real DOM
+    attributes (this externally-added one) didn't match what
+    `RootLayout`'s own JSX declared. Fixed the standard, sanctioned way —
+    `suppressHydrationWarning` on the `<html>` element itself (the same
+    pattern `next-themes` and other anti-FOUC libraries use for exactly
+    this "an external script may have already touched this element before
+    hydration" case) — scoped to just that one element, not deep/recursive.
+- **The mount effect changed from `useEffect` to an isomorphic
+  `useLayoutEffect`** (`typeof window !== "undefined" ? useLayoutEffect :
+  useEffect`, guarding against React's "useLayoutEffect does nothing on
+  the server" warning during Next's SSR pass of this client component).
+  This is what covers **client-side (soft) navigation between pages** —
+  confirmed the blocking script genuinely cannot help there (a browser
+  never re-executes an inline script it already ran, and Next doesn't
+  re-parse the document on a route change), and confirmed via grep that
+  `AnnouncementBar` isn't hoisted into `app/layout.tsx` — every one of the
+  23 pages composes its own instance inside its own `<header
+  className="siteHeader">`, so a soft nav genuinely unmounts/remounts a
+  fresh instance with no blocking script around to help it.
+  `useLayoutEffect` runs synchronously after DOM mutation but before the
+  browser paints, so flipping `dismissed` to `true` there lands in the
+  very first painted frame for that mount — no flash, and mechanically no
+  CSS transition ever plays for this path (there's no prior painted frame
+  with a different value to animate from).
+  - **A real correctness gap the Plan subagent caught, not just a
+    "flagged risk"**: because no transition plays on this path, `.bar`'s
+    `handleTransitionEnd` — which is what sets the `--header-h`-shrinking
+    attribute — never fires for it either. Without a direct fix, a
+    soft-navigated already-dismissed page would silently keep the full
+    108px `--header-h` forever, reintroducing Round 2's exact gap bug
+    through a different door. Fixed by calling
+    `document.documentElement.setAttribute(HEADER_ATTR, "true")` directly
+    inside the layout effect's own `if (localStorage.getItem(...))`
+    branch, right alongside `setDismissed(true)` — not left to
+    `handleTransitionEnd`, which now only ever fires for the one path it's
+    actually reachable from: a real, live, animated click-to-dismiss.
+- **`app/globals.css`** gained a companion rule to the existing
+  `--header-h` override: `html[data-announcement-dismissed="true"]
+  .js-announcement-bar { max-height: 0; opacity: 0; }`. CSS Modules class
+  names are hashed/unreachable from this global sheet, so
+  `AnnouncementBar.tsx`'s wrapper div carries this plain, stable,
+  unconditional class alongside its existing `styles.bar` module class
+  (static string, no hydration-mismatch risk — confirmed, since it's
+  identical in SSR output and the client's first render). First-paint
+  style resolution isn't a CSS *transition* (no prior painted state to
+  animate from), so this is instant regardless of
+  `prefers-reduced-motion` by construction, not by relying on the
+  reduced-motion media query.
+- **The live click-to-dismiss path is completely unchanged** —
+  `handleDismiss` and `handleTransitionEnd` still exclusively own the
+  real, animated, ~220ms user-visible collapse; none of this round's
+  changes touch it. Re-verified specifically that it still shows genuine
+  interpolated `max-height`/`opacity` values mid-collapse (not an instant
+  jump) after all the above changes landed.
+
+**Status:** Clean `tsc --noEmit`. Playwright-verified on a fresh `next dev`
+server (started and stopped cleanly, no hanging process) with a filmstrip
+method (multiple computed-style samples across the first ~200-300ms after
+the triggering action, not just a before/after pair — the same lesson
+Section 6 v2's own verification note already established elsewhere in
+this file: a couple of screenshots seconds apart can miss exactly this
+class of transient bug): hard reload shows zero flash across 7 samples
+(first at 9ms); a second reload in the same context stays instantly
+collapsed; soft navigation via a real `page.click()` on a nav link (not
+`page.goto()`) shows zero flash on the destination page; a fresh visitor
+(empty storage) still sees the bar normally; live click-to-dismiss still
+visibly animates over real interpolated values and settles correctly;
+`reducedMotion: "reduce"` still collapses near-instantly on a live click;
+`localStorage` throwing (private-mode emulation) leaves the bar visible
+with no uncaught error; zero console warnings (including specifically
+checked for the `useLayoutEffect`-on-server and hydration-mismatch
+warnings this round's own changes could plausibly have introduced). Also
+re-ran the existing multi-page/multi-width sweep (`/`, `/products`,
+`/solutions/payment-reminders`, `/resources/faq`, `/pricing` at
+1516/430px, banner pre-dismissed on each) — zero overflow, zero new
+console errors. The isolated production-build check used to diagnose the
+`next/script` timing gap left no trace afterward (`next.config.ts`
+confirmed zero net diff via `git diff`, `.next-verify` removed).
+
+**Approved:** Not yet reviewed by the user — same pending-review status as
+Rounds 1-2 above.
+
+**Next:** Wait for the user's review of the dismiss control and both
+follow-up fixes together.
