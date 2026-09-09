@@ -4,20 +4,25 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
-import { LoginIcon } from "@/components/ui/icons";
+import { ChevronDownIcon, LoginIcon } from "@/components/ui/icons";
 import { useIsomorphicLayoutEffect } from "@/components/ui/useIsomorphicLayoutEffect";
-import { SolutionsMegaMenu } from "./SolutionsMegaMenu";
-import { ResourcesMegaMenu } from "./ResourcesMegaMenu";
-import { CompanyMegaMenu } from "./CompanyMegaMenu";
+import { SolutionsMegaMenu, MAIN_SOLUTIONS } from "./SolutionsMegaMenu";
+import { ResourcesMegaMenu, RESOURCES_ITEMS } from "./ResourcesMegaMenu";
+import { CompanyMegaMenu, COMPANY_ITEMS } from "./CompanyMegaMenu";
 import styles from "./Navbar.module.css";
 
-const NAV_LINKS = [
-  { label: "Products", href: "/products" },
-  { label: "Solutions", href: "/solutions" },
-  { label: "Resources", href: "/resources" },
-  { label: "Company", href: "/company" },
-  { label: "Pricing", href: "/pricing" },
-];
+// "Solutions"/"Resources"/"Company" have no hub page (none is planned — see
+// CLAUDE.md) — they're hover-only triggers on desktop (each renders its own
+// mega-menu, see the imports above) and tap-to-expand accordions on mobile
+// (built inline below, since there's no hover on touch). "Products"/
+// "Pricing" are the only two plain, directly-navigable top-level links —
+// both the desktop <ul> and the mobile panel below hand-place all five
+// entries in the same Products/Solutions/Resources/Company/Pricing order.
+const MOBILE_GROUPS = [
+  { label: "Solutions", items: MAIN_SOLUTIONS },
+  { label: "Resources", items: RESOURCES_ITEMS },
+  { label: "Company", items: COMPANY_ITEMS },
+] as const;
 
 // Below this, the navbar reads as part of the hero (transparent, blended
 // into its backdrop); past it, it solidifies. A small non-zero value (not 0)
@@ -35,6 +40,7 @@ type NavbarProps = {
 export function Navbar({ solid = false }: NavbarProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [openMobileGroup, setOpenMobileGroup] = useState<string | null>(null);
 
   useIsomorphicLayoutEffect(() => {
     if (solid) return;
@@ -72,24 +78,19 @@ export function Navbar({ solid = false }: NavbarProps) {
         </Link>
 
         <ul className={styles.links}>
-          {NAV_LINKS.map((item) => {
-            if (item.label === "Solutions") {
-              return <SolutionsMegaMenu key={item.label} href={item.href} />;
-            }
-            if (item.label === "Resources") {
-              return <ResourcesMegaMenu key={item.label} href={item.href} />;
-            }
-            if (item.label === "Company") {
-              return <CompanyMegaMenu key={item.label} href={item.href} />;
-            }
-            return (
-              <li key={item.label}>
-                <Link href={item.href} className={styles.link}>
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
+          <li>
+            <Link href="/products" className={styles.link}>
+              Products
+            </Link>
+          </li>
+          <SolutionsMegaMenu />
+          <ResourcesMegaMenu />
+          <CompanyMegaMenu />
+          <li>
+            <Link href="/pricing" className={styles.link}>
+              Pricing
+            </Link>
+          </li>
         </ul>
 
         <div className={styles.actions}>
@@ -111,7 +112,13 @@ export function Navbar({ solid = false }: NavbarProps) {
             className={`${styles.toggle} ${open ? styles.open : ""}`}
             aria-expanded={open}
             aria-controls="mobile-nav"
-            onClick={() => setOpen((value) => !value)}
+            onClick={() =>
+              setOpen((value) => {
+                const next = !value;
+                if (!next) setOpenMobileGroup(null);
+                return next;
+              })
+            }
           >
             <span className={styles.toggleBar} />
             <span className={styles.toggleBar} />
@@ -128,16 +135,67 @@ export function Navbar({ solid = false }: NavbarProps) {
         className={`${styles.panel} ${open ? styles.panelOpen : ""}`}
       >
         <div className={`container ${styles.panelInner}`}>
-          {NAV_LINKS.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className={styles.panelLink}
-              onClick={() => setOpen(false)}
-            >
-              {item.label}
-            </Link>
-          ))}
+          <Link
+            href="/products"
+            className={styles.panelLink}
+            onClick={() => setOpen(false)}
+          >
+            Products
+          </Link>
+
+          {MOBILE_GROUPS.map((group) => {
+            const isGroupOpen = openMobileGroup === group.label;
+            return (
+              <div key={group.label} className={styles.mobileGroup}>
+                <button
+                  type="button"
+                  className={`${styles.panelLink} ${styles.mobileGroupTrigger}`}
+                  aria-expanded={isGroupOpen}
+                  onClick={() =>
+                    setOpenMobileGroup((current) =>
+                      current === group.label ? null : group.label
+                    )
+                  }
+                >
+                  {group.label}
+                  <ChevronDownIcon
+                    className={`${styles.mobileGroupChevron} ${
+                      isGroupOpen ? styles.mobileGroupChevronOpen : ""
+                    }`}
+                  />
+                </button>
+                <div
+                  className={styles.mobileSubPanel}
+                  data-open={isGroupOpen}
+                >
+                  <div className={styles.mobileSubInner}>
+                    {group.items.map((subItem) => (
+                      <Link
+                        key={subItem.label}
+                        href={subItem.href}
+                        className={styles.mobileSubLink}
+                        onClick={() => {
+                          setOpen(false);
+                          setOpenMobileGroup(null);
+                        }}
+                      >
+                        {subItem.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          <Link
+            href="/pricing"
+            className={styles.panelLink}
+            onClick={() => setOpen(false)}
+          >
+            Pricing
+          </Link>
+
           <div className={styles.panelActions}>
             <Link href="/login" className={styles.login} style={{ display: "inline-flex" }}>
               Login

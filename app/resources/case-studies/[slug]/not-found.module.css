@@ -1,0 +1,35 @@
+.section {
+  background: var(--bg);
+  padding-block: calc(var(--header-h) + 120px) 140px;
+  text-align: center;
+}
+
+.eyebrow {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--brand);
+}
+
+.title {
+  margin-top: 16px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.lead {
+  margin-top: 16px;
+  max-width: 480px;
+  margin-inline: auto;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+}
+
+.actions {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}

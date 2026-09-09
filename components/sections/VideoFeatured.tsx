@@ -1,7 +1,9 @@
 import Image from "next/image";
 import { Entrance } from "@/components/ui/Entrance";
 import { PlayIcon } from "@/components/ui/icons";
-import { formatDate, type Video } from "@/lib/videos";
+import { VideoThumbButton } from "@/components/ui/VideoThumbButton";
+import { formatDate } from "@/lib/format-date";
+import type { Video } from "@/lib/videos";
 import styles from "./VideoFeatured.module.css";
 
 export function VideoFeatured({ video }: { video: Video }) {
@@ -9,7 +11,7 @@ export function VideoFeatured({ video }: { video: Video }) {
     <section className={styles.section} aria-labelledby="featured-video-title">
       <div className="container">
         <Entrance as="article" className={styles.card}>
-          <div className={styles.thumb}>
+          <VideoThumbButton youtubeId={video.youtubeId} title={video.title} className={styles.thumb}>
             <Image
               src={video.thumb}
               alt=""
@@ -22,10 +24,7 @@ export function VideoFeatured({ video }: { video: Video }) {
             <span className={styles.playButton} aria-hidden="true">
               <PlayIcon />
             </span>
-            <span className={styles.duration} aria-hidden="true">
-              {video.duration}
-            </span>
-          </div>
+          </VideoThumbButton>
           <div className={styles.body}>
             <div className={styles.badges}>
               <span className={styles.eyebrow}>Featured</span>

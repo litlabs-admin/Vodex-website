@@ -51,9 +51,11 @@
   white-space: nowrap;
 }
 
+/* Square, not the old hand-drawn arrow's flat 20x11 — same reasoning as
+   Button.module.css's .sm svg. */
 .link svg {
-  width: 20px;
-  height: 11px;
+  width: 18px;
+  height: 18px;
   transition: transform var(--dur) var(--ease);
 }
 

@@ -3,11 +3,20 @@
 }
 
 /* Mirrors Navbar.module.css's .link exactly (same hover underline) — same
-   local-copy convention SolutionsMegaMenu.module.css already uses. */
+   local-copy convention SolutionsMegaMenu.module.css already uses. Rendered
+   as a <button> (no "/resources" hub page exists), so it also resets the
+   default button chrome the donor <a> never needed. */
 .link {
   position: relative;
+  display: inline-block;
   padding-block: 4px;
+  padding-inline: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  font: inherit;
   color: #fff;
+  cursor: pointer;
   transition: color var(--dur) var(--ease);
 }
 

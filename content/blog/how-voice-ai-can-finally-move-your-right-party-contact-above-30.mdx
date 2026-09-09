@@ -1,0 +1,192 @@
+---
+title: Why Most Agencies Are Stuck Below 25% RPC And What’s Actually Working Now
+excerpt: 'Why RPC is stuck around 26%, what thousands of calls taught us, and how voice AI plus smart workflows can lift contact rates without burning out your collectors'
+category: Debt Collection
+date: '2026-03-23'
+thumb: /assets/blog/how-voice-ai-can-finally-move-your-right-party-contact-above-30.png
+faqs:
+  - q: Why is my Right Party Contact (RPC) rate stuck around 20–25% even after changing dialers or scripts?
+    a: 'In most shops we’ve seen, low RPC is not a dialer problem, it’s a system problem. The biggest drivers tend to be dirty or outdated data, voice‑only outreach, calling at the wrong times, poor caller ID reputation, and a high‑friction experience when you finally reach the debtor. Until you address those together (data hygiene, channel mix, timing, and experience design), simply swapping dialers or tweaking scripts rarely moves RPC in a durable way.'
+  - q: 'Does using SMS before calling actually improve RPC, or does it just generate more opt‑outs?'
+    a: 'SMS hurts RPC when it’s used to “warn” people you’re going to call (“we will call you at 2 PM”), but it helps when used to provide context and self‑service options. In practice, high‑performing teams use SMS to explain who they are and offer a secure portal link first; this resolves a chunk of accounts without any call and warms up the rest, which then see higher contact and payment rates than voice‑only campaigns. Opt‑outs happen, but they usually remove unproductive numbers you were wasting dials on anyway.'
+  - q: 'How should I measure RPC in an omnichannel setup (voice + SMS + email), not just on outbound calls?'
+    a: 'A more modern way is to look at “right‑party engagement” across channels, not just calls answered. That means tracking: RPC on voice (calls where you confirm identity), SMS/email responses or authenticated portal logins, and payments or arrangements that followed any of these touches. This gives you a truer picture of how many right parties you are actually reaching and moving, and it lets you see which mix of channels (e.g., SMS‑first + targeted calls) is lifting outcomes, not just dialer KPIs'
+  - q: What’s a realistic data/skip‑tracing cadence for a small or mid‑sized US agency that wants better RPC?
+    a: 'For most small and mid‑sized agencies, a quarterly data refresh on active portfolios is a strong baseline; waiting a full year leaves you dialing a lot of dead numbers. At a minimum, you want to: (1) push new placements plus older, high‑value segments through a modern skip‑tracing or enrichment provider, (2) remove or deprioritize obviously wrong/disconnected numbers, and (3) normalize phone types so mobile vs landline can be treated differently. This kind of hygiene alone often recovers 10–20% of wasted dial attempts.'
+  - q: How can voice AI improve RPC without damaging consumer experience or compliance?
+    a: 'The key is to treat voice AI as a structured Tier‑1 outreach layer, not a free‑for‑all auto‑dialer. In well‑designed deployments, AI agents handle first touches, reminders, and simple conversations using pre‑approved language, enforce time‑of‑day and frequency rules, log and honor opt‑outs, and escalate complex or emotional situations to humans. Agencies using this pattern report higher connection and recovery rates at lower cost per interaction while staying within FDCPA/TCPA guardrails and maintaining audit trails.'
+---
+If you run a collections team, you already know this: **you only get paid when you talk to the right person.**
+
+Yet across the industry, Right Party Contact (RPC) rates still hover around **26%**, and roughly **one in four contact centers sit below 20%**, meaning three out of four outbound calls never reach someone who can actually resolve the debt.
+
+Dialing harder has stopped working. Consumers screen unknown numbers, carriers label high‑volume lines as spam, and your collectors are exhausted.
+
+At Vodex, we’ve spent the last couple of years working with U.S. agencies and analyzing thousands of calls and campaigns while building our voice AI stack. This article shares what we learned: **why RPC is stuck**, what actually moved it, and how **voice AI plus a better outreach design** can finally push you past that 30–40% band.
+
+## **Why RPC Is Stuck Around 26% (Even in “Good” Shops)**
+
+Industry benchmarks say the average RPC rate for collections sits at about **26%**, with **23% of contact centers under 20%**. On paper, it looks like “that’s just the new normal.
+
+But when we looked inside real campaigns, we saw something else: **RPC wasn’t low because one thing was broken—it was low because five small problems stacked together:**
+
+-   **Outdated or wrong numbers**: Skip‑tracing or enrichment hadn’t been run in months. In many portfolios, **10–25% of numbers were disconnected or clearly wrong**, but still being dialed every day.  
+
+-   **Voice‑only, single‑channel strategy**: The playbook was still “more calls, more often,” even though modern data shows **digital channels like SMS get far higher open and response rates than email or cold calls alone.  
+    ‍**
+-   **Bad timing**: Calls were concentrated during mid‑morning work hours, not when specific consumer segments were actually free to talk, even though studies and operations data show time‑of‑day has a clear impact on contact and answer rates.  
+
+-   **“Spam likely” caller ID**: High volumes from a small pool of numbers triggered carrier spam filters. Once your numbers show up as “Spam” or “Scam Likely,” answer rates drop, even on good data  
+
+-   **High friction after first contact**: Even when agencies did reach the right person, the experience was often stressful and rigid: no self‑service options, no digital follow‑up paths. Many consumers decided “never again” and stopped picking up future calls.
+
+Voice AI alone cannot fix all of that. But paired with better workflows, **it can attack several of those problems at once**.
+
+## **What the Data Says About SMS, Email, and Omnichannel (Before We Even Talk AI)**
+
+Before we get into Vodex specifically, it is worth grounding in the broader numbers:
+
+-   **SMS open rates** are close to **98%**, and messages are usually read within minutes.
+-   **SMS response rates** are about **45% higher than email** in collections use cases.\[[resolvepay](https://resolvepay.com/blog/statistics-illustrating-collections-success-by-communication-channel)\]​
+-   Omnichannel strategies (combining SMS, email, app, and voice) have delivered **up to 40% more payment arrangements and roughly 50% lower cost‑to‑collect** when combined with good self‑service and virtual agents.\[[fico](https://www.fico.com/blogs/how-omnichannel-communications-improve-debt-collection)\]​
+-   Digital‑first collections providers report **massively higher engagement** when they orchestrate multiple channels instead of leaning only on phone calls.\[[indebted](https://www.indebted.co/blog/guides/how-does-omnichannel-communication-improve-collections/)\]​
+
+The pattern is clear:
+
+**RPC is no longer just a dialer metric. It’s a whole‑system outcome of data quality, channels, timing, and friction.**
+
+Where does voice AI fit in? By sitting **in the middle of that system**, doing the repetitive, high‑volume contact work that humans shouldn’t be doing manually.
+
+## **Mini Story #1: Lifting RPC from 22% to 37% With Voice AI in the Mix**
+
+A 20‑collector agency in the Midwest came to us with a familiar problem: **RPC stuck around 22%** on outbound campaigns. They were working a mix of healthcare and utilities portfolios.
+
+Their instinct was “we need a stronger script and more dials.” Here’s what we did instead, together:
+
+**Cleaned the data first**  
+
+1.  They ran about 5,000 accounts through a modern skip‑tracing provider.
+2.  Disconnected and obviously wrong numbers were pulled out of active dialing.
+
+**Introduced SMS + email as soft first touches**  
+
+1.  For eligible accounts, they started with a compliant message like:  
+    “Hi \[First Name\], this is \[Agency\] about an important account. View details and payment options securely here: \[Link\]. Reply STOP to opt out.”
+2.  No promise like “we will call you at 2 PM.” The goal was **context and self‑service**, not announcing a call.
+
+**Brought Vodex voice AI in for high‑volume, lower‑balance accounts**  
+
+1.  Vodex called consumers in optimized time windows, left human‑sounding messages, and sent follow‑up SMS with payment links.
+2.  If someone wanted a human, they could press a key and be transferred to a collector, with full context on the screen (for teams using DROS as the OS).
+
+**Reserved human collectors for complex, high‑value conversations**  
+
+Agents focused on:  
+
+1.  Accounts that had opened emails or clicked SMS links but not paid.
+2.  Higher balances and disputed cases.
+3.  Inbound calls and transfers from Vodex.
+
+## **The Results (Over ~60 Days)**
+
+-   Campaign‑level RPC moved from **22% to 37%** on the segments where this strategy ran.
+-   Roughly **30% of payments came directly via SMS/email links**, without any live call.
+-   Collectors reported fewer “why are you calling me?” reactions; many consumers had already seen a digital touch from the agency.
+
+Voice AI didn’t magically “fix” RPC. But it made it **cheap and scalable** to reach out at the right times, on the right numbers, with the right context _and then_ pass real conversations to humans.
+
+## **Mini Story #2: Fewer Dials, Higher RPC in a BNPL / Retail Portfolio**
+
+A California agency focused on retail and BNPL portfolios was hovering at **24–25% RPC**. They had decent agents and had tried multiple scripts, but nothing moved the needle.
+
+What we saw in their campaigns:
+
+-   No consistent strategy around who to call first; lists were dialed top‑to‑bottom from a CSV.
+-   SMS and email were used, but only when individual agents remembered to send them.
+-   Low‑balance accounts were consuming a lot of dialer time.
+
+## **The Voice‑AI‑Plus‑Workflow Experiment**
+
+Together, we set up a simple structure:
+
+**Day 0 – Digital + AI First**  
+
+SMS + email with a portal link went out automatically for new placements.
+
+For certain low‑balance bands, Vodex began making short, compliant calls:  
+
+-   Identifying itself
+-   Stating the nature of the call
+-   Offering a one‑step path to a payment portal or to talk to an agent.
+
+**Day 2–3 – Human Focus on Warm Accounts**  
+
+Human collectors’ daily queues prioritized:  
+
+-   Accounts that opened emails.
+-   Accounts that clicked but didn’t complete payment.
+-   Inbound callbacks and AI transfers.
+
+**Ongoing – AI for Follow‑ups, Humans for Edge Cases**
+
+-   Vodex handled scheduled follow‑up reminders (e.g., before a promise‑to‑pay date).
+-   Agents focused on disputes, complex hardship cases, and larger balances.
+
+## **What Changed**
+
+-   On “warm” lists (accounts with any prior engagement), human‑handled RPC climbed into the **38–41%** range.
+-   Overall campaign‑level RPC improved to around **33%**, **with fewer total human‑placed dials**.
+-   Collectors reported that a higher percentage of the people they spoke to were ready to talk, not confused about who was calling or why.
+
+## **Where Voice AI Actually Helps RPC (And Where It Doesn’t)**
+
+From these and other projects, here’s how we now think about it.
+
+## **Where Voice AI Helps**
+
+-   **High‑volume, low‑complexity outreach**  
+    -   First touches, reminders, expired PTP follow‑ups, low‑balance segments.
+-   **Time‑of‑day and retry logic**  
+    -   AI can systematically test and learn the best times to reach different segments.
+-   **Consistency and compliance**  
+    -   Every call respects time‑zone windows, call frequency limits, and approved language.
+-   **Feeding humans only higher‑intent calls**  
+    -   Transfers and callbacks that land on a human are far more likely to be true right‑party, ready‑to‑talk conversations.
+
+## **Where Voice AI Should Not Replace Humans**
+
+-   Complex hardship discussions
+-   Disputes and emotionally charged cases
+-   Negotiations on large, sensitive balances
+-   Any situation where empathy and flexible judgment are core
+
+Our philosophy at Vodex is simple:
+
+**Use AI to clear the noise and repetitive work so humans can spend more time on the conversations that actually require humans.**
+
+## **A Practical RPC Improvement Framework (With or Without Vodex)**
+
+Even if you never use our stack, you can apply the same thinking:
+
+**Clean your data quarterly**: Run skip‑tracing and enrichment for phone and email, remove dead numbers.
+
+**Go digital‑first for context and self‑service**: Use SMS and email to explain who you are and offer a secure portal before calling.**‍**
+
+**Reserve human calls for high‑intent and high‑value accounts**: Prioritize those who opened, clicked, or partially paid
+
+**Use automation (or voice AI) for the long tail**: Let a system handle scheduled reminders, long‑tail follow‑ups, and predictable flow
+
+‍**Measure RPC by segment, channel, and time window**: Don’t just look at global RPC. Break it down by list type, time of day, and outreach pattern.
+
+Vodex simply makes this approach **faster, more consistent, and more scalable**.
+
+## **How Vodex Fits With DROS**
+
+In many deployments, Vodex is paired with [**DROS**](https://www.dros.ai), an operating system for collections teams. DROS centralizes dialer, CRM, SMS/email, payments, and workflows in one place; Vodex sits on top as the **voice automation layer**.
+
+-   DROS decides **who should be contacted next, on which channel, and why**.
+-   Vodex executes **high‑volume voice outreach** within those rules, and hands off to humans when it makes sense.
+
+You don’t need both to start improving RPC. but together, they let you design outreach around **the reality of modern consumers**, not the habits of legacy dialers.
+
+That is the change we are building for with Vodex. If you want to see how this could look on your portfolios, we are always happy to walk through a few real examples from your shop.

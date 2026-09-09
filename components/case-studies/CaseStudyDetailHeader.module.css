@@ -1,0 +1,140 @@
+.header {
+  background: var(--bg);
+  padding-block: calc(var(--header-h) + 48px) 0;
+  text-align: center;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg-muted);
+  transition: color var(--dur) var(--ease);
+}
+
+.back:hover {
+  color: var(--fg);
+}
+
+.backIcon {
+  transform: scaleX(-1);
+}
+
+.industry {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  margin-top: 24px;
+  padding-inline: 14px;
+  border-radius: var(--radius-pill);
+  background: var(--brand);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.title {
+  margin-top: 20px;
+  max-width: 780px;
+  margin-inline: auto;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--fg);
+}
+
+.excerpt {
+  margin-top: 18px;
+  max-width: 620px;
+  margin-inline: auto;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+}
+
+.thumb {
+  position: relative;
+  margin-top: 40px;
+  max-width: 1180px;
+  margin-inline: auto;
+  aspect-ratio: 16 / 8;
+  overflow: hidden;
+}
+
+.stats {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  /* Webflow's own data has 3–5 stat pairs, not a fixed 2 — grid-template
+     driven by the actual count via [data-count] rather than hardcoded. */
+  grid-template-columns: repeat(var(--stat-count, 3), minmax(0, 1fr));
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.stats[data-count="2"] { --stat-count: 2; }
+.stats[data-count="3"] { --stat-count: 3; }
+.stats[data-count="4"] { --stat-count: 4; }
+.stats[data-count="5"] { --stat-count: 5; }
+
+.stat {
+  padding: 32px 16px;
+  box-shadow: inset 1px 0 0 var(--hairline);
+}
+
+.stat:first-child {
+  box-shadow: none;
+}
+
+.statNumber {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(28px, 3vw, 40px);
+  color: var(--brand);
+}
+
+.statLabel {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--fg-muted);
+}
+
+@media (max-width: 720px) {
+  .header {
+    padding-block: calc(var(--header-h) + 32px) 0;
+  }
+
+  .thumb {
+    margin-top: 28px;
+    aspect-ratio: 4 / 3;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat:nth-child(2n + 1) {
+    box-shadow: none;
+  }
+
+  .stat:nth-child(n + 3) {
+    box-shadow: inset 0 1px 0 var(--hairline);
+  }
+}
+
+@media (max-width: 480px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .stat {
+    box-shadow: inset 0 1px 0 var(--hairline) !important;
+  }
+
+  .stat:first-child {
+    box-shadow: none !important;
+  }
+}

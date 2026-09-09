@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/icons";
 import styles from "./SolutionsMegaMenu.module.css";
 
-const MAIN_SOLUTIONS = [
+export const MAIN_SOLUTIONS = [
   { label: "Payment Reminders", href: "/solutions/payment-reminders", Icon: BellIcon },
   { label: "Promise-to-Pay Capture", href: "/solutions/promise-to-pay", Icon: CheckIcon },
   { label: "Lead Qualification", href: "/solutions/lead-qualification", Icon: FunnelIcon },
@@ -20,10 +20,21 @@ const MAIN_SOLUTIONS = [
   { label: "Collection Software", href: "/solutions/collection-software", Icon: WorkflowIcon },
 ];
 
-export function SolutionsMegaMenu({ href }: { href: string }) {
+// There is no "/solutions" hub page and none is planned — the trigger is a
+// non-navigating button, not a Link. On desktop the mega-menu panel below is
+// reachable by hover/focus alone; the equivalent tap-to-expand affordance for
+// touch/mobile lives in Navbar.tsx's own accordion (no hover there).
+export function SolutionsMegaMenu() {
   const itemRef = useRef<HTMLLIElement>(null);
   const pathname = usePathname();
 
+  // The trigger has nowhere to navigate to, so a click just blurs itself
+  // (see the button's onClick below) rather than leaving focus parked there
+  // — :focus-within keeps a panel open independent of mouse position, and a
+  // stray click otherwise leaves this panel stuck open (via lingering
+  // focus) even after the mouse moves on to hover a sibling menu, stacking
+  // two panels at once.
+  //
   // Dropping focus on Escape closes the panel (removes :focus-within),
   // assuming the mouse isn't also hovering it.
   useEffect(() => {
@@ -47,9 +58,14 @@ export function SolutionsMegaMenu({ href }: { href: string }) {
 
   return (
     <li className={styles.solutionsItem} ref={itemRef}>
-      <Link href={href} className={styles.link} aria-haspopup="true">
+      <button
+        type="button"
+        className={styles.link}
+        aria-haspopup="true"
+        onClick={(event) => event.currentTarget.blur()}
+      >
         Solutions
-      </Link>
+      </button>
       <div className={styles.panel}>
         <div className={styles.panelInner}>
           <p className={styles.colLabel}>Main Solutions</p>

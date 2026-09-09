@@ -70,9 +70,12 @@
   color: var(--fg-muted);
 }
 
+/* Pins the divider + Read More row to the bottom of the card regardless of
+   how many lines the title/excerpt above take — same technique as
+   Resources.module.css's/BlogPostCard.module.css's own cards. */
 .divider {
   width: 100%;
-  margin-top: 16px;
+  margin-top: auto;
   border: none;
   border-top: 1px solid var(--hairline-strong);
 }

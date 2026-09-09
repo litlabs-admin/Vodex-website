@@ -10,6 +10,10 @@ npm-debug.log*
 next-env.d.ts
 tsconfig.tsbuildinfo
 
+# Webflow migration — raw API dumps + downloaded originals, not source
+scripts/webflow/.cache/
+.next-verify/
+
 # Oversized source assets — too large for GitHub, kept locally only
 vodex assets.zip
 Vodex - Product_Page.pdf

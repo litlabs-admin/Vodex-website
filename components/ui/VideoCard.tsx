@@ -1,7 +1,9 @@
 import Image from "next/image";
 import { Entrance } from "@/components/ui/Entrance";
 import { PlayIcon } from "@/components/ui/icons";
-import { formatDate, type Video } from "@/lib/videos";
+import { VideoThumbButton } from "@/components/ui/VideoThumbButton";
+import { formatDate } from "@/lib/format-date";
+import type { Video } from "@/lib/videos";
 import styles from "./VideoCard.module.css";
 
 type VideoCardProps = {
@@ -10,16 +12,17 @@ type VideoCardProps = {
 };
 
 /**
- * Grid card for the videos listing. Unlike BlogPostCard, this is
- * deliberately NOT a link — there's no real per-video page to send anyone
- * to yet (explicit user instruction: mock content, no actual video this
- * round). The play button and duration badge are visual affordances only,
- * not functional controls.
+ * Grid card for the videos listing. Every migrated video is a real,
+ * published YouTube video (see lib/videos.ts) — clicking the thumbnail now
+ * opens it in an on-page lightbox (VideoThumbButton + VideoLightbox)
+ * instead of the decorative, non-interactive play icon this card shipped
+ * with when there was no real video to link to. Webflow's videos
+ * collection has no duration field, so that badge is gone too.
  */
 export function VideoCard({ video, delay = 0 }: VideoCardProps) {
   return (
     <Entrance as="article" delay={delay} className={styles.card}>
-      <div className={styles.thumb}>
+      <VideoThumbButton youtubeId={video.youtubeId} title={video.title} className={styles.thumb}>
         <Image
           src={video.thumb}
           alt=""
@@ -31,10 +34,7 @@ export function VideoCard({ video, delay = 0 }: VideoCardProps) {
         <span className={styles.playButton} aria-hidden="true">
           <PlayIcon />
         </span>
-        <span className={styles.duration} aria-hidden="true">
-          {video.duration}
-        </span>
-      </div>
+      </VideoThumbButton>
       <div className={styles.body}>
         <p className={styles.category}>{video.category}</p>
         <h3 className={styles.cardTitle}>{video.title}</h3>

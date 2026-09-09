@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/icons";
 import styles from "./CompanyMegaMenu.module.css";
 
-const COMPANY_ITEMS = [
+export const COMPANY_ITEMS = [
   { label: "About Us", href: "/company/about", Icon: InfoIcon },
   { label: "News", href: "/company/news", Icon: NewsIcon },
   { label: "Investors & Partners", href: "/company/investors", Icon: TrendingUpIcon },
@@ -20,10 +20,20 @@ const COMPANY_ITEMS = [
   { label: "Contact Us", href: "/company/contact", Icon: MailIcon },
 ];
 
-export function CompanyMegaMenu({ href }: { href: string }) {
+// There is no "/company" hub page and none is planned — the trigger is a
+// non-navigating button, not a Link. On desktop the mega-menu panel below is
+// reachable by hover/focus alone; the equivalent tap-to-expand affordance for
+// touch/mobile lives in Navbar.tsx's own accordion (no hover there).
+export function CompanyMegaMenu() {
   const itemRef = useRef<HTMLLIElement>(null);
   const pathname = usePathname();
 
+  // The trigger has nowhere to navigate to, so a click just blurs itself
+  // (see the button's onClick below) — otherwise a stray click leaves this
+  // panel stuck open (:focus-within, independent of mouse position) even
+  // after the mouse moves on to hover a sibling menu. Same fix as
+  // SolutionsMegaMenu/ResourcesMegaMenu.
+  //
   // Dropping focus on Escape closes the panel (removes :focus-within),
   // assuming the mouse isn't also hovering it.
   useEffect(() => {
@@ -47,9 +57,14 @@ export function CompanyMegaMenu({ href }: { href: string }) {
 
   return (
     <li className={styles.companyItem} ref={itemRef}>
-      <Link href={href} className={styles.link} aria-haspopup="true">
+      <button
+        type="button"
+        className={styles.link}
+        aria-haspopup="true"
+        onClick={(event) => event.currentTarget.blur()}
+      >
         Company
-      </Link>
+      </button>
       <div className={styles.panel}>
         <div className={styles.panelInner}>
           <p className={styles.colLabel}>Company</p>

@@ -46,9 +46,12 @@
   gap: 8px;
 }
 
+/* Square, not the old hand-drawn arrow's flat 18x10 — the Lucide ArrowRight
+   glyph is a standard 24x24 icon, so a flat box just shrinks it down with
+   dead space on either side instead of centering it at full size. */
 .sm svg {
-  width: 18px;
-  height: 10px;
+  width: 16px;
+  height: 16px;
 }
 
 /* --- Variants ------------------------------------------------------------ */

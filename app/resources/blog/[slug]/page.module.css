@@ -15,4 +15,11 @@
     grid-template-columns: 220px minmax(0, 1fr);
     gap: 64px;
   }
+
+  /* A post with fewer than 2 headings renders no <ArticleToc> at all (see
+     ArticleToc.tsx) — without this, the body would sit in the 220px TOC
+     column instead of taking the full width. */
+  .gridNoToc {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

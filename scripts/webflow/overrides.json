@@ -1,0 +1,36 @@
+{
+  "_comment": "Editorial decisions for the Webflow migration, kept out of transform.mjs so the script stays generic and this file stays a reviewable diff of what we changed vs. what Webflow literally said.",
+
+  "news": {
+    "_comment": "9 of these 10 slugs are the same '$2M seed round' press release syndicated across outlets (Benzinga appears twice under two different slugs, verbatim same URL). Collapsed to one entry, kept under the PR Newswire original (the canonical source release) with a clean slug — this also resolves all 3 template-leftover slugs the raw export carried ('10-great-examples-of-responsive-websites', 'the-worst-advice-weve-ever-heard-about-web-design', '7-must-have-tools-for-web-designers'), since two of the three are simply dropped as duplicates and the third is the renamed keeper.",
+    "collapseGroups": [
+      {
+        "keepSlug": "7-must-have-tools-for-web-designers",
+        "renameSlugTo": "vodex-raises-2m-seed-funding",
+        "renameTitleTo": "Vodex Raises $2M in Seed Funding to Power AI Voice Agents for Collections",
+        "categoryOverride": "Press Releases",
+        "dropSlugs": [
+          "vodex-2-0-the-next-big-thing-in-generative-ai-innovation",
+          "vodex-powers-up-with-2-million-seed-investment-for-gen-ai-sales-boost-4",
+          "vodex-powers-up-with-2-million-seed-investment-for-gen-ai-sales-boost-3",
+          "vodex-powers-up-with-2-million-seed-investment-for-gen-ai-sales-boost-2",
+          "vodex-powers-up-with-2-million-seed-investment-for-gen-ai-sales-boost",
+          "ap-news-vodex-powers-up-with-2-million-seed-investment-for-gen-ai-sales-boos",
+          "10-great-examples-of-responsive-websites",
+          "the-worst-advice-weve-ever-heard-about-web-design",
+          "ktla-vodex-powers-up-with-2-million-seed-investment-for-gen-ai-sales-boost"
+        ]
+      }
+    ],
+    "categoryPrecedence": ["Press Releases", "Funding", "Partnerships", "Events", "Featured in", "Product"]
+  },
+
+  "blog": {
+    "categoryPrecedence": ["Debt Collection", "AI & Technology", "Agencies", "Insurance", "Sales"]
+  },
+
+  "videos": {
+    "_comment": "Display category picked by this precedence when a video carries more than one — 'Overview' and 'Podcasts / Interviews' co-occur often, and the more specific label should win for display while `categories` keeps every tag for filtering.",
+    "categoryPrecedence": ["Product", "Customer Stories", "Tutorials", "Podcasts / Interviews", "Overview", "Explainers"]
+  }
+}

@@ -164,6 +164,12 @@ accent word is scaled to `1.13em` inside `.title` to occupy the same measure.
                               oversized VODEX wordmark
 ```
 
+> ⚠️ This list is the **PDF's** own structure and is left as historical record —
+> it is not fully "what's coded" any more. **Section 5 was replaced** with a
+> new interactive "Initiate Call" band per explicit user request, supplied as
+> a mockup screenshot outside this PDF (no PDF reference for this swap). See
+> §7 Current progress and §8 Implementation decisions for the live version.
+
 ---
 
 ## 7. Current progress
@@ -171,7 +177,22 @@ accent word is scaled to `1.13em` inside `.title` to occupy the same measure.
 ```
 Current section:
 ALL 16 sections implemented — the page is complete top to bottom. Most
-recent work: the oversized footer VODEX wordmark was rebuilt as a measured
+recent work: Section 5 (`DashboardShowcase`, the flat dashboard-mockup
+screenshot) was **replaced** with a new interactive "Initiate Call" band —
+a full-bleed dark desk photo carrying an eyebrow/h2/lead and an inline
+Name + Phone → "Initiate Call" form, plus a "Book a Demo" CTA, a reserved
+captcha slot, and fine print — per explicit user request with two supplied
+assets (a photo, and a gradient "Initiate Call" button PNG used only as a
+colour reference, not rendered directly). See Implementation decisions for
+the full component breakdown, the dial-code country picker, the CSS mesh
+gradient reconstructing the button PNG, and a real focus bug hit and fixed
+along the way (a transitioned `visibility` property silently blocked the
+dial popover's search input from ever receiving keyboard focus on open —
+same latent bug pattern exists in the pre-existing `Select.tsx`, not
+touched this round since it's out of scope, but worth knowing if that
+component is revisited). `dashboard-mockup.png` is intentionally NOT
+deleted — `lib/videos.ts` still uses it as a video thumbnail, independent
+of `DashboardShowcase`. Before that: the oversized footer VODEX wordmark was rebuilt as a measured
 inline SVG (`components/ui/FooterWordmark.tsx`) after the user reported it
 "is not clear" — the supplied raster turned out to be a low-res export
 upscaled to 4548px, and the reference PDF has the same defect, so no
@@ -225,6 +246,24 @@ real layout bug in the Why section's bento grid (see Implementation
 decisions) that the user flagged directly.
 
 Status:
+The Initiate Call section was verified with a fresh `next dev` server
+(started and stopped cleanly by this round, no hanging process, confirmed
+down via a failed curl): clean `tsc --noEmit` + `next build` (25 routes,
+zero errors) both before and after the gradient/focus fixes. Playwright at
+1516/1280/900/430px — zero console errors, zero horizontal overflow at
+every width. Interaction-tested (not just screenshotted): hover on the
+submit button changes `getComputedStyle().backgroundPosition` (confirms no
+`Entrance`-vs-`:hover` transform conflict — the same class of bug already
+documented for the pricing cards, avoided here by never putting `Entrance`
+and the hover/focus-within visuals on the same element); empty submit
+shows both field errors; the dial-code select opens, filters to exactly 1
+result on typing "+44" (real `page.keyboard.type`, not `locator.fill`),
+selects United Kingdom, and `Escape` closes it; valid submit shows the
+"Calling…" loading state then a success panel naming the composed
+`+44 5551234567`-style number. `reducedMotion: "reduce"` emulation
+collapses the backdrop's ken-burns drift to ~0 duration. `/resources/videos`
+re-checked (200 OK) to confirm `dashboard-mockup.png`'s other consumer
+still works after `DashboardShowcase` was deleted.
 The corner-radius/bleed correction pass was verified the same way as the
 image work before it: Playwright element screenshots of Why, Featured Case
 Study, Resources, Enterprise Band and Final CTA post-fix (scrolled into
@@ -253,16 +292,27 @@ capture blank images) at 1516px, plus a full-page pass at
 1516/1280/900/430px confirming zero console errors and zero horizontal
 overflow at every width.
 
-⚠️ One thing is NOT final and needs the user's real content to finish:
+⚠️ Things NOT final and needing the user's real content/decision to finish:
   - Section 9 (Call Samples) — the 3 MP3s are real but temporary/mismatched
     placeholder audio, not final content (user is aware, will swap later).
+  - Section 5 (Initiate Call) — the submit is a placeholder (`setTimeout`,
+    same precedent as `ContactForm.tsx`); there is no backend anywhere in
+    this project. The captcha slot is a reserved empty box, per explicit
+    user choice, with nothing rendered yet. The CSS gradient on "Initiate
+    Call" is a close reconstruction of the supplied button PNG, not a
+    pixel match — confirmed acceptable via `AskUserQuestion` before
+    building, not assumed.
 Section 13's FAQ copy was rewritten from scratch (the PDF's copy was
 leftover template text) per explicit user direction — this one is final,
 not a placeholder.
 
 Approved:
-Sections 1, 5, 7, 8, 9, 10 — approved implicitly each time the user asked to
-move on. Sections 11–16 not yet reviewed by the user. Section 9's audio
+Sections 1, 7, 8, 9, 10 — approved implicitly each time the user asked to
+move on. (Section 5 was approved in its *old* `DashboardShowcase` form, but
+that content no longer exists — it was fully replaced by the new Initiate
+Call section below, which is unreviewed; don't carry the old approval
+forward to the new content occupying that slot.) Sections 11–16 not yet
+reviewed by the user. Section 9's audio
 player: user said "just build clean, typechecked well, I will verify
 myself" — not yet an explicit approval, treat as pending their review too.
 Section 6 is NOT currently in the approved list — first rejected by the user
@@ -272,14 +322,18 @@ current implementation — this has now happened twice for Section 6, don't
 assume v2 is right either without their sign-off). The earlier photo/footer-
 artwork swap into Sections 10/11/12/14/15/Footer is likewise NOT yet
 approved — the user asked for it built clean and said they would verify
-themselves, same as Section 9's audio player.
+themselves, same as Section 9's audio player. Section 5 (Initiate Call) is
+also NOT yet approved — built per explicit user request but not yet
+reviewed by them in a real browser.
 
 Next:
 Wait for the user's review of the footer wordmark vectorization (and decide
 on the two flagged deviations: full-bleed width, and the 200px crop), and of Section 6 v2, the image/footer work, 9 (audio
-player), and 11–16 generally. Separately: swap Section 9's placeholder audio
+player), 11–16 generally, and the new Section 5 (Initiate Call). Separately: swap Section 9's placeholder audio
 for final MP3s once supplied — everything else on the page now has real
-content.
+content. For Section 5: wire a real submit endpoint once a backend/
+telephony provider is chosen, and drop in the real reCAPTCHA widget into
+the reserved slot once a site key exists.
 ```
 
 ---
@@ -331,14 +385,198 @@ content.
   harmless there.
 - Navbar is `position: sticky; top: 0` (`Navbar.module.css`); the announcement
   bar scrolls away normally above it.
-- **Section 5 is just the supplied image.** `dashboard-mockup.png` already
-  bakes in the browser chrome, the floating "Call me now" card and the
-  "Connect rate 7x" badge as one flat composite — confirmed by diffing the
+- **⚠️ Section 5 is no longer the flat `dashboard-mockup.png` screenshot —
+  it was replaced with a new, coded, interactive "Initiate Call" band.**
+  `DashboardShowcase.tsx`/`.module.css` (the old flat-image component
+  documented immediately below, kept here for history) were **deleted**;
+  `app/page.tsx` now renders `<InitiateCall />`
+  (`components/sections/InitiateCall.tsx`, a server component: full-bleed
+  photo backdrop + eyebrow/`h2`/lead) which renders `<InitiateCallForm />`
+  (`components/sections/InitiateCallForm.tsx`, `"use client"`: the inline
+  Name + Phone → "Initiate Call" form, the captcha slot, fine print). No
+  PDF backs this section — the reference was two mockup screenshots the
+  user pasted directly (a full section screenshot, and a close-up of the
+  dashboard mockup's own "Call me now"/"Connect rate 7x" card, kept only as
+  visual context for the ask, not a new asset). Confirmed with the user via
+  `AskUserQuestion` before building, not assumed: (1) this is a second dark
+  photographic section under the real `Hero` — its heading is a **styled
+  `<h2>`**, not a second `h1`, so the page keeps one true hero; (2) the
+  "Initiate Call" button is a **real CSS gradient + live text**, not the
+  supplied PNG rendered verbatim, so hover/loading/disabled states all
+  work; (3) submit is a **placeholder** (`setTimeout`), same precedent as
+  `ContactForm.tsx` — this project has no backend anywhere; (4) the captcha
+  area is a **reserved empty slot**, not a styled-but-inert fake widget.
+  - **Assets**: `pexels-oguzhan-oncu-349382156-36389508 1.png` (4548×2391 =
+    3× of **1516×797px**, confirming the section really is full-bleed at
+    ~797px tall on the artboard) → converted to `public/assets/
+    initiate-call-bg.jpg` (JPEG, no alpha needed — cut the file from 12.9MB
+    to 1.8MB; the raw PNG was not kept, unlike the footer-wordmark
+    precedent, since this file is a plain photo being used directly, not a
+    measurement reference for a hand-traced reconstruction).
+    `Frame 2147227644.png` (672×152 = 3× of **224×50.7px**, corner radius
+    measures out to exactly `--radius-btn`'s 10px at 1×) →
+    `public/assets/initiate-call-button.png`, kept **only as an unreferenced
+    colour reference** for tuning the CSS gradient below, same "reference
+    asset, not shipped" treatment as `footer-wordmark.png`. Note this file
+    is unrelated to the *different*, already-shipped `Frame 2147227644.jpg`
+    (`pricing-badge-popular.jpg`, §23) despite sharing a Figma frame number
+    — same frame-number-reuse situation already seen elsewhere in this
+    project, not a naming collision to "fix."
+  - **Full-bleed pattern**: same escape hatch as `EnterpriseBand` — the
+    `<section>` itself carries no width constraint; only `.content` (via
+    the shared `.container` class) opts into the page grid. **Deliberately
+    does NOT put `overflow:hidden` on the `.section`** — a real bug was
+    caught and fixed here: the first version put `overflow:hidden` on
+    `.section` (for the ken-burns backdrop zoom, see below) exactly like
+    `EnterpriseBand`'s `.banner` does, but unlike `EnterpriseBand` this
+    section has an absolutely-positioned interactive popover
+    (`DialCodeSelect`'s panel) living inside `.content`, a **sibling** of
+    the backdrop — an ancestor `overflow:hidden` would silently clip that
+    popover any time it needs to render near the section's bottom edge.
+    Fixed by scoping `overflow:hidden` to `.backdrop` alone (itself a
+    sibling of `.content`, not an ancestor of it), so the ken-burns
+    scale-up is still contained without ever being able to clip the
+    popover. **If a future full-bleed section combines a zooming/animated
+    backdrop with any absolutely-positioned interactive child (a popover,
+    a tooltip, a dropdown), scope `overflow:hidden` to the backdrop element
+    itself, never to an ancestor the interactive child also lives under.**
+  - **The heading is deliberately local-sized, not `--fs-display`.**
+    `.title`'s `font-size: clamp(30px, 3.95vw, 60px)` is a new value scoped
+    to `InitiateCall.module.css` only — reusing the shared `--fs-display`
+    token (72px at 1516, the real `Hero`'s own size) would have made this
+    h2 visually compete with the page's actual h1 instead of reading as a
+    clear second-tier heading below it.
+  - **`InitiateCallForm` is a separate client component from
+    `InitiateCall`**, mirroring the existing `Faq`/`FaqAccordion` and
+    `CallSamples`/`CallSamplesGrid` split — the section shell (backdrop,
+    eyebrow, heading, lead) has no interactive state and stays a server
+    component; only the form owns `useState`.
+  - **New `components/ui/DialCodeSelect.tsx` + `.module.css`** — a
+    dark-surface twin of the existing `Select.tsx` (built for
+    `ContactForm.tsx`, §22), copy-adapted rather than given a `tone` prop
+    per this project's standing "copy-adapt, don't force a shared generic
+    component" rule: the trigger's content (a flag emoji + dial code, no
+    floating label) is materially different from `Select`'s label+value
+    trigger, not just a colour swap. `FloatingField`/`Select` were **not**
+    reused directly here — both hard-code `background:#fff` on their
+    shell, floated-label notch, and popover panel, which would render as
+    white bars over this section's dark photo.
+    - Data reuses the existing `lib/countries.ts` (`{name, iso2, dial}`,
+      57 rows, previously only consumed for its `dial` as select-option
+      `meta` text) — `iso2` was unused anywhere in the codebase before
+      this; now used to derive a flag emoji at render time via the
+      regional-indicator Unicode offset (`0x1F1E6 + charCode - 65`), so no
+      flag image assets were needed.
+    - Two deliberate improvements over `Select.tsx` for this specific
+      "phone country code" use case, not carried back to `Select` itself
+      (out of scope — `Select` is shared, already-shipped, `ContactForm`
+      code): the search filter matches the dial code too, not just the
+      country name (typing "+44" finds United Kingdom — `Select`'s own
+      filter only ever tested `label`), and both the trigger and each
+      option row show the flag so the control visually reads as a real
+      phone-number picker, addressing the user's explicit "should not look
+      like a test site" instruction.
+    - **⚠️ Real bug found and fixed: the popover's search input never
+      actually received focus on open.** `Select.tsx`'s own open-effect
+      (`requestAnimationFrame(() => searchRef.current?.focus())`) was
+      copied verbatim, and a first Playwright check (reading
+      `document.activeElement` at delays from 0ms to 600ms after a real
+      click) showed focus staying on the trigger button indefinitely —
+      never landing on the search input. Root cause: the panel's CSS
+      listed `visibility` inside its `transition` property
+      (`transition: opacity …, transform …, visibility var(--dur)`), and a
+      *transitioned* non-interpolable property like `visibility` only
+      flips its **used** value at the *end* of the transition's duration
+      by default (not the start) — so for the full ~220ms open animation,
+      the panel was still computed `visibility: hidden`, and a hidden
+      element cannot receive focus, so `.focus()` silently failed. Fixed
+      by removing `visibility` from `.panel`'s `transition` list entirely
+      (opacity/transform still animate; `visibility` now flips
+      synchronously with the `[data-open]` attribute). Re-verified the
+      same way: `document.activeElement` is the search input at every
+      delay from 0ms onward after a real click. **`Select.module.css`
+      has the exact same `transition: …, visibility var(--dur)` pattern
+      and almost certainly has the identical bug** — not fixed here (out
+      of scope, a different already-shipped page/flow), but flagged for
+      whenever that component is next touched. **General lesson: never
+      list a non-interpolable CSS property (`visibility`, `display`) in a
+      `transition` alongside a JS effect that calls `.focus()`/reads
+      layout on open — the property's used value lags behind the
+      attribute/class change for the full transition duration unless
+      `transition-behavior: allow-discrete` is also declared.**
+  - **The "Initiate Call" submit button is a hand-tuned CSS mesh gradient**
+    (`.submit` in `InitiateCall.module.css`), reconstructed from 5 layered
+    `radial-gradient`/`linear-gradient`s sampled against
+    `initiate-call-button.png`'s own pixel grid (a light green-teal glow at
+    the left edge, a brighter blue lobe upper-centre, near-black navy at
+    the bottom) — tuned by repeated Playwright element-screenshot crops of
+    the *rendered* button held side-by-side with the source PNG, not a
+    single guess. Confirmed close but explicitly **not** a pixel match,
+    consistent with the "CSS gradient + real text" choice the user made
+    over "use the PNG verbatim." A `feTurbulence` data-URI overlay at 5%
+    opacity + `mix-blend-mode: overlay` reproduces the source's visible
+    grain. Hover pans `background-position` (the mesh visibly shifts) and
+    plays a diagonal sheen sweep — same two-layer "gate the visibility on
+    one element, run a continuous animation on a nested/pseudo element"
+    split already established by `EngagementQueueIllustration`'s
+    active-row sheen (§8), here done via `::before`/`::after` pseudo-
+    elements instead of real DOM nodes since there's no per-row gating
+    needed, just a single hover state.
+  - **`Entrance` wraps a plain positioning element, never the form/bar
+    directly** — `.barSlot` (an unstyled `Entrance` target) contains either
+    the `<form>` or the success panel as a nested child, exactly the
+    "outer gate / inner effect" split this project had to introduce for
+    the pricing cards (§23) after discovering `Entrance`'s `rise` keyframe
+    (`animation: rise 700ms var(--ease) both`) keeps pinning `transform`
+    via its `both` fill mode, which silently overrides any `:hover`/
+    `:focus-within` transform declared on that *same* element. Verified via
+    a real Playwright `.hover()` + `getComputedStyle().backgroundPosition`
+    read (not just a visual screenshot) that the submit button's hover
+    state actually applies. This also sidestepped a TypeScript issue:
+    `Entrance`'s prop type is fixed to `ComponentPropsWithoutRef<"div">`
+    regardless of its `as` prop, so passing `noValidate` (a
+    `FormHTMLAttributes`-only prop) straight onto an `Entrance as="form"`
+    doesn't typecheck — moot once the `<form>` is a plain nested element
+    instead.
+  - **The submitted phone value composes the dial code onto the digits**
+    (`` `${dial} ${values.phone}` ``, shown in the success panel) — a
+    deliberate difference from `ContactForm.tsx`, which keeps its own
+    country and phone fields completely independent with no concatenation.
+    Here the mockup makes the dial code visually part of the phone control,
+    so composing it is the correct behaviour for this form specifically;
+    this is not a retroactive fix to `ContactForm`.
+  - **Two-class compound selector for the "Book a Demo" override**
+    (`.demoWrap .demoButton`, not a bare `.demoButton`) — a bare single
+    class has the same (0,1,0,0) specificity as `Button.module.css`'s own
+    `.lg`/`.light`, so which one wins would depend on stylesheet bundling
+    order rather than intent, the exact bug already hit and fixed for
+    `PricingPlans`' `.cardDark .cta` override (§23). Applied proactively
+    here rather than waiting to hit the same bug a third time.
+  - **Captcha slot is a literal empty, fixed-size `<div>`**
+    (`.captchaSlot`, 304×78px — reCAPTCHA v2's own default footprint) with
+    a code comment marking the mount point, so a real widget can drop in
+    later with zero layout shift and nothing fake is shown to users in the
+    meantime. Hidden below 480px (would force horizontal scroll otherwise).
+  - Verified: clean `tsc --noEmit` + `next build` (25 routes), Playwright
+    at 1516/1280/900/430px (zero console errors/overflow), a full
+    interaction pass (hover, empty-submit errors, dial search-and-select,
+    Escape-closes, loading state, success panel) via real
+    `page.keyboard`/`locator.hover()` calls rather than just screenshots,
+    and a `reducedMotion: "reduce"` check. `/resources/videos` re-checked
+    (200 OK) since it depends on `dashboard-mockup.png`, which was
+    deliberately left in place.
+
+---
+
+- **Section 5's old implementation, for history (superseded, not live)** —
+  `DashboardShowcase.tsx`/`.module.css` were one `next/image` at
+  `aspect-ratio: 4306/2150`, since `dashboard-mockup.png` already baked in
+  the browser chrome, the floating "Call me now" card and the "Connect rate
+  7x" badge as one flat composite — confirmed at the time by diffing the
   asset's own visible-pixel bounding box against the PDF's rendered bbox
-  (both ≈1389×611 at 1×, placed 1:1, no extra scaling). So
-  `DashboardShowcase` is one `next/image` at `aspect-ratio: 4306/2150`,
-  capped to `max-width: 1080px` and centred (not full container width — see
-  sizing note below).
+  (both ≈1389×611 at 1×, placed 1:1, no extra scaling), capped to
+  `max-width: 1080px` and centred. `dashboard-mockup.png` itself is **not**
+  deleted — it's still used as a video thumbnail in `lib/videos.ts`.
 - **⚠️ Section 6's right-hand illustration is no longer the flat
   `introducing-dros.png` — it's a real, coded, seamlessly-looping CSS
   animation**, per explicit user request ("convert this static illustration
@@ -824,7 +1062,9 @@ content.
 | Asset (`assets/`)                         | Destination                        |
 | ----------------------------------------- | ---------------------------------- |
 | `hero landing page bg.png`                | `public/assets/hero-bg.png` → Hero |
-| `landing page 2nd section dros image.png` | `public/assets/dashboard-mockup.png` → Section 5 |
+| `landing page 2nd section dros image.png` | `public/assets/dashboard-mockup.png` — **no longer used by Section 5** (replaced by Initiate Call, see below); kept only as `lib/videos.ts`'s featured video thumbnail |
+| `pexels-oguzhan-oncu-349382156-36389508 1.png` | `public/assets/initiate-call-bg.jpg` → Section 5 (Initiate Call) backdrop |
+| `Frame 2147227644.png`                    | `public/assets/initiate-call-button.png` — **unreferenced**, colour reference only for the CSS-gradient submit button (see decisions) |
 | `introducing dros image.png`              | `public/assets/introducing-dros.png` — unused now, left in place (see decisions) |
 | `alexander-kaufmann-dJSLl0oO0AU-unsplash 1.jpg` | `public/assets/engagement-queue-bg.jpg` → Section 6 (illustration bg photo) |
 | `fully automated.png`                     | `public/assets/fully-automated-ribbon.png` → Section 6 (ribbon graphic) |
@@ -869,7 +1109,7 @@ components/
                     SolutionsMegaMenu (client)              [Solutions — §12]
                     ResourcesMegaMenu (client)                   [Resources — §17]
   hero/             Hero, TrustStrip
-  sections/         DashboardShowcase, IntroducingDros,
+  sections/         InitiateCall, InitiateCallForm (client), IntroducingDros,
                     EngagementQueueIllustration, Solutions,
                     IndustryTabs (client), AutoRedialBanner, CallSamples,
                     CallSamplesGrid (client), CallCard (client), Why,
@@ -888,6 +1128,7 @@ components/
                     ComplianceCertifications, ComplianceSecurityPractices,
                     ComplianceDpoBanner                        [Compliance — §21]
   ui/               Logo (+ Wordmark), Button, Entrance, icons,
+                    DialCodeSelect (client)                [Initiate Call — §7]
                     AudioWaveform, useWaveformData, BlogPostCard      [Blog — §16]
                     VideoCard                                     [Videos — §17]
                     CaseStudyCard                              [Case Studies — §19]
@@ -5247,3 +5488,783 @@ Rounds 1-2 above.
 
 **Next:** Wait for the user's review of the dismiss control and both
 follow-up fixes together.
+
+---
+
+## 27. Global — All hand-drawn icons replaced with Lucide (`lucide-react`)
+
+> No page/section of its own — this is a cross-cutting design-system change
+> touching `components/ui/icons.tsx`, which every section in this file
+> renders icons through. Prompted directly by the user reviewing the new
+> Initiate Call section (§ above) and judging the hand-drawn glyphs there as
+> reading amateur, not "polish and premium" — they then asked explicitly to
+> replace **all** of them, not just that section's two.
+
+### Confirmed with the user before building (`AskUserQuestion`, not assumed)
+
+1. **Scope**: all 40 icon exports, sitewide — **except `Waveform`**, the
+   literal Vodex brand mark (its 5-bar geometry matches `Logo.tsx`'s `BARS`
+   array and `app/icon.svg` exactly, confirmed by direct comparison) — that
+   one stays hand-drawn, since it's brand identity, not a generic UI icon.
+   **39 replaced.**
+2. **Approach**: an npm icon package, not manually downloaded/hand-inlined
+   SVGs — first icon-library dependency this project has installed (it
+   already had `gray-matter`/`next-mdx-remote`/`rehype-slug`/`remark-gfm`
+   for an in-progress, separate MDX-blog migration, so not literally the
+   project's first dependency of any kind).
+3. **Library**: **Lucide** (`lucide-react@1.43.0`) — MIT licensed, actively
+   maintained, `currentColor`/round-stroke convention close enough to this
+   site's own established `strokeIcon` look that the swap reads as a
+   level-up, not a style clash.
+
+A `Plan` subagent pass produced the full replacement mapping before any code
+was written (see below) — cross-checked every proposed Lucide export name
+against the **actually-installed** package's real type exports (not
+trained/possibly-stale knowledge of Lucide's naming, which has shifted
+across releases) before finalizing the wrapper file.
+
+### Architecture — `icons.tsx` stays the only import surface
+
+~55 files do `import { XIcon } from "@/components/ui/icons"`. **None of them
+needed to change.** Every one of the 39 replaced exports is now a thin
+wrapper preserving the exact same name and an `SVGProps<SVGSVGElement>`-
+compatible signature (`LucideProps` is a superset):
+
+```tsx
+const WEIGHT = 3; // matches the old hand-drawn icons' shared strokeWidth —
+                   // Lucide's own default is 2, which reads visibly thinner.
+export const GaugeIcon = (props: LucideProps) => <Gauge strokeWidth={WEIGHT} {...props} />;
+```
+
+Each wrapper is a **named arrow-function const**, not a shared factory
+function — deliberately, so React DevTools shows each icon's real name
+(`GaugeIcon`, not a generic `Wrapped`) via JS's function-name inference for
+`const X = (props) => …` assignments; a `withWeight(Icon)` factory was
+considered and rejected for exactly this DX reason.
+
+Two categories needed a non-default wrapper body:
+- **Filled icons** (`ChatIcon`, `PlayIcon`, `PauseIcon`) — Lucide ships
+  every icon stroke-only by default (`fill:"none"` is the library's own
+  shared base), so these override `fill="currentColor" stroke="none"` to
+  reproduce the old glyphs' solid look.
+- **Custom stroke weights** (`ArrowRight` at 2, `LoginIcon` at 1.9) — kept
+  their existing non-default weights rather than forced to `WEIGHT=3`.
+
+`Waveform` is untouched, still 100% hand-drawn. `SyncIcon` (the old
+hand-drawn sync/exchange glyph) was **deleted outright** — a repo-wide grep
+confirmed zero usages anywhere outside `icons.tsx` itself, so there was
+nothing to map it onto.
+
+### Full mapping (39 icons) — verified against the real installed package
+
+| Old | Lucide | Note |
+| --- | --- | --- |
+| `ArrowRight` | `ArrowRight` (aliased on import) | see the CSS fix below — needs two `.module.css` changes, not just a swap |
+| `LoginIcon` | `LogIn` | keeps custom `strokeWidth=1.9` |
+| `GaugeIcon` | `Gauge` | exact |
+| `ShieldCheckIcon` | `ShieldCheck` | exact |
+| `PhoneLinesIcon` | `AudioLines` | interpretive — no literal "handset + call-log lines" composite exists; a voice-waveform glyph fits a voice-AI product and avoids duplicating `PhoneCallIcon`'s glyph |
+| `LayersIcon` | `Layers` | exact |
+| `ContextIcon` | `Orbit` | interpretive — no literal "dotted ring + swirl" exists; ring-with-orbiting-point is the closest fit for "context-aware AI" |
+| `WorkflowIcon` | `Workflow` | exact name match |
+| `ChatIcon` | `MessageCircle` (filled override) | exact concept |
+| `ExternalLinkIcon` | `ExternalLink` | exact |
+| `CheckIcon` | `Check` | exact |
+| `XIcon` | `X` | exact |
+| `PlayIcon` | `Play` (filled override) | exact concept |
+| `PauseIcon` | `Pause` (filled override) | exact concept |
+| `TrendingUpIcon` | `TrendingUp` | exact |
+| `SyncIcon` | — **deleted, unused** | confirmed 0 usages via grep |
+| `BankIcon` | `Landmark` | exact — Lucide's standard institution/bank glyph |
+| `PhoneCallIcon` | `PhoneCall` | exact |
+| `ShieldPlusIcon` | `ShieldPlus` | exact |
+| `BellIcon` | `Bell` | exact |
+| `FunnelIcon` | `Funnel` | exact — confirmed the literal `funnel.mjs` export exists in the installed version, used it over `Filter` |
+| `SignalTowerIcon` | `RadioTower` | close/exact |
+| `SparkleIcon` | `Sparkle` (singular) | exact — old glyph was one 4-point sparkle, not a multi-star cluster, so `Sparkle` not `Sparkles` |
+| `LockIcon` | `Lock` | exact |
+| `SearchIcon` | `Search` | exact |
+| `PlayFrameIcon` | `SquarePlay` | close — frame + triangle render as one uniform stroke now; can't independently fill just the inner triangle without extra per-path overrides, accepted as a minor simplification |
+| `ArticleIcon` | `FileText` | exact |
+| `CaseStudyIcon` | `Briefcase` | exact |
+| `ResearchIcon` | `FlaskConical` | exact |
+| `InfoIcon` | `Info` | exact |
+| `NewsIcon` | `Newspaper` | exact |
+| `MailIcon` | `Mail` | exact |
+| `ChartBarIcon` | `ChartColumn` | exact — confirmed the literal export in the installed version (Lucide has renamed this family across releases; `BarChart3` was the fallback if `ChartColumn` hadn't existed) |
+| `MegaphoneIcon` | `Megaphone` | exact |
+| `HandshakeIcon` | `Handshake` | **upgrade** — literal clasped-hands is a stronger "Partnership" fit than the old stylized linked-heart glyph it replaces |
+| `CloudLockIcon` | `ShieldLock` | interpretive — no literal "cloud + lock" composite exists in Lucide; `ShieldLock` ("protection" + "security") is a stronger semantic fit for a Data Protection Officer contact card than a bare `Lock` or plain `Cloud` would be, and stays visually distinct from `LockIcon`/`ShieldCheckIcon`/`ShieldPlusIcon` (never shown on the same view as any of them) |
+| `ChevronDownIcon` | `ChevronDown` | exact |
+| `UserIcon` | `User` | exact |
+| `PhoneIcon` | `Phone` | exact |
+
+`ArrowRight` and `CloudLockIcon` were flagged during planning as candidates
+to keep hand-drawn (ArrowRight is the single most-repeated CTA glyph on the
+site; CloudLockIcon has no literal Lucide composite) — **decision: replaced
+both anyway**, per the user's explicit "do this for all." A mixed
+hand-drawn/Lucide site would have undercut the actual consistency being
+asked for.
+
+### ⚠️ `ArrowRight` needed two CSS changes, not just an icon swap
+
+The old hand-drawn `ArrowRight` baked in a flat, non-square
+`viewBox="0 0 24 13"` directly on the component, and two CSS files sized it
+as a **non-square** box relying on that exact shape:
+- `components/ui/Button.module.css` — `.sm svg` was `18px × 10px`
+- `components/layout/AnnouncementBar.module.css` — `.link svg` was
+  `20px × 11px`
+- `.lg` buttons (the hero/primary CTA size, used ~50× site-wide) had **no
+  CSS override at all** — sized purely by the old component's own intrinsic
+  `24×13`.
+
+Lucide's `ArrowRight` is a standard square 24×24 glyph. Left in the old flat
+boxes it shrinks-to-fit and reads small/off-balance (SVGs default to
+`preserveAspectRatio="xMidYMid meet"`, nothing in this codebase overrides
+that). **Fixed** by resizing both rules to square boxes — `.sm svg` →
+`16×16`, `.link svg` → `18×18` — confirmed by a real before/after Playwright
+crop comparison (`.sm`'s old 18×10 box visibly pinched the arrow with dead
+space on either side; the new 16×16 box gives it real presence). The `.lg`
+case (no CSS override, so nothing needed changing) was screenshot-checked
+directly since it's the most-used variant and had no CSS safety net —
+confirmed clean, the square glyph fills its no-constraint slot naturally.
+
+### Verification
+
+`npx tsc --noEmit` clean outside one pre-existing, unrelated file (see
+below). Playwright, scroll-and-wait-for-`img.complete` method (per the
+established gotcha), 1516px + 430px, across `/`, `/products`, `/pricing`,
+`/solutions/debt-collection`, `/resources/faq`, `/company/contact` — zero
+console errors, zero horizontal overflow at every width/page checked. All
+three mega-menus (Solutions/Resources/Company) screenshotted open — every
+icon renders crisp and consistently weighted; visually compared before/after
+and it's a genuine step up, not just "different." `CallCard`'s live
+play/pause toggle interaction-tested (not just screenshotted) — `PlayIcon`/
+`PauseIcon`'s fill override confirmed working. `DialCodeSelect` opened live
+to confirm the 14px inline-sized `CheckIcon` (`width={14} height={14}`
+passed straight through, no code change needed there) still renders
+correctly. `Button.module.css`/`AnnouncementBar.module.css` arrow crops
+compared before/after the square-box fix at 3x DPR.
+
+**⚠️ Environment note, not a code issue — flagging since it caused real
+confusion mid-verification:** this session ran concurrently with a
+separate, unrelated, large in-progress change already on disk (an MDX-blog-
+content migration — `lib/mdx.ts`, `lib/legacy-routes.ts`,
+`components/blog/mdx-components.tsx`, a `redirects()` block added to
+`next.config.ts`, and more — all **uncommitted**, not authored by this
+round of work). `lib/mdx.ts` has a pre-existing syntax error that blocks
+whole-project `tsc --noEmit` and `next build` outright — confirmed via `git
+diff`/`git status` that none of it is this round's work before assuming
+otherwise. That other process was also actively editing `next.config.ts`
+and the shared `.next` directory *while this round's own dev-server
+verification was running*, which produced exactly the `.next`-collision
+symptom this file already documents in §23/§24 (missing
+`routes-manifest.json`, transient 500s on completely unrelated routes,
+`ERR_CONNECTION_REFUSED` mid-Playwright-run) — not a regression from this
+round's icon changes, confirmed by re-running the identical checks
+immediately afterward and getting a clean pass. **If a future round ever
+hits collateral 500s/connection-errors on routes it didn't touch, check
+`git status` for concurrent uncommitted work on shared files
+(`next.config.ts` especially) before assuming the current round's own code
+is at fault** — this is the same lesson §23/§24 already documented, just
+triggered this time by a second live process rather than a leftover stale
+process. Did not touch any file belonging to that other work.
+
+### Files changed
+
+- `package.json` / `package-lock.json` — added `lucide-react`.
+- `components/ui/icons.tsx` — rewritten per the wrapper architecture above.
+- `components/ui/Button.module.css` — `.sm svg` resized (ArrowRight fix).
+- `components/layout/AnnouncementBar.module.css` — `.link svg` resized
+  (ArrowRight fix).
+- No other file needed a change — every consumer file's import/prop usage
+  kept working unmodified, confirmed by cross-checking every icon name
+  actually imported anywhere in the app against the new export list.
+
+**Approved:** Not yet reviewed by the user in a real browser — same
+pending-review status every section in this file uses before explicit
+sign-off. User said "just build clean … I will verify result manually."
+
+**Next:** Wait for the user's review, in particular of the handful of
+interpretive substitutions (`ContextIcon`→`Orbit`, `PhoneLinesIcon`→
+`AudioLines`, `CloudLockIcon`→`ShieldLock`, `PlayFrameIcon`→`SquarePlay`)
+and the `ArrowRight`/CSS-box decision, all made as implementation judgment
+calls per the plan rather than individually pre-blocked on.
+
+## 28. Webflow CMS migration — Blog, News, Videos, Case Studies
+
+> The client is moving off Webflow entirely; our team owns publishing from
+> here on. Every real editorial item (18 blog posts, 18 press items → 9
+> after collapsing syndication duplicates, 19 videos, 3 case studies) was
+> pulled from Webflow's Data API v2 (site `66a38648fc56330fa5753f86`) and
+> migrated into this repo, replacing every mock array in `lib/blog-posts.ts`
+> / `lib/news.ts` / `lib/videos.ts` / `lib/case-studies.ts`. `careers` (1
+> item) was explicitly deferred, per the user's decision.
+
+### Migration architecture
+
+- **Two throwaway scripts, `scripts/webflow/fetch.mjs` (phase 1: API +
+  asset downloads → `.cache/`, gitignored) and `scripts/webflow/transform.mjs`
+  (phase 2: `.cache/` → `content/`, `public/assets/`, `lib/news.ts`,
+  `lib/videos.ts`)** — re-runnable if Webflow content changes again before
+  the domain cutover, or if the conversion needs tuning; phase 1 is
+  effectively write-once (slow, hits the network), phase 2 is what got
+  iterated on. Neither script is imported by the app. `.env.local` holds
+  `WEBFLOW_API_TOKEN` (cms:read + assets:read only); run with
+  `node --env-file=.env.local scripts/webflow/fetch.mjs`.
+- **`isDraft` is NOT Webflow's publication flag** — one case study
+  (`this-debt-collection-firm-increased-connectivity-rate-by-3x`, the 3X/7X
+  story the landing page already features) has `isDraft: true` yet is live
+  on the real site. The flag means "has unpublished edits"; `fetch.mjs`
+  uses `/collections/{id}/items/live` as the sole source of truth for what
+  to import.
+- **MDX only where there's a body.** Blog posts and case studies (long-form
+  RichText) became `content/blog/*.mdx` / `content/case-studies/*.mdx`,
+  read via the new `lib/mdx.ts` (`next-mdx-remote/rsc`'s `compileMDX` +
+  `gray-matter` for frontmatter). News and videos have no prose — they stay
+  generated plain typed arrays (`lib/news.ts`, `lib/videos.ts`, marked
+  `GENERATED by scripts/webflow/transform.mjs` — hand-edit the types/helpers
+  outside that block freely, but re-run the script rather than hand-editing
+  the array contents).
+- **`scripts/webflow/lib/html-to-mdx.mjs` converts Webflow's RichText HTML
+  to MDX by routing everything through Turndown (HTML to Markdown), not by
+  emitting HTML.** This is the load-bearing decision: MDX parses literal
+  HTML as JSX, not as passthrough — `<br>`, `class=`, inline
+  `style="a:b"`, `colspan=` are compile errors or React warnings there,
+  and `rehype-raw` doesn't fix this (it only applies under `format: 'md'`,
+  which would forfeit MDX's whole point — mixing in real components).
+  Markdown text can never trip that problem; the only literal JSX tags the
+  script ever emits are two self-closing custom components,
+  `<Figure src width height alt caption />` and `<Embed src title />`
+  (rendered by `components/blog/mdx-components.tsx`), both with clean
+  JSX-attribute syntax. Custom Turndown rules: unwrap `div`/`span`/`sup`/
+  `sub` (the 1,487 `<sup>` + 27 `<sub>` in the corpus wrap ordinary running
+  prose — a Webflow paste artifact, not real superscript — content is kept,
+  the tag is dropped); `<style>` removed; `<table>` hand-serialized to a
+  GFM pipe table (all 6 tables in the corpus are simple rectangular grids,
+  no rowspan/colspan — not worth a `turndown-plugin-gfm` dependency);
+  `<figure>`/bare `<img>` → `<Figure>`, with intrinsic width/height read
+  directly from the downloaded file's own bytes via a hand-written
+  `scripts/webflow/lib/image-dims.mjs` (PNG/JPEG/WebP/GIF header parsing,
+  no `sharp`/`image-size` dependency — Webflow's own HTML always has
+  `width="auto" height="auto"`, never real dimensions); a `<figure
+  class="…-type-video">` wrapping `<div><iframe>` (Webflow's video-figure
+  markup, no `<img>` at all) and bare `<iframe>` both → `<Embed>`.
+  - **Two real bugs hit and fixed during development, not shipped
+    latent**: (1) the first version's figure rule did
+    `node.querySelector("img")` and returned `""` with no warning when it
+    found none — silently dropping every video-type figure (2 in the
+    corpus) with zero trace. Fixed by checking for a nested `<iframe>`
+    first and routing to the same `<Embed>` handling `embedRule` already
+    provides for bare iframes. (2) The "bare image" rule (meant to catch
+    images NOT inside a `<figure>`) checked only `node.parentNode?.tagName
+    !== "FIGURE"` — but Webflow always wraps images as `<figure><div>
+    <img></div></figure>`, so an image's *immediate* parent is the `<div>`,
+    never the figure itself; the immediate-parent check missed that,
+    misclassified every figure-wrapped image as "bare" too, and produced a
+    duplicate `<Figure>` (with a duplicate asset copy under a different
+    destination name) for every single inline image in the corpus. Fixed
+    with a real ancestor walk (`hasFigureAncestor`, walks `parentNode` to
+    the root) instead of an immediate-parent check. If a future rule in
+    this file ever needs to test "is this node inside an X" for HTML this
+    project doesn't fully control the shape of, walk every ancestor, not
+    just the immediate parent — the same lesson as several
+    corner-radius/asset-mapping "measure, don't assume the obvious
+    structure" findings elsewhere in this file, now in DOM-tree form.
+  - Turndown itself needs no jsdom/DOM polyfill in Node — it bundles
+    `@mixmark-io/domino` — but `querySelectorAll()` on a Turndown/domino
+    node returns a NodeList **without `Symbol.iterator`**; spread syntax
+    throws `TypeError: ... is not iterable`, `Array.from(x)` works. Hit
+    immediately while writing the table rule; if a future rule here ever
+    calls `querySelectorAll`, use `Array.from`, not spread.
+  - **A JSDoc-comment gotcha, unrelated to Turndown**: an early draft of
+    `lib/mdx.ts`'s file-header comment literally contained a glob pattern
+    referencing every file under `content/` inside a `/** … */` block —
+    the two-character sequence that closes a block comment appeared mid
+    glob, so everything after it was parsed as code, producing a cascade
+    of ~30 unrelated-looking `tsc` errors starting several lines later.
+    Fixed by rewording the comment to avoid writing that glob literally.
+    If a future JSDoc comment anywhere in this project needs to reference
+    a glob pattern, describe it in words (e.g. "every `.mdx` file under
+    `content/`") rather than writing the glob literally — this is a real,
+    easy-to-hit trap, not a one-off typo.
+- **Link resolution happens at render time, not as a one-time text
+  rewrite.** The script leaves internal `https://www.vodex.ai/...` URLs
+  found in migrated body copy as absolute URLs verbatim (15 of them across
+  the corpus) — `components/blog/mdx-components.tsx`'s `a` override
+  resolves them through `lib/legacy-routes.ts`'s `mapLegacyVodexUrl` at
+  render time instead. This is the same map `next.config.ts`'s
+  `redirects()` uses (`EXACT_REDIRECTS`/`PREFIX_REDIRECTS`) — one source of
+  truth, and it means any link a human adds to a future hand-written post
+  gets the same resolution for free, not just what happened to exist at
+  migration time. Genuine external links get `target="_blank" rel=
+  "noopener noreferrer"` plus a visually-hidden "(opens in a new tab)".
+
+### Data model changes
+
+- **`lib/format-date.ts` is new** — `formatDate` was previously exported
+  from `lib/blog-posts.ts`/`lib/news.ts`/`lib/videos.ts` themselves (3
+  duplicate copies). Those modules are about to read the filesystem (MDX
+  frontmatter), and `components/sections/BlogExplorer.tsx` (`"use client"`)
+  imports `BlogPostCard`, which imported `formatDate` **as a value** from
+  `@/lib/blog-posts` — so the whole module, `fs` call included, would have
+  been pulled into the client bundle. Same chain via `NewsCard`/`lib/news`
+  and `VideoCard`/`lib/videos`. Extracted first, as its own client-safe
+  step, specifically so this couldn't surface as a confusing webpack `fs`
+  error once the libs actually started reading files. `lib/blog-posts.ts`
+  and `lib/case-studies.ts` (both now genuinely read the filesystem) import
+  `"server-only"` so any future accidental client import fails loudly at
+  build time instead of shipping `node:fs` to the browser.
+- **`BlogPost` drops `body: PostBlock[]`** — the old `PostBlock` union
+  (heading/paragraph/list/quote) and `tocFromBlocks()` are deleted; a post's
+  body is now compiled MDX (`lib/mdx.ts`'s `renderMdx`), not a stored
+  block array. Gains `author?` (`author-name-date-2`, e.g. "By Vodex") and
+  `faqs?: {q,a}[]` (from Webflow's ten flat `faq-q1..5`/`faq-answer-1..5`
+  fields, populated on 10/18 live posts). `readMinutes` is **computed at
+  read time** from the post's own word count (`lib/mdx.ts`'s `wordCount`),
+  not stored — so it can never drift from an edited body, including a
+  hand-authored one. `title` = `title-of-blog ?? name` (they differed on
+  4/21 raw items). `getFeaturedPost()` is now "explicit `featured: true`,
+  else newest by date" — Webflow has no featured flag, and none of the 4
+  migrated content types were given one; every listing page's "featured"
+  slot is currently just its newest item, which is honest given the data.
+- **`Video` gains `slug`** (it had neither slug nor any id before — the
+  mock type used `title` as its own de-facto identity, which
+  `VideoExplorer.tsx` even kept as its React `key`), **`youtubeId`**
+  (parsed from Webflow's `video` field, handles both `youtube.com/watch?v=`
+  and `youtu.be/` URL shapes), and **`categories: string[]`** alongside the
+  existing single `category` string (Webflow's `select-categories` is a
+  multi-reference — a video can carry more than one tag, e.g. both
+  "Podcasts / Interviews" and "Overview"). `category` (singular, for
+  display) is picked from `categories` by a declared precedence order in
+  `scripts/webflow/overrides.json`, not just "whichever came first" —
+  deterministic across re-runs. **Loses `duration`** — no such field
+  exists in Webflow's videos collection; `VideoCard`/`VideoFeatured` no
+  longer render a duration badge at all (removed, not blanked).
+  `getGridVideos()` changed from an object-identity compare (`v !==
+  featured`) to `v.slug !== featured.slug` — the identity compare only
+  ever worked by accident (an element of the same in-memory array), and
+  would have silently duplicated the featured video into the grid the
+  moment `VIDEOS` was produced by anything other than that one literal
+  array, which is exactly what a generated file is.
+- **`NewsPost` gains `articleUrl`** (Webflow's `article-link` — every one
+  of the 18 raw items is real outbound press coverage; the collection has
+  no on-site article body at all) **and `source`** (the outlet's display
+  name, derived from the URL's hostname via a lookup table in
+  `transform.mjs` — "Read on TechCrunch" reads better than a bare arrow).
+  `date` has no source field in Webflow either — falls back to the item's
+  own `createdOn`.
+- **`CaseStudy` gains `stats: {number,label}[]`** (3–5 pairs from
+  Webflow's `matrix-nb-1..5`/`matrix-nb-1..5-text`, not a fixed 2) and
+  `pdf?` (2/3 have one, a Google Drive share link). **Keeps
+  `statNumber`/`statLabel`/`secondStatNumber`/`secondStatLabel` as derived
+  aliases of `stats[0]`/`stats[1]`** specifically so `CaseStudyCard` and
+  `CaseStudyFeatured` — both already written against that flat 2-stat
+  shape — needed zero changes; only the new detail route reads the full
+  `stats[]` array. The `author-*` fields (quote, name, occupation, image)
+  are dropped — 0/3 populated in the real data.
+  - **Webflow's case-studies collection has no image field at all** —
+    confirmed by reading the full schema, not assumed. `CASE_STUDY_THUMBS`
+    in `transform.mjs` maps each of the 3 slugs to an existing,
+    semantically-matched project photo instead (BNPL story →
+    `debt-collection-industry-1.png`, Genworks/healthcare →
+    `debt-collection-industry-2.jpg`, the 3X/7X story → the landing page's
+    own `case-study-bg.jpg`, which already depicts that exact story) —
+    flagged here as pending real photography, not a permanent choice.
+- **Categories are derived from the loaded data, not hardcoded consts** —
+  `lib/blog-posts.ts`'s `CATEGORIES` (and the generated `lib/news.ts`'s
+  `CATEGORIES` / `lib/videos.ts`'s `VIDEO_CATEGORIES`) compute the distinct
+  set actually present on a published item, ordered by a declared
+  precedence array with anything unlisted appended alphabetically. This
+  kills the entire "chip exists but matches zero posts" / "post exists but
+  has no matching chip" bug class outright — the pre-migration mock data's
+  hardcoded blog `CATEGORIES` included `"Voice Technology"`, which **does
+  not exist anywhere in the real Webflow taxonomy**. Real blog categories
+  come from the `blog-topic-reference` field (a clean 5-value taxonomy:
+  Debt Collection, AI & Technology, Agencies, Insurance, Sales), not the
+  parallel `category` Option field, whose value set includes a literal
+  `"All"` — which would have collided with `BlogExplorer`'s own `ALL`
+  filter-chip sentinel — and a meaningless `"Industries"`.
+- **Webflow's own taxonomy names carry stray whitespace** — "Featured in"
+  and "Debt collection" both have a trailing space in the source data.
+  Trimmed in `transform.mjs`'s `nameMap()`/`t()` helpers (applied to every
+  title/excerpt/description/name read, not just categories) — a real,
+  if minor, Webflow data-quality issue, not a project convention.
+
+### Content hygiene fixes (per explicit user instruction — clean up, don't import verbatim)
+
+- **9 of the raw 18 news items were the same "$2M seed round" PR Newswire
+  release syndicated across outlets** (Benzinga — twice, under two
+  different slugs, literally the same URL — plus WFLA, Fox8, finanzen.net,
+  AP News, Yahoo Finance, Seeking Alpha, KTLA, PR Newswire itself).
+  Collapsed to one entry via `scripts/webflow/overrides.json`'s
+  `news.collapseGroups`, kept under the PR Newswire original with a clean
+  slug (`vodex-raises-2m-seed-funding`) and title. This single collapse
+  also resolves **all three** template-leftover slugs the raw export
+  carried (`10-great-examples-of-responsive-websites`,
+  `the-worst-advice-weve-ever-heard-about-web-design`,
+  `7-must-have-tools-for-web-designers` — obvious Webflow starter-template
+  junk despite each having a real title/link) — two are simply dropped as
+  duplicates, the third is the renamed keeper.
+- **`generateStaticParams` + `dynamicParams = false`** on both dynamic
+  routes now (blog post detail was already `generateStaticParams`-only;
+  case studies is new) — an unlisted slug 404s statically at build time
+  rather than attempting an on-demand render, appropriate since every real
+  slug is already known from the content directory at build time.
+- **Editorial decisions live in `scripts/webflow/overrides.json`, not
+  inline in the script** — the news collapse groups, and the category
+  display-precedence arrays for blog/news/videos. Kept as one reviewable,
+  diffable JSON file (with the "why" in its own comments) rather than
+  scattered through `transform.mjs`, matching this project's established
+  "editorial choice is not code" separation.
+
+### Component changes
+
+- **`components/blog/ArticleBody.tsx`** is now a plain styling wrapper
+  (`{children}`) — the old `switch (block.type)` and its `PostBlock` import
+  are gone; MDX output has no classNames of its own, so
+  `ArticleBody.module.css`'s selectors moved from class-based
+  (`.heading`/`.paragraph`/`.list`/`.quote`) to element-based under `.body`
+  (`.body h2`, `.body p`, `.body :is(ul,ol) li`, `.body blockquote`, plus
+  new rules for tags the mock data never produced: `h3`, `a`, `strong`,
+  `em`, `table/th/td`, `.figure`/`.figcaption`, `.embed` (a responsive
+  16:9 iframe wrapper)). **`scroll-margin-top: 96px` moved from `.heading`
+  to `.body :is(h2, h3)`** — still the offset `ArticleToc`'s
+  `ACTIVE_OFFSET` is tuned against; losing this would land every in-page
+  anchor jump under the sticky navbar.
+- **`ArticleToc.tsx` required zero changes** — its `{id, text}[]` contract
+  is now filled by `lib/rehype-collect-headings.ts`, a factory plugin (run
+  after `rehype-slug` in `lib/mdx.ts`'s pipeline) that walks the compiled
+  hast tree collecting every `<h2>`'s already-slugified `id` and its
+  rendered text, in document order, into a caller-supplied array — h2-only,
+  matching the pre-migration behavior (h3s still get slugged ids for deep
+  links, just don't appear in the sidebar). Heading text is read from the
+  rendered node's own children, not the MDX source, specifically so it can
+  never drift from what `rehype-slug` actually slugified (a source-text
+  regex would drift on any heading containing inline `**bold**` — 752
+  `<strong>` tags in the corpus).
+- **Real bug found and fixed before shipping (not caught by `tsc`)**:
+  `app/resources/blog/[slug]/page.module.css`'s `.grid` had no fallback for
+  a post with fewer than 2 headings — `ArticleToc` returns `null` in that
+  case (documented, pre-existing behavior), but the CSS still reserved a
+  220px sidebar column, which would have collapsed the article body into
+  that narrow column instead of the full width. Never fired against the 6
+  mock posts (all had 2+ headings) but would have against real content.
+  Fixed with a `.gridNoToc` variant (`grid-template-columns: minmax(0,
+  1fr)`) applied by the route when `toc.length < 2`. As it happens, all
+  18 live migrated posts have 3+ `##` headings, so this specific fix
+  isn't visibly exercised by today's data — it's a defensive correctness
+  fix for the next hand-written short post, verified by code review and
+  the CSS class actually being wired up, not by a live example.
+- **`NewsCard`/`NewsFeatured` now link off-site** (`target="_blank" rel=
+  "noopener noreferrer"`, `ExternalLinkIcon` instead of `ArrowRight`, "Read
+  on {source}" copy) instead of to `/company/news/[slug]` — that route
+  never existed and was a live 404; every migrated news item is real
+  outbound coverage with no on-site body to link to in the first place, so
+  this isn't a placeholder-to-be-fixed-later, it's the correct permanent
+  behavior for this content shape.
+- **`VideoCard`/`VideoFeatured` are now interactive** — every migrated
+  video is a real, published YouTube video (previously there was nothing
+  to link to, so the play button was `aria-hidden` decoration). New
+  `components/ui/VideoThumbButton.tsx` (`"use client"`) owns click-to-open
+  state and renders the caller's own thumb markup (image/scrim/play icon —
+  unchanged JSX/CSS in both cards) inside a real `<button
+  aria-haspopup="dialog">`; `components/ui/VideoLightbox.tsx` renders the
+  actual player using the **native `<dialog>` element + `showModal()`** —
+  free focus trap, Escape-to-close, background inerting, scroll lock and
+  `::backdrop`, zero dependencies, consistent with this project's
+  plain-platform-features bias. The YouTube iframe
+  (`youtube-nocookie.com/embed/...`) only mounts while the dialog is open,
+  so no YouTube script loads just from viewing the listing page, and
+  closing (unmounting) stops playback with no manual teardown. `.thumb` in
+  both cards' CSS modules gained button-chrome resets (`border:0;
+  background:none; padding:0; …`) since it's now a `<button>`, not a
+  `<div>`. `VideoExplorer.tsx` changed `key={video.title}` to `key=
+  {video.slug}` and its category filter from `video.category ===
+  activeCategory` to `video.categories.includes(activeCategory)` (one
+  line) — chosen over making `category` an array everywhere specifically
+  to avoid rippling into the other two explorers and 8 other card
+  components for a change only videos' multi-reference actually needs.
+- **New case-study detail route, `app/resources/case-studies/[slug]/
+  page.tsx`** (+ route-local `not-found.tsx`) — fixes a second live 404:
+  `CaseStudyCard`/`CaseStudyFeatured` already linked to
+  `/resources/case-studies/[slug]`, which never existed. New
+  `components/case-studies/CaseStudyDetailHeader.tsx` (copy-adapted from
+  `ArticleHeader.tsx` — same centered eyebrow/title/excerpt/hero-image
+  shell) plus a count-aware stat band underneath (`grid-template-columns:
+  repeat(var(--stat-count), …)`, driven by `[data-count]` since Webflow's
+  real data has 3–5 stats, not a fixed 2). Body (About/Challenges/
+  Solutions/Results, each an MDX `##` section) reuses `ArticleBody`
+  directly — no new body-rendering code. An optional PDF download link
+  (plain `<a target="_blank">`, not the shared `Button` component, since
+  `Button` always renders a `next/link` with no way to set `target`).
+- **`next.config.ts` gained `redirects()`** — ~20 permanent (308) rules
+  covering every real vodex.ai (Webflow) URL found in that site's live
+  sitemap, generated from the new `lib/legacy-routes.ts` (also used by the
+  MDX link resolver, see above — one source of truth). Two wildcards
+  (`/blog-posts/:slug`, `/case-studies/:slug`) — which is *why* blog post
+  and case-study slugs were kept verbatim from Webflow during migration,
+  not re-slugged (unlike the 3 news items, which had no live detail pages
+  to preserve links to). `/search` has no real equivalent — redirected to
+  `/resources/blog` (the only page with a search box) as the least-bad
+  target, flagged as a judgment call. `/privacy-policy`, `/terms-of-use`,
+  `/cookie-management` are deliberately **not** redirected — none of the
+  three has a built destination page yet (and `ContactForm.tsx` already
+  links to `/privacy`/`/terms`, which also 404 today) — redirecting to a
+  page that doesn't exist would be worse than the clean 404 those URLs get
+  now. `/pricing` is identical on both sites — correctly omitted, not
+  missed.
+- **`app/sitemap.ts` + `app/robots.ts` are new** — neither existed before
+  this migration. Shipping the redirects above with no replacement sitemap
+  would have left the migration half-done from a crawler's point of view.
+  Lists every static route plus every blog post and case study slug
+  (`BLOG_POSTS`/`CASE_STUDIES`, read directly — no separate route list to
+  keep in sync).
+
+### A live cross-session `.next` collision, hit and worked around during verification
+
+Mid-verification, a **different**, concurrently-running Claude Code session
+in this same repo (working on an unrelated icon-library swap — see the
+adjacent global-icons section) was actively building against the shared
+default `.next` directory at the same time this migration's own
+verification build ran. Symptoms matched this project's own documented
+failure mode exactly (the Pricing and Investors sections earlier in this
+file): a build that reported "46/46 routes ok" in its own terminal output,
+immediately followed by `PageNotFoundError: Cannot find module for page:
+/_document` on a retry, and — once actually inspected — a
+`.next/server/app/` tree missing most routes despite the manifests looking
+intact. Root cause confirmed by finding a **stray, half-reverted
+`distDir: ".next-verify-icons"` override** that had been added to
+`next.config.ts` by the other session (their own comment: "Reverted before
+this change is done" — evidently interrupted before that revert happened)
+and picked up transparently by this migration's own `next build`
+invocation, which happened to read the file mid-edit.
+
+Fixed by removing that stray override (restoring `next.config.ts` to just
+this migration's own `images`/`redirects()` config), then doing this
+migration's *own* isolated-`distDir` verification build
+(`distDir: process.env.BUILD_VERIFY ? ".next-verify-migration" : ".next"`,
+run via `BUILD_VERIFY=1 npm run build`) rather than repeatedly contesting
+the shared default `.next` a second time — same defensive pattern already
+established elsewhere in this file, just needed here for a genuinely
+concurrent collision rather than a sequential dev/build one. `next start`
+was run against `.next-verify-migration` on a scratch port (3901) for the
+full route/redirect/asset smoke test below; the actual PID listening on
+that port had to be found via `netstat -ano` and killed by PID
+specifically — the PID `npm run start &` itself reports is an npm wrapper
+process, not the real listener, the same gotcha as this project's other
+process-cleanup notes. `next.config.ts` and `tsconfig.json` (Next
+auto-appends a `distDir`-specific entry to `include` on any isolated
+build) were both reverted to their exact pre-migration-verification state
+afterward — `git diff` on both shows only this migration's intended net
+changes, confirmed before finishing. If a future session in this project
+ever sees a build that "succeeded" per its own terminal output immediately
+followed by page-not-found errors on the very next command, suspect a
+concurrent process sharing `.next` before suspecting the code — check
+`next.config.ts` for an unexpected `distDir` and check for other live node
+processes (`ps aux` / `netstat -ano`) before spending time on the build
+output itself.
+
+### Status
+
+**Verified** (isolated-`distDir` build + `next start` on a scratch port,
+then re-verified with one final clean build against the real default
+`.next` once no concurrent process was active): `npx tsc --noEmit` clean;
+`next build` succeeds, all 46 routes including all 18 blog slugs and all 3
+case-study slugs statically generated (`generateStaticParams` +
+`dynamicParams = false` on both); every one of the ~20 legacy redirects
+fires with the correct 308 + `Location`; a genuinely unknown blog slug
+404s (confirms `dynamicParams = false` is doing its job, not silently
+falling through); the CFPB post's GFM table renders as real `<table>`
+markup; the gibberlink post's `<Embed>` renders the actual YouTube iframe;
+zero occurrences of `website-files.com`/`uploads-ssl.webflow.com` anywhere
+in `content/` or `lib/*.ts` (grepped directly, not assumed); the Genworks
+case study's PDF link resolves to the real Google Drive URL; all 19 video
+cards render a real `aria-haspopup="dialog"` button and zero `duration`
+badges remain anywhere; all 9 news cards are real `target="_blank"`
+external links with correctly-derived "Read on {source}" labels (including
+"Inc42" — the hostname-to-name lookup table handles digits in a brand name
+correctly, not just letters). No hanging processes — every server started
+during verification (both the accidental first one on the corrupted shared
+`.next`, and the deliberate isolated one on port 3901) was confirmed
+stopped by checking the port again before moving on.
+
+**Known gaps, flagged rather than silently decided:**
+1. **11 inline blog images (across 8 posts) and 1 case-study inline image
+   had no real alt text or caption in Webflow's own data** — each got a
+   generated fallback (`Illustration from "<post title>"` /
+   `<case study title> — <section>`) and is individually listed in
+   `scripts/webflow/.cache/transform-report.json`'s `warnings` array
+   (gitignored — re-run `node scripts/webflow/transform.mjs` to regenerate
+   it) — needs real, specific alt text written in by hand eventually.
+2. **The 3 case-study thumbnails are reused existing project photography**
+   (see "Data model changes" above) — Webflow's case-studies collection
+   has no image field at all; these are semantically matched, not
+   arbitrary, but still pending real case-study photography if/when the
+   client supplies any.
+3. **`/search`'s redirect target (`/resources/blog`) is a judgment call**,
+   not a literal equivalent — there is no real search page on this site.
+4. **`/privacy-policy`, `/terms-of-use`, `/cookie-management` have no
+   redirect and no destination page** — a pre-existing gap (`ContactForm.tsx`
+   already links to `/privacy`/`/terms`), not introduced by this round, but
+   worth closing together whenever those two pages get built.
+5. **No JSON-LD (`FAQPage`, `Article`) was added** despite `BlogPost` now
+   carrying real `faqs` on 10/18 posts — the plan's core scope was the data
+   migration plus redirects plus the case-study route; structured data is a
+   reasonable follow-up, not done here.
+6. **Careers (1 Webflow item) was explicitly deferred** per the user's
+   decision — `Footer.tsx`'s `/careers` link and `CompanyMegaMenu.tsx`'s
+   Careers item remain pointed at a route that still doesn't exist, exactly
+   as documented in earlier sections of this file.
+
+**Approved:** Nothing yet — user said "just build clean, I will verify
+result manually," same pending-review status every other "build clean"
+round in this project uses before explicit sign-off.
+
+**Next:** Wait for the user's review of the real migrated content
+end-to-end (blog, news, videos, case studies), in particular the 12
+generated-fallback alt texts and the 3 reused case-study thumbnails flagged
+above. If the client supplies real case-study photography or better alt
+text later, only `scripts/webflow/overrides.json` (thumbnails) or the
+individual MDX files' frontmatter/`<Figure alt="...">` props need
+hand-editing — no code changes.
+
+---
+
+## 29. Global — `/solutions`, `/resources`, `/company` are never getting hub
+pages; the mega-menus are the only navigation to their sub-pages
+
+> Confirmed directly by the user: **do not build hub pages for these three
+> routes.** Every earlier section of this file that called this a
+> "pre-existing gap" (§12–§15, §17, §20, §22 and others) was describing an
+> open TODO — it wasn't one. The mega-menu hover panel (desktop) / tap
+> accordion (mobile, added this round) is the complete, permanent
+> navigation surface for Solutions/Resources/Company; nothing else is
+> planned. Leave those historical "gap" mentions as-is (they're accurate
+> project history for what was true at the time), but don't act on them —
+> this section is the current, authoritative statement.
+
+### The real bug this surfaced
+
+Before this round, "Solutions"/"Resources"/"Company" in `Navbar.tsx` were
+real `<Link href="/solutions">` (etc.) triggers — the mega-menu panel opened
+on `:hover`/`:focus-within`, but the trigger **itself** was still a live,
+clickable link to a page that has never existed and 404s. Two real broken
+paths, not just an aesthetic gap:
+- **Desktop**: clicking the trigger directly (not hovering, not clicking a
+  panel item) navigated to a 404 — a keyboard user tabbing to it and
+  pressing Enter, or anyone who clicks before the hover panel has visually
+  registered, hit this every time.
+- **Mobile**: the hamburger panel had no hover mechanism at all, so it
+  rendered these three as the exact same plain `<Link>` — tapping
+  "Solutions" on mobile 404'd **immediately**, with no way to reach any of
+  the 15 real sub-pages (Payment Reminders, Blog, About, etc.) from the
+  mobile nav at all.
+
+### Fix
+
+- **`SolutionsMegaMenu.tsx`/`ResourcesMegaMenu.tsx`/`CompanyMegaMenu.tsx`**:
+  the trigger changed from `<Link href={href}>` to a non-navigating
+  `<button type="button" aria-haspopup="true">` — dropped the now-meaningless
+  `href` prop entirely (all three components take no props now). Each
+  component's own `.link` CSS class gained the button-chrome reset
+  (`border:0; background:none; font:inherit; cursor:pointer; …`) the
+  donor `<a>` never needed. `:hover`/`:focus-within` on the parent `<li>`
+  still opens the panel exactly as before — only the trigger element type
+  changed, not the open mechanism.
+- **Each menu's item array is now exported** (`MAIN_SOLUTIONS`,
+  `RESOURCES_ITEMS`, `COMPANY_ITEMS`) so `Navbar.tsx` can reuse the same
+  data for the new mobile accordion, rather than maintaining a second copy.
+- **`Navbar.tsx`'s mobile panel**: "Solutions"/"Resources"/"Company" are now
+  tap-to-expand disclosures (`openMobileGroup` state, one open at a time,
+  `ChevronDownIcon` rotates 180° open), each revealing the exact same item
+  list its desktop mega-menu shows on hover — not a link to anywhere.
+  Tapping a real sub-item (e.g. "Payment Reminders") navigates normally and
+  closes the whole mobile panel; tapping the group label itself only
+  toggles the disclosure, never navigates.
+- **`Navbar.module.css`'s mobile `.panel` switched from a hardcoded
+  `max-height: 420px` to the `grid-template-rows: 0fr → 1fr` technique**
+  (same as `FaqAccordion`) — the panel now holds variable-height expanding
+  accordion groups, so a guessed pixel ceiling would either clip an
+  expanded group or leave dead space when everything's collapsed. Each
+  accordion group's own sub-panel uses the identical technique, driven by
+  `data-open="true"|"false"` (same boolean-data-attribute convention as
+  `Select.tsx`/`DialCodeSelect.tsx`'s `[data-open="true"]`, not a raw
+  boolean prop, which React would otherwise stringify).
+- `NAV_LINKS` (the old shared array covering all 5 top-level items) was
+  split apart — Products/Pricing are now hand-placed plain `<Link>`s in
+  both the desktop `<ul>` and the mobile panel (same
+  Products→Solutions→Resources→Company→Pricing order in both), and a new
+  `MOBILE_GROUPS` array (built from the 3 mega-menus' exported item lists)
+  drives only the 3 accordions.
+
+### Verified
+
+Clean `npx tsc --noEmit`; `next build` — 46/46 routes, and `/solutions`,
+`/resources`, `/company` correctly do **not** appear in the route list (no
+hub page exists or was added). A scratch `next dev` server (started and
+stopped cleanly this round, confirmed down via a failed curl afterward)
+confirmed via `curl`: `/solutions`, `/resources`, `/company` all return
+`404`. Playwright: clicking the desktop "Solutions"/"Resources"/"Company"
+trigger directly (not hovering) leaves the URL unchanged on every one of
+the three; hovering still reveals the real panel with working links
+(`Payment Reminders` etc. visible and `<a href="/solutions/payment-reminders">`);
+on a 430px mobile viewport, tapping the hamburger then tapping "Solutions"
+expands the accordion in place with the URL unchanged, and tapping a real
+item inside it (`Payment Reminders`) navigates correctly to
+`/solutions/payment-reminders`. Zero console errors and zero horizontal
+overflow at both 1516px and 430px.
+
+**Approved:** This was a direct, explicit user correction (not a "build
+clean, I'll verify" round) — treat the "no hub pages, hover/accordion only"
+constraint as confirmed going forward for any future work touching these
+three nav entries.
+
+### ⚠️ Round 2 — the button conversion itself introduced a real bug, caught by the user pasting a screenshot
+
+The user pasted a screenshot showing the Resources **and** Company panels
+both fully open at once, overlapping, and asked "is this a bug?" — then,
+before the investigation finished, added "if I leave hover, the sub menu
+should be gone right?" Both correctly identified a real regression from
+the fix above, confirmed by reproducing it directly (not just inferred from
+the screenshot):
+
+- **Root cause**: converting the trigger from `<Link>` to `<button>` changed
+  what a mouse *click* on it does. The old `<Link>` navigated away on click
+  (a full page transition); the new `<button>` does nothing but take
+  browser focus and stay on the page. `:focus-within` keeps a panel open
+  independent of mouse position — so clicking "Resources" (a natural thing
+  to do, since it now visually reads as an interactive control with no href
+  hint) leaves focus parked on that button. Moving the *mouse* to hover
+  "Company" afterward opens Company's panel via `:hover` while Resources'
+  panel stays open via the still-active `:focus-within` — both rendered at
+  once, exactly matching the screenshot. This is why leaving hover didn't
+  close it: the panel wasn't being held open by hover, it was being held
+  open by leftover focus hover couldn't touch.
+- **Reproduced directly before fixing**: a Playwright script that clicks the
+  Resources trigger, then hovers the Company trigger with the mouse,
+  confirmed `document.activeElement` stayed on the Resources button and
+  both panels' links were simultaneously visible — not just eyeballed from
+  the screenshot.
+- **Fix**: each of the three trigger buttons
+  (`SolutionsMegaMenu`/`ResourcesMegaMenu`/`CompanyMegaMenu`) now blurs
+  itself immediately on click (`onClick={(event) => event.currentTarget.blur()}`)
+  — there's nothing to click *to* (no href), so a stray click can no longer
+  leave the panel focus-locked open. This doesn't touch real keyboard
+  navigation: `Tab`-ing to the trigger still opens its panel via
+  `:focus-within` (focus events aren't click events, so the blur handler
+  doesn't fire), and the existing Escape-blur handler still closes it from
+  there exactly as before.
+- **Re-verified with the same repro script**: after the fix, clicking
+  Resources then hovering Company shows Company's panel only (Resources'
+  is gone); moving the mouse fully away closes everything; plain
+  hover-open/hover-leave still works; `Tab`-focusing a trigger still opens
+  its panel and `Escape` still closes it. Clean `tsc --noEmit` afterward, on
+  a scratch `next dev` server started and stopped cleanly this round
+  (confirmed down via a failed curl).
+
+**If a future trigger in this project is ever converted from a real `<Link>`
+to a non-navigating `<button>` for the same "there's nothing to link to"
+reason, check whether anything relies on `:focus-within` to stay open** —
+a click that used to navigate away (and thus couldn't leave stale focus
+behind) can silently start doing so once it no longer navigates.

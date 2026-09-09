@@ -18,7 +18,7 @@ import styles from "./ResourcesMegaMenu.module.css";
    sub-group this used to carry (About/News/Investors & Partners/Contact Us)
    moved out into its own CompanyMegaMenu once "Company" got a real navbar
    entry of its own, so it isn't duplicated across two menus. */
-const RESOURCES_ITEMS = [
+export const RESOURCES_ITEMS = [
   { label: "Blog", href: "/resources/blog", Icon: ArticleIcon },
   { label: "Videos", href: "/resources/videos", Icon: PlayFrameIcon },
   { label: "Call Samples", href: "/resources/call-samples", Icon: PhoneCallIcon },
@@ -28,10 +28,20 @@ const RESOURCES_ITEMS = [
   { label: "Research", href: "/resources/research", Icon: ResearchIcon },
 ];
 
-export function ResourcesMegaMenu({ href }: { href: string }) {
+// There is no "/resources" hub page and none is planned — the trigger is a
+// non-navigating button, not a Link. On desktop the mega-menu panel below is
+// reachable by hover/focus alone; the equivalent tap-to-expand affordance for
+// touch/mobile lives in Navbar.tsx's own accordion (no hover there).
+export function ResourcesMegaMenu() {
   const itemRef = useRef<HTMLLIElement>(null);
   const pathname = usePathname();
 
+  // The trigger has nowhere to navigate to, so a click just blurs itself
+  // (see the button's onClick below) — otherwise a stray click leaves this
+  // panel stuck open (:focus-within, independent of mouse position) even
+  // after the mouse moves on to hover a sibling menu. Same fix as
+  // SolutionsMegaMenu/CompanyMegaMenu.
+  //
   // Dropping focus on Escape closes the panel (removes :focus-within),
   // assuming the mouse isn't also hovering it. Same mechanism as
   // SolutionsMegaMenu.
@@ -56,9 +66,14 @@ export function ResourcesMegaMenu({ href }: { href: string }) {
 
   return (
     <li className={styles.resourcesItem} ref={itemRef}>
-      <Link href={href} className={styles.link} aria-haspopup="true">
+      <button
+        type="button"
+        className={styles.link}
+        aria-haspopup="true"
+        onClick={(event) => event.currentTarget.blur()}
+      >
         Resources
-      </Link>
+      </button>
       <div className={styles.panel}>
         <div className={styles.panelInner}>
           <p className={styles.colLabel}>Resources</p>

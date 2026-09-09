@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
 import { ArrowRight } from "@/components/ui/icons";
-import { formatDate, type BlogPost } from "@/lib/blog-posts";
+import { formatDate } from "@/lib/format-date";
+import type { BlogPost } from "@/lib/blog-posts";
 import styles from "./BlogPostCard.module.css";
 
 type BlogPostCardProps = {

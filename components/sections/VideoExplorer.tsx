@@ -26,12 +26,12 @@ export function VideoExplorer({ videos, categories }: VideoExplorerProps) {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return videos.filter((video) => {
-      const matchesCategory = activeCategory === ALL || video.category === activeCategory;
+      const matchesCategory = activeCategory === ALL || video.categories.includes(activeCategory);
       const matchesQuery =
         q === "" ||
         video.title.toLowerCase().includes(q) ||
         video.description.toLowerCase().includes(q) ||
-        video.category.toLowerCase().includes(q);
+        video.categories.some((c) => c.toLowerCase().includes(q));
       return matchesCategory && matchesQuery;
     });
   }, [videos, activeCategory, query]);
@@ -89,7 +89,7 @@ export function VideoExplorer({ videos, categories }: VideoExplorerProps) {
         {filtered.length > 0 ? (
           <div id="video-grid" className={styles.grid}>
             {filtered.map((video, i) => (
-              <VideoCard key={video.title} video={video} delay={i * 70} />
+              <VideoCard key={video.slug} video={video} delay={i * 70} />
             ))}
           </div>
         ) : (

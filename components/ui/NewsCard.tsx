@@ -1,8 +1,8 @@
 import Image from "next/image";
-import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
-import { ArrowRight } from "@/components/ui/icons";
-import { formatDate, type NewsPost } from "@/lib/news";
+import { ExternalLinkIcon } from "@/components/ui/icons";
+import { formatDate } from "@/lib/format-date";
+import type { NewsPost } from "@/lib/news";
 import styles from "./NewsCard.module.css";
 
 type NewsCardProps = {
@@ -12,11 +12,11 @@ type NewsCardProps = {
 
 /**
  * Grid card for the newsroom listing — copy-adapted from BlogPostCard (same
- * light body / sharp corners / stretched-link idiom). No per-item detail
- * page exists yet, so the link is a plausible, not-yet-resolving
- * `/company/news/[slug]` href — same placeholder-link convention used
- * elsewhere in this project (e.g. Resources.tsx, CaseStudyCard) before a
- * real destination page is built.
+ * light body / sharp corners / stretched-link idiom). Every migrated news
+ * item is real outbound press coverage (Webflow's "news-articles"
+ * collection has no on-site article body, only an external `article-link`)
+ * — so the card links off-site rather than to a `/company/news/[slug]`
+ * page that was never real content to begin with.
  */
 export function NewsCard({ post, delay = 0 }: NewsCardProps) {
   return (
@@ -33,16 +33,22 @@ export function NewsCard({ post, delay = 0 }: NewsCardProps) {
       <div className={styles.body}>
         <p className={styles.category}>{post.category}</p>
         <h3 className={styles.cardTitle}>
-          <Link href={`/company/news/${post.slug}`} className={styles.titleLink}>
+          <a
+            href={post.articleUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.titleLink}
+          >
             {post.title}
-          </Link>
+            <span className="visually-hidden"> (opens in a new tab)</span>
+          </a>
         </h3>
         <p className={styles.excerpt}>{post.excerpt}</p>
         <p className={styles.meta}>{formatDate(post.date)}</p>
         <hr className={styles.divider} />
         <span className={styles.readMore} aria-hidden="true">
-          Read More
-          <ArrowRight />
+          {post.source ? `Read on ${post.source}` : "Read More"}
+          <ExternalLinkIcon />
         </span>
       </div>
     </Entrance>

@@ -8,7 +8,8 @@ import { ArticleHeader } from "@/components/blog/ArticleHeader";
 import { ArticleToc } from "@/components/blog/ArticleToc";
 import { ArticleBody } from "@/components/blog/ArticleBody";
 import { RelatedPosts } from "@/components/blog/RelatedPosts";
-import { BLOG_POSTS, getPostBySlug, getRelatedPosts, tocFromBlocks } from "@/lib/blog-posts";
+import { BLOG_POSTS, getPostBySlug, getRelatedPosts, type BlogPostFrontmatter } from "@/lib/blog-posts";
+import { renderMdx } from "@/lib/mdx";
 import styles from "./page.module.css";
 
 type PageProps = {
@@ -18,6 +19,11 @@ type PageProps = {
 export function generateStaticParams() {
   return BLOG_POSTS.map((post) => ({ slug: post.slug }));
 }
+
+// Every slug this route can ever render comes from content/blog/*.mdx at
+// build time (generateStaticParams above) — a request for anything else
+// should 404 statically rather than attempting an on-demand render.
+export const dynamicParams = false;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -34,8 +40,9 @@ export default async function BlogPostPage({ params }: PageProps) {
   const post = getPostBySlug(slug);
   if (!post) notFound();
 
-  const toc = tocFromBlocks(post.body);
+  const { content, toc } = await renderMdx<BlogPostFrontmatter>("blog", slug);
   const related = getRelatedPosts(post.slug, 3);
+  const hasToc = toc.length >= 2;
 
   return (
     <>
@@ -48,9 +55,9 @@ export default async function BlogPostPage({ params }: PageProps) {
 
         <section className={styles.section}>
           <div className="container">
-            <div className={styles.grid}>
-              <ArticleToc items={toc} />
-              <ArticleBody body={post.body} />
+            <div className={`${styles.grid} ${hasToc ? "" : styles.gridNoToc}`}>
+              {hasToc && <ArticleToc items={toc} />}
+              <ArticleBody>{content}</ArticleBody>
             </div>
           </div>
         </section>

@@ -1,0 +1,35 @@
+.section {
+  background: var(--bg);
+  padding-block: 48px 0;
+}
+
+.section > div {
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+.pdfLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 40px;
+  padding-block: 14px;
+  border-top: 1px solid var(--hairline-strong);
+  width: 100%;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fg);
+  transition: color var(--dur) var(--ease);
+}
+
+.pdfLink:hover {
+  color: var(--brand);
+}
+
+.pdfLink svg {
+  transition: transform var(--dur) var(--ease);
+}
+
+.pdfLink:hover svg {
+  transform: translateX(4px);
+}

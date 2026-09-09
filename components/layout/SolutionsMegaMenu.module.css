@@ -5,11 +5,19 @@
 /* Mirrors Navbar.module.css's .link exactly (same hover underline) — copied
    locally rather than shared, this component owns its own small CSS module
    the same way every other interactive nav/section piece in this project
-   does. */
+   does. Rendered as a <button> (no "/solutions" hub page exists), so it also
+   resets the default button chrome the donor <a> never needed. */
 .link {
   position: relative;
+  display: inline-block;
   padding-block: 4px;
+  padding-inline: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  font: inherit;
   color: #fff;
+  cursor: pointer;
   transition: color var(--dur) var(--ease);
 }
 

@@ -70,9 +70,16 @@
   color: var(--fg-muted);
 }
 
+/* Pins the divider + Read More pill to the bottom of the card regardless of
+   how many lines the title/excerpt above take — same technique as
+   Resources.module.css's own cards. Without this, .body's flex-column
+   children just stack from the top and any extra height the grid's
+   row-stretch gives a shorter card sits as dead space below Read More
+   instead of pushing it down, so three cards with different title/excerpt
+   lengths land their buttons at three different heights. */
 .divider {
   width: 100%;
-  margin-top: 16px;
+  margin-top: auto;
   border: none;
   border-top: 1px solid var(--hairline-strong);
 }

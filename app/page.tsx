@@ -3,7 +3,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/hero/Hero";
 import { TrustStrip } from "@/components/hero/TrustStrip";
-import { DashboardShowcase } from "@/components/sections/DashboardShowcase";
+import { InitiateCall } from "@/components/sections/InitiateCall";
 import { IntroducingDros } from "@/components/sections/IntroducingDros";
 import { Solutions } from "@/components/sections/Solutions";
 import { AutoRedialBanner } from "@/components/sections/AutoRedialBanner";
@@ -25,7 +25,7 @@ export default function HomePage() {
       <main>
         <Hero />
         <TrustStrip />
-        <DashboardShowcase />
+        <InitiateCall />
         <IntroducingDros />
         <Solutions />
         <AutoRedialBanner />

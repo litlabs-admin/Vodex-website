@@ -2,44 +2,74 @@
   max-width: 720px;
 }
 
-.heading {
+/* MDX output carries no classNames of its own (see ArticleBody.tsx) — every
+   rule here targets the plain element a Markdown/MDX compile actually
+   produces, scoped under .body via CSS Modules. */
+
+.body :is(h2, h3) {
   /* Clears the sticky navbar when following an in-page anchor jump — same
      offset ArticleToc's ACTIVE_OFFSET is tuned against. */
   scroll-margin-top: 96px;
-  margin-top: 48px;
-  font-size: 26px;
   font-weight: 600;
-  line-height: 1.3;
   letter-spacing: -0.01em;
   color: var(--fg);
+}
+
+.body h2 {
+  margin-top: 48px;
+  font-size: 26px;
+  line-height: 1.3;
+}
+
+.body h3 {
+  margin-top: 36px;
+  font-size: 20px;
+  line-height: 1.35;
 }
 
 .body > *:first-child {
   margin-top: 0;
 }
 
-.paragraph {
+.body p {
   margin-top: 20px;
   font-size: var(--fs-body);
   line-height: var(--lh-body);
   color: var(--fg-muted);
 }
 
-.list {
+.body strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.body em {
+  font-style: italic;
+}
+
+.body :is(ul, ol) {
   margin-top: 20px;
   display: grid;
   gap: 12px;
 }
 
-.list li {
-  position: relative;
-  padding-left: 24px;
+.body ol {
+  padding-left: 22px;
+  list-style: decimal;
+}
+
+.body :is(ul, ol) li {
   font-size: var(--fs-body);
   line-height: var(--lh-body);
   color: var(--fg-muted);
 }
 
-.list li::before {
+.body ul li {
+  position: relative;
+  padding-left: 24px;
+}
+
+.body ul li::before {
   content: "";
   position: absolute;
   left: 4px;
@@ -50,13 +80,14 @@
   background: var(--brand);
 }
 
-.quote {
+.body blockquote {
   margin: 32px 0;
   padding-left: 24px;
   border-left: 3px solid var(--brand);
 }
 
-.quote p {
+.body blockquote p {
+  margin-top: 0;
   font-family: var(--font-serif);
   font-style: italic;
   font-size: 20px;
@@ -64,7 +95,7 @@
   color: var(--fg);
 }
 
-.cite {
+.body blockquote cite {
   display: block;
   margin-top: 12px;
   font-style: normal;
@@ -73,12 +104,96 @@
   color: var(--fg-muted);
 }
 
+.link {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--dur) var(--ease);
+}
+
+.link:hover {
+  color: var(--brand-hover);
+}
+
+.body hr {
+  margin: 40px 0;
+  border: none;
+  border-top: 1px solid var(--hairline-strong);
+}
+
+.body :is(table) {
+  margin-top: 28px;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.body th {
+  padding: 12px;
+  border-bottom: 1px solid var(--hairline-strong);
+  text-align: left;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.body td {
+  padding: 12px;
+  border-bottom: 1px solid var(--hairline);
+  color: var(--fg-muted);
+}
+
+.body :is(table) {
+  overflow-x: auto;
+  display: block;
+}
+
+.figure {
+  display: block;
+  margin: 32px 0;
+}
+
+.figureImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.figcaption {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg-muted);
+  text-align: center;
+}
+
+.embed {
+  position: relative;
+  margin: 32px 0;
+  aspect-ratio: 16 / 9;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
 @media (max-width: 480px) {
-  .heading {
+  .body h2 {
     font-size: 22px;
   }
 
-  .quote p {
+  .body h3 {
+    font-size: 18px;
+  }
+
+  .body blockquote p {
     font-size: 18px;
   }
 }
