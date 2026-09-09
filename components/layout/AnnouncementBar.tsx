@@ -1,19 +1,13 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, XIcon } from "@/components/ui/icons";
+import { useIsomorphicLayoutEffect } from "@/components/ui/useIsomorphicLayoutEffect";
 import styles from "./AnnouncementBar.module.css";
 
 const DISMISSED_KEY = "vodex-announcement-dismissed";
 const HEADER_ATTR = "data-announcement-dismissed";
-
-// SSR has no DOM/window, and a real useLayoutEffect warns ("useLayoutEffect
-// does nothing on the server") when Next server-renders this client
-// component. Falls back to useEffect there; on the client it's always the
-// real useLayoutEffect.
-const useIsomorphicLayoutEffect =
-  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 export function AnnouncementBar() {
   const [dismissed, setDismissed] = useState(false);

@@ -1,10 +1,24 @@
 .section {
+  position: relative;
+  isolation: isolate;
   background: var(--ink);
   min-height: calc(100vh - var(--header-h));
   display: flex;
   align-items: center;
   padding-block: calc(var(--header-h) + 48px) 96px;
   text-align: center;
+}
+
+/* The navbar is transparent at the top of the page (see Navbar.module.css) —
+   without this, the section's own background only fills its own box (below
+   the header), leaving a gap that shows the page's plain white background
+   behind the navbar/announcement bar instead of this section's dark tone. */
+.section::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--header-h)) 0 0;
+  background: var(--ink);
+  z-index: -1;
 }
 
 .imageWrap {

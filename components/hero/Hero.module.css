@@ -1,7 +1,6 @@
 .hero {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
   background: #0d1013;
   display: flex;
   align-items: center;
@@ -25,11 +24,16 @@
   padding-block: 64px 132px;
 }
 
-/* The artwork is 1516x672 and sits 40px higher than the section, so its top
-   band runs behind the (opaque) navbar. */
+/* The artwork extends up behind the full header height (not just the
+   section's own box), so its top band runs behind the navbar (transparent at
+   the top of the page) and the announcement bar above it, with no gap.
+   .hero has no overflow:hidden — it used to, which silently clipped this
+   overhang down to nothing (it only ever "worked" because the navbar was
+   opaque and covered the resulting gap regardless); now that the navbar can
+   be transparent, the overhang has to actually be visible. */
 .backdrop {
   position: absolute;
-  inset: -40px 0 0;
+  inset: calc(-1 * var(--header-h)) 0 0;
   z-index: -1;
 }
 

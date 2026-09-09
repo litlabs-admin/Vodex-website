@@ -41,7 +41,7 @@ export default async function BlogPostPage({ params }: PageProps) {
     <>
       <header className="siteHeader">
         <AnnouncementBar />
-        <Navbar />
+        <Navbar solid />
       </header>
       <main>
         <ArticleHeader post={post} />

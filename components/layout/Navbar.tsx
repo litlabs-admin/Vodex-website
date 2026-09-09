@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
 import { LoginIcon } from "@/components/ui/icons";
+import { useIsomorphicLayoutEffect } from "@/components/ui/useIsomorphicLayoutEffect";
 import { SolutionsMegaMenu } from "./SolutionsMegaMenu";
 import { ResourcesMegaMenu } from "./ResourcesMegaMenu";
 import { CompanyMegaMenu } from "./CompanyMegaMenu";
@@ -18,11 +19,53 @@ const NAV_LINKS = [
   { label: "Pricing", href: "/pricing" },
 ];
 
-export function Navbar() {
+// Below this, the navbar reads as part of the hero (transparent, blended
+// into its backdrop); past it, it solidifies. A small non-zero value (not 0)
+// so rubber-band/momentum micro-scroll right at the top doesn't flicker
+// between states.
+const SCROLL_THRESHOLD = 24;
+
+type NavbarProps = {
+  // Pages with no dark hero directly underneath (e.g. a blog post's white
+  // ArticleHeader) must stay permanently solid — a transparent bar there
+  // would put white nav text over a white body with nothing behind it.
+  solid?: boolean;
+};
+
+export function Navbar({ solid = false }: NavbarProps) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useIsomorphicLayoutEffect(() => {
+    if (solid) return;
+
+    // Synchronous pre-paint check covers the rare case where the page
+    // doesn't load scrolled to the top (e.g. browser scroll-position
+    // restoration on back/forward navigation) — avoids a flash of
+    // transparent-then-solid on that path.
+    setScrolled(window.scrollY > SCROLL_THRESHOLD);
+
+    let ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY > SCROLL_THRESHOLD);
+        ticking = false;
+      });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [solid]);
+
+  const isSolid = solid || scrolled;
 
   return (
-    <nav className={styles.nav} aria-label="Primary">
+    <nav
+      className={`${styles.nav} ${isSolid ? styles.navSolid : ""}`}
+      aria-label="Primary"
+    >
       <div className={styles.inner}>
         <Link href="/" className={styles.logo} aria-label="Vodex — home">
           <Logo height={38} />

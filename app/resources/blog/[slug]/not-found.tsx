@@ -9,7 +9,7 @@ export default function BlogPostNotFound() {
     <>
       <header className="siteHeader">
         <AnnouncementBar />
-        <Navbar />
+        <Navbar solid />
       </header>
       <main>
         <section className={styles.section}>

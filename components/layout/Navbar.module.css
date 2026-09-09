@@ -2,8 +2,13 @@
   position: sticky;
   top: 0;
   z-index: 30;
-  background: var(--ink);
+  background: transparent;
   color: #fff;
+  transition: background-color 320ms var(--ease);
+}
+
+.navSolid {
+  background: var(--ink);
 }
 
 .inner {

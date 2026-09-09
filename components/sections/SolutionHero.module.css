@@ -1,7 +1,6 @@
 .hero {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
   background: #0d1013;
   display: flex;
   align-items: center;
@@ -18,11 +17,27 @@
   padding-block: 64px 132px;
 }
 
-/* The artwork sits 40px higher than the section so its top band runs behind
-   the (opaque) navbar — same trick as Hero.module.css. */
+/* The artwork extends up behind the full header height so its top band runs
+   behind the navbar (transparent at the top of the page) and the
+   announcement bar above it, with no gap — same trick and same
+   overflow:hidden-removal reasoning as Hero.module.css. */
 .backdrop {
   position: absolute;
-  inset: -40px 0 0;
+  inset: calc(-1 * var(--header-h)) 0 0;
+  z-index: -1;
+}
+
+/* When bgImage is omitted, .hero's own #0d1013 background only fills the
+   section's own box (below the header) — this pseudo-element mirrors
+   .backdrop's overhang purely as a flat color, so a photo-less hero still
+   bleeds up behind the navbar/announcement bar seamlessly. Paints behind
+   .backdrop (same z-index, but .backdrop is a later sibling in the DOM), so
+   the real photo still wins whenever one is supplied. */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--header-h)) 0 0;
+  background: #0d1013;
   z-index: -1;
 }
 
