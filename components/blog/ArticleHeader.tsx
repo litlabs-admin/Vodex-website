@@ -40,6 +40,12 @@ export function ArticleHeader({ post }: { post: BlogPost }) {
             fill
             sizes="(max-width: 1100px) 100vw, 1180px"
             style={{ objectFit: "cover" }}
+            /* Same convention as Hero/ProductHero/SolutionHero for large hero
+               banners. Matters here specifically: 10 of the 18 migrated Webflow
+               sources are 887-1500px against a 2360px slot, so they're already
+               being upscaled — this at least avoids compounding compression on
+               top of that. */
+            quality={90}
             priority
           />
         </Entrance>

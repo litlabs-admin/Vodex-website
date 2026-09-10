@@ -44,6 +44,17 @@
   align-items: stretch;
 }
 
+/* Two-tier layout (today's real content): a narrow Free card beside a wider
+   Enterprise card, matching the previous live pricing page's proportions.
+   Driven by `data-count` rather than a hardcoded 2-column rule so the grid
+   stays correct if the tier count ever changes again. */
+.grid[data-count="2"] {
+  max-width: 1040px;
+  margin-inline: auto;
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1fr);
+  gap: 28px;
+}
+
 /* `Entrance` (`.cardWrap`) owns the mount/scroll reveal animation; the
    inner `.card` owns the hover lift. They must be different elements —
    `Entrance`'s `animation: rise ... both` pins `transform` on whatever
@@ -212,7 +223,7 @@
 
 .feature {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   font-size: 14px;
   color: var(--fg);
@@ -228,6 +239,7 @@
    other section needs it. */
 .checkIcon {
   flex: none;
+  margin-top: 1px;
   display: grid;
   place-items: center;
   width: 18px;
@@ -253,6 +265,14 @@
   transform: scale(1.15);
 }
 
+/* Longer checklists (the Enterprise tier) run in two columns, as the
+   reference does — short lists stay single-column. */
+.featuresTwoCol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 24px;
+}
+
 .closing {
   margin-top: 48px;
   text-align: center;
@@ -276,6 +296,12 @@
   }
 }
 
+@media (max-width: 820px) {
+  .featuresTwoCol {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 1100px) {
   .section {
     padding-block: 64px 72px;
@@ -287,7 +313,8 @@
 }
 
 @media (max-width: 640px) {
-  .grid {
+  .grid,
+  .grid[data-count="2"] {
     grid-template-columns: 1fr;
   }
 }
@@ -297,7 +324,15 @@
     padding-block: 48px 56px;
   }
 
-  .closing {
+  /* Longer checklists (the Enterprise tier) run in two columns, as the
+   reference does — short lists stay single-column. */
+.featuresTwoCol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 24px;
+}
+
+.closing {
     margin-top: 36px;
   }
 }

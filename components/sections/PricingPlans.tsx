@@ -18,77 +18,40 @@ type Plan = {
   dark?: boolean;
 };
 
-/* Feature lists are grounded in facts already established elsewhere on this
-   site (integrations, compliance, RPC verification, auto re-dial) rather
-   than the reference's generic "10 Web Components / 5 Web Templates"
-   website-builder copy — confirmed with the user before writing these. */
+/* Content matches the previous (live) Vodex pricing page: two tiers only —
+   a free trial tier and a single Enterprise plan. The old 5-tier ladder
+   (Starter/Standard/Premium, with the "Popular"/"Best Value" ribbons) was
+   invented copy and is gone; `Plan.badge`/`.ribbon` are kept in place since
+   nothing renders them today but the styling is still correct if a tier
+   ever needs one again. */
 const PLANS: Plan[] = [
   {
     name: "Free",
     price: "$0",
-    description: "Try Voice AI with no upfront commitment, no credit card.",
+    description:
+      "Experience Voice AI with our free plan, no upfront commitment, no credit card required.",
     features: [
-      "1 AI voice agent",
-      "100 call minutes / month",
-      "Core call scripts & disposition codes",
-      "Standard TCPA / FDCPA guardrails",
-      "Email support",
+      "10 Calling minutes (call duration limited to 2 min per call)",
+      "AI Agent builder",
+      "Platform access",
     ],
-    cta: { label: "Get Started", href: "/demo" },
+    cta: { label: "Get started", href: "/demo" },
   },
   {
-    name: "Starter",
-    price: "$100",
-    description: "For small teams.",
-    features: [
-      "3 AI voice agents",
-      "1,000 call minutes / month",
-      "Auto re-dial & promise-to-pay capture",
-      "HubSpot & Twilio integrations",
-      "Email support",
-    ],
-    cta: { label: "Get Started", href: "/demo" },
-  },
-  {
-    name: "Standard",
-    price: "$250",
-    description: "For growing teams.",
-    features: [
-      "8 AI voice agents",
-      "5,000 call minutes / month",
-      "RPC verification & disposition analytics",
-      "HubSpot, Twilio & Make integrations",
-      "Priority chat & email support",
-    ],
-    cta: { label: "Get Started", href: "/demo" },
-    badge: { src: popularBadge, alt: "Popular" },
-  },
-  {
-    name: "Premium",
-    price: "$500",
-    description: "For performance teams.",
-    features: [
-      "20 AI voice agents",
-      "15,000 call minutes / month",
-      "Advanced compliance audit trails (SOC 2, ISO 27001)",
-      "VICIdial & HighLevel integrations",
-      "Dedicated account manager",
-    ],
-    cta: { label: "Get Started", href: "/demo" },
-    badge: { src: bestValueBadge, alt: "Best Value" },
-  },
-  {
-    name: "Enterprise",
+    name: "Enterprise Plan",
     price: "Custom",
-    description: "For larger teams and call volumes.",
+    description: "For larger teams and call volumes",
     features: [
-      "Unlimited AI voice agents",
-      "Custom call volume & concurrency",
-      "Full API access & custom integrations",
-      "Dedicated compliance & security review",
-      "24/7 priority support with SLA",
+      "All Pro features",
+      "SLAs",
+      "Multi Agent workflows",
+      "Account manager",
+      "Custom Integrations",
+      "Training & support",
+      "Compliance (SOC 2, HIPAA, ISO 27001, FDCPA, TCPA)",
+      "Discounted pricing for larger volumes",
     ],
-    cta: { label: "Get Started", href: "/demo" },
+    cta: { label: "Contact Sales", href: "/company/contact" },
     dark: true,
   },
 ];
@@ -108,7 +71,7 @@ export function PricingPlans() {
           </p>
         </Entrance>
 
-        <div className={styles.grid}>
+        <div className={styles.grid} data-count={PLANS.length}>
           {PLANS.map((plan, i) => (
             <Entrance key={plan.name} delay={i * 70} as="article" className={styles.cardWrap}>
               <div className={[styles.card, plan.dark ? styles.cardDark : ""].filter(Boolean).join(" ")}>
@@ -122,7 +85,10 @@ export function PricingPlans() {
                 <p className={styles.planName}>{plan.name}</p>
                 <p className={styles.price}>
                   {plan.price}
-                  <span className={styles.priceSuffix}>/per month</span>
+                  {/* "Custom" is not a per-month figure — only real prices get the suffix. */}
+                  {plan.price.startsWith("$") ? (
+                    <span className={styles.priceSuffix}>/per month</span>
+                  ) : null}
                 </p>
                 <p className={styles.description}>{plan.description}</p>
 
@@ -132,7 +98,11 @@ export function PricingPlans() {
 
                 <div className={styles.divider} />
 
-                <ul className={styles.features}>
+                <ul
+                  className={[styles.features, plan.features.length > 5 ? styles.featuresTwoCol : ""]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
                   {plan.features.map((feature, fi) => (
                     <li
                       key={feature}

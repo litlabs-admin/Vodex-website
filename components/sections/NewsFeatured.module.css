@@ -20,19 +20,25 @@
   box-shadow: 0 20px 44px rgba(0, 0, 0, 0.1);
 }
 
+/* Same logo treatment as NewsCard.module.css — see the long comment there for
+   why these are contained rather than cover-cropped. It matters even more on
+   this card: the featured item's own logo is a 1702x1702 square, which
+   cover-fitted into this wide box lost ~45% of its height. */
 .thumb {
   position: relative;
   min-height: 340px;
   overflow: hidden;
+  background: #fff;
 }
 
+/* Padding on the <img>, not .thumb — a `fill` image's inset:0 resolves against
+   the padding box, so .thumb padding would not inset it. Larger box than the
+   grid card, so a little more room. */
 .thumb img {
-  transition: transform 500ms var(--ease);
+  padding: 40px;
 }
 
-.card:hover .thumb img {
-  transform: scale(1.04);
-}
+/* No hover scale — it would clip a contained logo. See NewsCard.module.css. */
 
 .body {
   display: flex;

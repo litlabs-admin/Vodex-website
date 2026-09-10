@@ -42,6 +42,7 @@ export function CaseStudyDetailHeader({ study }: { study: CaseStudy }) {
             fill
             sizes="(max-width: 1100px) 100vw, 1180px"
             style={{ objectFit: "cover" }}
+            quality={90}
             priority
           />
         </Entrance>

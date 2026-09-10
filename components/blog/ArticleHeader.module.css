@@ -69,7 +69,9 @@
   margin-top: 40px;
   max-width: 1180px;
   margin-inline: auto;
-  aspect-ratio: 16 / 8;
+  /* 3:2 matches the ~1.54 ratio every migrated Webflow hero photo actually has,
+     so nothing is cropped. Was 16/8 (2.0), which cut 23% off all 18 posts. */
+  aspect-ratio: 3 / 2;
   overflow: hidden;
 }
 
@@ -80,6 +82,8 @@
 
   .thumb {
     margin-top: 28px;
-    aspect-ratio: 4 / 3;
+    /* 3:2 here too, so the zero-crop result holds at every width — 4/3 would
+       have cut ~14% off the same photos on mobile. */
+    aspect-ratio: 3 / 2;
   }
 }

@@ -147,12 +147,30 @@ async function transformBlog() {
 // verified by reading the full schema. Reuses existing, semantically
 // matched project photography per case study rather than shipping with no
 // image at all; flagged in the migration report as pending real photos.
+//
+// ⚠️ These MUST be landscape (~3:2). The first mapping here reused photos
+// without checking orientation and picked two PORTRAIT ones (they had been
+// cropped for the portrait scrim cards on the Solutions pages, aspect
+// 436/492) — 1360x2416 and 1304x1476 — which the landscape card and detail
+// hero then cropped by 41-63%. All three below are now 1.50 and >=2492px
+// wide, so nothing is cropped or upscaled in either slot. If you swap one,
+// re-check its aspect ratio first.
 // --------------------------------------------------------------------
 const CASE_STUDY_THUMBS = {
+  // cash / credit cards / passport — on-topic for BNPL credit delinquency
   "voice-ai-in-bnpl-collections-how-a-leading-partner-improved-recovery-with-vodex":
-    "/assets/debt-collection-industry-1.png",
-  "vodex-genworks-case-study": "/assets/debt-collection-industry-2.jpg",
-  "this-debt-collection-firm-increased-connectivity-rate-by-3x": "/assets/case-study-bg.jpg",
+    "/assets/case-studies/voice-ai-in-bnpl-collections-how-a-leading-partner-improved-recovery-with-vodex.jpg",
+  // ⚠️ outreach/office scene, NOT a healthcare photo. Genworks is a healthcare
+  // provider, but every copy of the surgeon shot in this project is the same
+  // 1360x2416 portrait file (industries-healthcare.jpg =
+  // lead-qualification-industry-4.jpg = debt-collection-industry-2.jpg) and no
+  // landscape healthcare photo exists. This case study is about conversions,
+  // engagement and scaling without added headcount, so an outreach scene is the
+  // honest fit. Swap it the moment real case-study photography arrives.
+  "vodex-genworks-case-study": "/assets/case-studies/vodex-genworks-case-study.jpg",
+  // cream desk telephone — on-brand for a voice-AI collections story
+  "this-debt-collection-firm-increased-connectivity-rate-by-3x":
+    "/assets/case-studies/this-debt-collection-firm-increased-connectivity-rate-by-3x.jpg",
 };
 
 async function transformCaseStudies() {

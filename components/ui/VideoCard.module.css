@@ -24,7 +24,12 @@
   text-align: inherit;
   cursor: pointer;
   position: relative;
-  aspect-ratio: 3 / 2;
+  /* 16:9, the native ratio of every YouTube thumbnail — not the 3:2 this card
+     inherited from BlogPostCard. At 3:2 the 12 native-16:9 thumbs lost 16% off
+     the sides and the 7 wider tutorial screenshots (up to 2.31:1) lost 35%.
+     `cover` stays correct here, unlike the news logos: video thumbnails are
+     conventionally cropped to 16:9, and their subject is centred. */
+  aspect-ratio: 16 / 9;
   overflow: hidden;
 }
 

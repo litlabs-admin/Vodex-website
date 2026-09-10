@@ -4844,6 +4844,59 @@ the user in a real browser.
 
 ---
 
+### Round 2 — pricing content replaced with the previous live site's real tiers
+
+The user pasted a screenshot of the **previous (live) Vodex pricing page**
+and asked to adapt to it, plus supplied 7 real pricing FAQs. Explicit scope,
+confirmed via `AskUserQuestion` rather than assumed: *"just change the
+pricing and faq section content, thats it. Our UI and other things stays the
+same."* So the hero, section eyebrow/heading/lead, the "Running a collections
+operation?" closing line, `ContactOffices`/`EnterpriseBand`/`FinalCta` and
+all card styling are **untouched** — only `PLANS` and the FAQ items changed.
+
+- **`PLANS` went from 5 invented tiers to the real 2**: Free ($0 — 10 calling
+  minutes with a 2-min per-call cap, AI Agent builder, Platform access →
+  "Get started") and Enterprise Plan (Custom — 8 features → "Contact Sales",
+  `/company/contact`). The 25 invented, Vodex-grounded plan features written
+  in Round 1 are **gone** — they were never real pricing. `Plan.badge` and
+  the `.ribbon`/`.ribbonSheen` CSS (the "Popular"/"Best Value" images) are
+  kept but now unrendered — no tier carries a badge; the two
+  `pricing-badge-*.jpg` assets are consequently unreferenced but left in
+  place, same "leave the asset, don't delete" precedent as
+  `introducing-dros.png`.
+- **`.grid[data-count="2"]`** lays the two tiers out as `minmax(0,0.78fr)
+  minmax(0,1fr)` in a 1040px centred band (narrow Free beside a wider
+  Enterprise, matching the reference's proportions). Keyed off `data-count`
+  rather than hardcoding a 2-column rule, so the existing 5-col default and
+  the ≤1200/≤640px breakpoints still work if the tier count changes again.
+  New `.featuresTwoCol` (applied when a tier has >5 features) runs the
+  Enterprise checklist in 2 columns, collapsing to 1 below 820px. `.feature`
+  changed `align-items: center` → `flex-start` (+1px on `.checkIcon`) so the
+  now-wrapping long feature lines align to the first line, not the middle.
+- **The `/per month` suffix now only renders for a `$`-prefixed price** —
+  "Custom /per month" read as a real bug in the first pass, caught by a
+  screenshot, not shipped.
+- **`Faq` is now prop-driven** (`items?: FaqItem[]`, defaulting to its
+  existing 5 FAQs) and the 7 pricing FAQs live in `app/pricing/page.tsx` as
+  `PRICING_FAQS`. Deliberately **not** a global content swap — `<Faq />` is
+  rendered on ~10 pages (landing, `/products`, all 5 solutions pages) and the
+  user's chosen scope was pricing only. Every other page's FAQ is
+  byte-identical to before; `FaqAccordion` needed no change. Answers are
+  plain strings (the reference bolds phrases inside them — not reproduced,
+  since `FaqAccordion`'s `answer` is a `string`, and enriching it was outside
+  the confirmed "content only" scope).
+
+**Status:** clean `tsc --noEmit` + `next build`. Playwright at 1516/430px —
+zero console errors, zero horizontal overflow at both; section screenshot
+compared against the supplied reference (2 cards, correct proportions, 2-col
+Enterprise checklist, correct CTA labels). Dev server started and stopped
+cleanly by this round (confirmed down via a failed curl); `.next` cleared
+before the build since dev had run first, per the §23/§24 gotcha.
+
+**Approved:** Not yet — user said "just build clean, i will verify manually."
+
+---
+
 ## 24. Company — Investors & Partners (`/company/investors`)
 
 > Reference: `C:\Users\Aashutosh\Downloads\Vodex -  -_ Investors.png`, a flat
@@ -6542,3 +6595,165 @@ and this project doesn't invent copy silently); the auto-advance-the-tabs
 reconciliation above is worth a second look now that it's live; if a 5th
 card is ever added to any tab, the reserved `[data-count="5"]` bento rule
 has not been exercised against real content yet.
+
+---
+
+## 31. Migrated-content thumbnails — four aspect/fit bugs fixed
+
+> Prompted by the user: thumbnails looked "blurry or half cut or zoomed in."
+> Measuring every migrated asset against the box it actually renders in found
+> **four separate root causes**, which is why it presented as three different
+> symptoms at once. Three were inherited from card components written against
+> the old mock data; the fourth was a mapping mistake made during §28's
+> migration. Blog **grid** cards were already correct (~2% crop, no upscale)
+> and were not touched.
+
+### The measurement harness is the point
+
+Every number below came from a script that computes, per asset, the exact
+`object-fit: cover` crop percentage and the DPR2 upscale factor against each
+component's real box — not from eyeballing a screenshot. **A screenshot cannot
+show you a 23% crop**; it just looks like a normal photo. Re-run that
+computation after any future change to a thumbnail box:
+
+```
+scale   = max(boxW/imgW, boxH/imgH)                     // cover
+visible = (min(imgW, boxW/scale) * min(imgH, boxH/scale)) / (imgW*imgH)
+upscale = scale * 2                                     // at DPR2
+```
+
+It also caught two of my own assertion thresholds being wrong (see "17 of 18"
+below) — the harness was right and my estimates weren't.
+
+### 1. News cards — press-outlet LOGOS were being cover-cropped as photos
+
+The worst of the four. `NewsCard`/`NewsFeatured` inherited `object-fit: cover`
++ `aspect-ratio: 3/2` from `BlogPostCard`, but Webflow's `logo-thumbnail` field
+holds **outlet logos**, not photographs:
+
+| Source | ratio | cropped | upscale @DPR2 |
+| --- | --- | --- | --- |
+| PR Newswire `168×23` | 7.30 | **79%** | **22×** |
+| `280×77` | 3.64 | 59% | 6.6× |
+| Forbes `400×400` | 1.00 | 33% | 1.9× |
+| ProdWrks `500×500` | 1.00 | 33% | 1.5× |
+| seed-funding `1702×1702` | 1.00 | 33% | 0.4× |
+
+**Fixed with `object-fit: scale-down`, not `contain`.** `contain` also stops the
+cropping but *enlarges* a small logo to fill the box — the 168px-wide PR
+Newswire mark would be stretched to 324px (1.93×) and stay soft. `scale-down`
+is `min(none, contain)`: big logos shrink to fit, small ones render at their
+natural size and are never enlarged at all. Verified: max scale is now exactly
+`1.00×` across all 9 items, zero cropped. **Reach for `scale-down` over
+`contain` whenever the box may be larger than the asset.**
+
+Three things this needed that are easy to miss:
+- **The `objectFit` had to change in the TSX, not the CSS.** Both components
+  set it as an *inline* `style={{...}}`, which beats any CSS-module class — a
+  stylesheet-only fix would have silently done nothing.
+- **Padding must go on the `<img>`, not on `.thumb`.** A `next/image fill`
+  child is `position:absolute; inset:0`, which resolves against the ancestor's
+  *padding box*, so padding on `.thumb` does not inset it at all. Padding on
+  the image itself does shrink its content box, and `object-fit` resolves
+  within that. (28px on the grid card, 40px on the larger featured card.)
+- **The hover `transform: scale(1.05)` had to be removed for news only.** On a
+  cover-fitted photo a zoom is invisible at the edges; on a scaled-down logo it
+  pushes the mark past its own box and `.thumb`'s `overflow: hidden` clips it —
+  reintroducing the exact cropping being fixed. `BlogPostCard`/`CaseStudyCard`
+  keep their hover zoom; they hold real photos.
+
+`background: #fff` on `.thumb` (it previously inherited the card's `#f7f7f7`)
+since press logos are drawn for white. The 4 items that are genuine banners
+(Google for Startups, Krisp, Inc42, Business Review Live) sit at ratio
+1.33–1.58 against the 1.50 box, so they still fill it near edge-to-edge and
+look unchanged — confirmed visually, which was the check that the uniform
+treatment didn't regress the ones that already worked.
+
+### 2. Video cards — 16:9 content in a 3:2 box
+
+All 19 sources are ≥1.69; the box was 1.50. `VideoCard.module.css`'s `.thumb`
+`aspect-ratio: 3/2` → **`16/9`**, the native ratio of a YouTube thumbnail. The
+9 native-16:9 thumbs go from 16% cropped to **0%**; the 7 wide tutorial
+screenshots (up to 2.31:1) from 29–35% down to ~23%. `cover` stays correct here
+— unlike the news logos, video thumbnails are conventionally cropped to 16:9
+and their subject is centred.
+
+`VideoFeatured.module.css` was **deliberately left alone**: its `.thumb` has no
+fixed aspect (it's `height: 100%` in a 2-column grid so it tracks the body
+column's height) and its images are native 16:9, so it crops only ~10%. Giving
+it a fixed aspect would break that height coupling.
+
+### 3. Article + case-study detail heroes — 16/8 vs ~1.54 sources
+
+`aspect-ratio: 16/8` (2.0) against migrated photos that are all ~1.54 cropped
+**23% off every one of the 18 posts**. Both `ArticleHeader.module.css` and
+`CaseStudyDetailHeader.module.css` → **`3/2`**, including each file's
+`@media (max-width: 720px)` override (was `4/3` ≈ 14% crop) so zero-crop holds
+at every width.
+
+- **17 of 18 posts now crop <3%.** The one outlier,
+  `how-ai-voice-agents-are-transforming-bpos-and-contact-centers.png`, is
+  genuinely a different shape (`1478×768`, ratio **1.92**) and now crops 22%
+  where 16/8 cropped it only 4%. That single photo is the one case the old box
+  suited better; the trade is 17 posts fixed against 1 regressed, and it isn't
+  worth chasing in CSS. Flagged, not hidden.
+- Added `quality={90}` to both heroes, matching the existing convention for
+  large hero banners (`Hero`/`ProductHero`/`SolutionHero`/`InitiateCall`);
+  `next.config.ts` already allow-lists `qualities: [75, 90]`, so no config
+  change. **This does not fix the residual softness** on 10 of the 18 posts
+  whose Webflow sources are genuinely 887–1500px against a 2360px slot — that
+  is a source-asset limit only real replacement photography fixes. The
+  `quality` bump just stops compounding compression on top of the upscale.
+
+### 4. Case-study thumbnails — my own §28 mapping error
+
+`CASE_STUDY_THUMBS` in `scripts/webflow/transform.mjs` reused existing project
+photos without checking orientation. Two were **portrait**, because they'd been
+cropped for the *portrait* scrim cards on the Solutions pages
+(`aspect-ratio: 436/492`): `debt-collection-industry-2.jpg` `1360×2416`
+(ratio **0.56**, ~63% cropped) and `debt-collection-industry-1.png` `1304×1476`
+(**0.88**, ~41%); the third, `case-study-bg.jpg` `2995×987` (**3.03**), lost
+~50%. Re-mapped to landscape photos already in `public/assets/`, copied to
+page-specific files under `public/assets/case-studies/`:
+
+| Case study | Now uses | Why |
+| --- | --- | --- |
+| BNPL collections | `why-vodex-3.jpg` `2492×1662` — cash/cards/passport | on-topic for BNPL credit delinquency |
+| Genworks | `why-vodex-1.jpg` `2832×1889` — outreach scene | ⚠️ see below |
+| Debt collection 3X/7X | `feature-1.jpg` `2492×1662` — desk telephone | on-brand for a *voice* AI story |
+
+All three are ratio 1.50 and ≥2492px wide: **0% cropped and no upscale in both
+the 3:2 card and the new 3:2 hero.**
+
+> ⚠️ **Genworks is a knowing compromise.** Genworks is a healthcare provider,
+> but **every copy of the surgeon photo in this project is the same `1360×2416`
+> portrait file** (`industries-healthcare.jpg` = `lead-qualification-industry-4.jpg`
+> = `debt-collection-industry-2.jpg`) — there is no landscape healthcare photo
+> anywhere in `public/assets/`. This case study is about conversions, engagement
+> and scaling without added headcount, so an outreach scene is the honest fit
+> rather than force-cropping a portrait clinical shot. Swap it the moment real
+> case-study photography exists.
+
+**Updated in two places, or a re-run silently reverts it**: the `thumb:`
+frontmatter in the three `content/case-studies/*.mdx` files (what's read at
+runtime) *and* `CASE_STUDY_THUMBS` in `scripts/webflow/transform.mjs` (what
+regenerates them). That constant now carries a ⚠️ comment requiring any
+replacement to be checked for landscape orientation first.
+
+### Status
+
+`npx tsc --noEmit` clean; `next build` clean (all 18 blog + 3 case-study slugs
+still statically generated). The measurement harness re-run asserts: 0 news
+logos cropped and none enlarged past natural size; worst video crop 23%; 17/18
+blog heroes <3%; all 3 case-study assets 0% in both slots. Playwright at 1516px
+confirmed `object-fit: scale-down` + 28px padding + hover `transform: none` on
+news, `16/9 → 377×212` on video, `3/2 → 1180×787` on both heroes; a 430px sweep
+across `/company/news`, `/resources/videos` and `/resources/case-studies` showed
+zero horizontal overflow and zero console errors. The dev server was started and
+stopped by PID this round, confirmed down via a failed curl before building, and
+`.next` was cleared before the production build per the §23/§24 collision rule.
+
+**Approved:** Not yet — user said "just build clean, I will verify manually."
+
+**Next:** user review, in particular the Genworks photo compromise and the one
+1.92-ratio blog hero that the 3/2 box suits less well than 16/8 did.

@@ -39,7 +39,14 @@ const FAQS = [
   },
 ];
 
-export function Faq() {
+export type FaqItem = { question: string; answer: string };
+
+/**
+ * `items` is optional and defaults to the FAQs above, so every page already
+ * rendering `<Faq />` (landing, /products, all five solutions pages) is
+ * unchanged. Only /pricing passes its own set today.
+ */
+export function Faq({ items = FAQS }: { items?: FaqItem[] }) {
   return (
     <section className={styles.section} aria-labelledby="faq-title">
       <div className="container">
@@ -49,7 +56,7 @@ export function Faq() {
               Frequently asked <span className={styles.serif}>questions</span>
             </h2>
 
-            <FaqAccordion items={FAQS} />
+            <FaqAccordion items={items} />
           </Entrance>
 
           <Entrance delay={90} className={styles.sideCol}>

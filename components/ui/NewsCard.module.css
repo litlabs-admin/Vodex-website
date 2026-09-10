@@ -13,19 +13,35 @@
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
 }
 
+/* News thumbnails are press-outlet LOGOS, not photographs — several are tiny
+   and extreme-aspect (PR Newswire's is 168x23, ratio 7.3:1). Cover-fitting
+   those into this 3:2 box cropped 79% of the mark away and magnified what
+   was left 22x. They are `object-fit: scale-down` instead (set inline in
+   NewsCard.tsx, since an inline style beats this stylesheet) — that behaves
+   like `contain` for large logos but never ENLARGES a small one past its
+   natural size, so nothing is ever cropped OR stretched. The four items that
+   are genuine banners sit at ratio 1.33-1.58 against this 1.50 box, so they
+   still fill it near edge-to-edge and look unchanged. */
 .thumb {
   position: relative;
   aspect-ratio: 3 / 2;
   overflow: hidden;
+  background: #fff;
 }
 
+/* Padding must live on the <img>, not on .thumb: a next/image `fill` child is
+   absolutely positioned with inset:0, which resolves against the ancestor's
+   PADDING box — so padding on .thumb would not inset it at all. Padding on
+   the image itself does shrink its content box, and object-fit resolves
+   within that. */
 .thumb img {
-  transition: transform 420ms var(--ease);
+  padding: 28px;
 }
 
-.card:hover .thumb img {
-  transform: scale(1.05);
-}
+/* Deliberately NO hover scale here, unlike BlogPostCard/CaseStudyCard. On a
+   cover-fitted photo a zoom is invisible at the edges; on a contained logo it
+   pushes the mark past its own box and .thumb's overflow:hidden clips it —
+   reintroducing the exact cropping this fix removes. */
 
 .body {
   flex: 1;

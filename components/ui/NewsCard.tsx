@@ -27,7 +27,12 @@ export function NewsCard({ post, delay = 0 }: NewsCardProps) {
           alt=""
           fill
           sizes="(max-width: 820px) 480px, 380px"
-          style={{ objectFit: "cover" }}
+          // scale-down, not cover — these are outlet logos, not photos. It behaves
+          // like contain for large logos but never ENLARGES a small one past its
+          // natural size, so the 168x23 PR Newswire mark stays pin-sharp. See the
+          // .thumb comment in NewsCard.module.css. Inline because an inline
+          // style wins over the stylesheet's own object-fit.
+          style={{ objectFit: "scale-down" }}
         />
       </div>
       <div className={styles.body}>

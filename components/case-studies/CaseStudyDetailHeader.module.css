@@ -60,7 +60,10 @@
   margin-top: 40px;
   max-width: 1180px;
   margin-inline: auto;
-  aspect-ratio: 16 / 8;
+  /* 3:2, matching the re-mapped landscape thumbnails (all 1.50) — was 16/8,
+     which cropped hard, especially on the two portrait photos this page used
+     to point at. See ArticleHeader.module.css for the same change. */
+  aspect-ratio: 3 / 2;
   overflow: hidden;
 }
 
@@ -109,7 +112,8 @@
 
   .thumb {
     margin-top: 28px;
-    aspect-ratio: 4 / 3;
+    /* 3:2 at every width, same reasoning as ArticleHeader.module.css. */
+    aspect-ratio: 3 / 2;
   }
 
   .stats {
