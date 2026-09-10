@@ -3,30 +3,68 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import {
-  ArticleIcon,
-  CaseStudyIcon,
-  ChatIcon,
-  LockIcon,
-  PhoneCallIcon,
-  PlayFrameIcon,
-  ResearchIcon,
-} from "@/components/ui/icons";
+import { ChevronDownIcon } from "@/components/ui/icons";
 import styles from "./ResourcesMegaMenu.module.css";
 
-/* Single flat list, same shape as SolutionsMegaMenu — the "Company"
-   sub-group this used to carry (About/News/Investors & Partners/Contact Us)
+/* Two labeled columns, matching SolutionsMegaMenu's treatment: title + a
+   one-line description per item, no icon boxes. The "Company" sub-group
+   this menu used to carry (About/News/Investors & Partners/Contact Us)
    moved out into its own CompanyMegaMenu once "Company" got a real navbar
    entry of its own, so it isn't duplicated across two menus. */
-export const RESOURCES_ITEMS = [
-  { label: "Blog", href: "/resources/blog", Icon: ArticleIcon },
-  { label: "Videos", href: "/resources/videos", Icon: PlayFrameIcon },
-  { label: "Call Samples", href: "/resources/call-samples", Icon: PhoneCallIcon },
-  { label: "Case Studies", href: "/resources/case-studies", Icon: CaseStudyIcon },
-  { label: "FAQ", href: "/resources/faq", Icon: ChatIcon },
-  { label: "Compliance", href: "/resources/compliance", Icon: LockIcon },
-  { label: "Research", href: "/resources/research", Icon: ResearchIcon },
+type ResourceItem = { label: string; href: string; description: string };
+type ResourceGroup = { label: string; items: ResourceItem[] };
+
+export const RESOURCE_GROUPS: ResourceGroup[] = [
+  {
+    label: "Learn",
+    items: [
+      {
+        label: "Blog",
+        href: "/resources/blog",
+        description: "Playbooks and product thinking from the team",
+      },
+      {
+        label: "Videos",
+        href: "/resources/videos",
+        description: "Product demos, customer stories and podcasts",
+      },
+      {
+        label: "Research",
+        href: "/resources/research",
+        description: "How we built our own voice and TTS stack",
+      },
+    ],
+  },
+  {
+    label: "Evaluate",
+    items: [
+      {
+        label: "Case Studies",
+        href: "/resources/case-studies",
+        description: "Real recovery and connect-rate results",
+      },
+      {
+        label: "Call Samples",
+        href: "/resources/call-samples",
+        description: "Hear real conversations our agents run",
+      },
+      {
+        label: "FAQ",
+        href: "/resources/faq",
+        description: "Answers on platform, compliance and pricing",
+      },
+      {
+        label: "Compliance",
+        href: "/resources/compliance",
+        description: "Certifications and security practices",
+      },
+    ],
+  },
 ];
+
+// Flat list kept for Navbar.tsx's mobile accordion, which renders labels
+// only (no columns, no descriptions) — derived so the two can't drift.
+export const RESOURCES_ITEMS = RESOURCE_GROUPS.flatMap((group) => group.items);
 
 // There is no "/resources" hub page and none is planned — the trigger is a
 // non-navigating button, not a Link. On desktop the mega-menu panel below is
@@ -73,22 +111,25 @@ export function ResourcesMegaMenu() {
         onClick={(event) => event.currentTarget.blur()}
       >
         Resources
+        <ChevronDownIcon className={styles.chevron} />
       </button>
       <div className={styles.panel}>
         <div className={styles.panelInner}>
-          <p className={styles.colLabel}>Resources</p>
-          <ul className={styles.grid}>
-            {RESOURCES_ITEMS.map(({ label, href, Icon }) => (
-              <li key={label}>
-                <Link href={href} className={styles.item}>
-                  <span className={styles.iconBox}>
-                    <Icon />
-                  </span>
-                  <span className={styles.itemTitle}>{label}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {RESOURCE_GROUPS.map((group) => (
+            <div key={group.label} className={styles.col}>
+              <p className={styles.colLabel}>{group.label}</p>
+              <ul className={styles.colList}>
+                {group.items.map(({ label, href, description }) => (
+                  <li key={label}>
+                    <Link href={href} className={styles.item}>
+                      <span className={styles.itemTitle}>{label}</span>
+                      <span className={styles.itemDesc}>{description}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
     </li>

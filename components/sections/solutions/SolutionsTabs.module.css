@@ -1,0 +1,238 @@
+.lifecycle {
+  margin-top: 56px;
+}
+
+/* --- Tabs -----------------------------------------------------------------
+   A single contained pill track holding four equal-width tabs, matching the
+   Metal Labs benchmark's segmented-control structure exactly (measured off
+   metal-labs/components/sections/solutions/Solutions.module.css:107-160) —
+   no icons, one rounded track, a sliding brand-fill behind the active label.
+   ------------------------------------------------------------------------- */
+
+.tabSwitcher {
+  position: relative;
+  display: flex;
+  align-self: center;
+  align-items: center;
+  width: 100%;
+  max-width: 640px;
+  margin-inline: auto;
+  gap: 6px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 200px;
+  margin-bottom: 40px;
+}
+
+.tab {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border-radius: 200px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tabFill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 200px;
+  background: var(--brand);
+  box-shadow: 0 4px 18px rgba(255, 77, 0, 0.28);
+}
+
+.tabLabel {
+  position: relative;
+  z-index: 1;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color var(--dur) var(--ease);
+}
+
+.tabActive .tabLabel {
+  color: #fff;
+}
+
+.tab:not(.tabActive):hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tab:not(.tabActive):hover .tabLabel {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Filling progress track hugging the bottom edge inside the active pill —
+   only present while autoplay is genuinely counting down; hidden entirely
+   once autoplay has stopped (permanently, on any real selection) so it
+   never implies a countdown that will not fire. */
+.tabProgress {
+  position: absolute;
+  z-index: 1;
+  left: 16px;
+  right: 16px;
+  bottom: 6px;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.3);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.tabProgress[data-active] {
+  animation-name: tabProgressFill;
+  animation-duration: var(--dwell, 8000ms);
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes tabProgressFill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* --- Bento grid ----------------------------------------------------------
+   Driven by [data-count] rather than a hardcoded "first N cards" index, so
+   every one of this section's real card counts (4 / 2 / 3 / 2) resolves to
+   a full grid with no orphan row. */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.card {
+  grid-column: span 3; /* default: 2-up, correct for 2- and 4-card tabs */
+  display: flex;
+  flex-direction: column;
+  background: #1e1f21;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 20px 40px -24px rgba(0, 0, 0, 0.5);
+}
+
+/* 3-card tabs: even thirds, no orphan. */
+.grid[data-count="3"] .card {
+  grid-column: span 2;
+}
+
+/* Reserved for a future 5-card tab: the reference's 3-then-2 bento split. */
+.grid[data-count="5"] .card:nth-child(-n+3) {
+  grid-column: span 2;
+}
+
+.grid[data-count="5"] .card:nth-child(n+4) {
+  grid-column: span 3;
+}
+
+.cardText {
+  margin-bottom: 20px;
+}
+
+.cardTitle {
+  font-size: 19px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.cardBullets {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.cardBullets li {
+  position: relative;
+  padding-left: 18px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--on-dark-muted);
+}
+
+.cardBullets li::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0.7em;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.cardLink {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--dur) var(--ease);
+}
+
+.cardLink:hover {
+  color: #fff;
+}
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .card,
+  .grid[data-count="3"] .card,
+  .grid[data-count="5"] .card:nth-child(-n+3),
+  .grid[data-count="5"] .card:nth-child(n+4) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 820px) {
+  .lifecycle {
+    margin-top: 40px;
+  }
+
+  .tabSwitcher {
+    max-width: none;
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 28px;
+  }
+
+  .tab {
+    padding: 10px 8px;
+  }
+
+  .tabLabel {
+    font-size: 13px;
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .card,
+  .grid[data-count="3"] .card,
+  .grid[data-count="5"] .card:nth-child(-n+3),
+  .grid[data-count="5"] .card:nth-child(n+4) {
+    grid-column: span 1;
+  }
+}

@@ -307,11 +307,15 @@ leftover template text) per explicit user direction — this one is final,
 not a placeholder.
 
 Approved:
-Sections 1, 7, 8, 9, 10 — approved implicitly each time the user asked to
+Sections 1, 8, 9, 10 — approved implicitly each time the user asked to
 move on. (Section 5 was approved in its *old* `DashboardShowcase` form, but
 that content no longer exists — it was fully replaced by the new Initiate
 Call section below, which is unreviewed; don't carry the old approval
-forward to the new content occupying that slot.) Sections 11–16 not yet
+forward to the new content occupying that slot. **Section 7 (Solutions) is
+the same situation as of the redesign in §30** — its old static-rows form
+was approved, but that content no longer exists either; the new interactive
+tabs+illustrations version is unreviewed, don't carry the old approval
+forward.) Sections 11–16 not yet
 reviewed by the user. Section 9's audio
 player: user said "just build clean, typechecked well, I will verify
 myself" — not yet an explicit approval, treat as pending their review too.
@@ -6268,3 +6272,273 @@ to a non-navigating `<button>` for the same "there's nothing to link to"
 reason, check whether anything relies on `:focus-within` to stay open** —
 a click that used to navigate away (and thus couldn't leave stale focus
 behind) can silently start doing so once it no longer navigates.
+
+---
+
+## 30. Landing page — Section 7 (Solutions) rebuilt: real tabs + 6 coded illustrations
+
+> No PDF change — this is a quality/interactivity rebuild of the existing
+> Section 7 (Solutions), prompted directly by the user pointing at
+> `D:\litlabs\vapi copy for metal labs\metal-labs` — an unrelated product's
+> marketing site — as an explicit **design/craft benchmark** (layout,
+> animation polish, storytelling), with equally explicit instructions: reuse
+> its content **not at all**, and reuse its illustrations **not at all** —
+> only the level of polish and the underlying interaction *techniques* were
+> to inform the rebuild. All content below (11 use cases across 4 industry
+> tabs) is the user's own supplied copy, transcribed verbatim; all six
+> illustrations are original, first-party visual ideas built to dramatise
+> that copy, not traced or ported from the benchmark.
+
+### The problem being fixed
+
+`IndustryTabs.tsx` was **purely decorative** — it kept its active index in
+private `useState` with no `onChange`/`aria-controls`/`role="tabpanel"`, so
+clicking BPO/Insurance/Mortgage changed nothing below it. `Solutions.tsx`'s
+`USE_CASES` was a flat 3-item array (Debt Collection only), and all three
+rows rendered the **same** 1.19MB `solution-card.png` as their illustration
+— this was already flagged as a replacement target in this file's own
+pre-existing notes on the section.
+
+### What was studied before building (two Explore agents, in parallel)
+
+1. **The benchmark itself**
+   (`metal-labs/components/sections/solutions/{LifecycleTabs,Mockups}.tsx`) —
+   3 tabs × 5 cards = 15 hand-coded, zero-image-asset illustrations built on
+   one shared `useMockupMotion` hook: a ping-pong "working → resolved" state
+   machine via **self-rescheduling `setTimeout`** (not `setInterval`, so the
+   two phases can have different dwell times — 1900ms working / 3400ms
+   resolved, so the *resolved* state dominates ~64% of the loop), **viewport-
+   gated with no `once`** (`useInView`, so 5 simultaneous loops genuinely
+   pause off-screen), **reduced motion pinned to `active: true`** (the
+   informative end state, not a frozen spinner), and a `layoutId`-based
+   sliding tab-pill fill (Framer projects between the two DOM boxes itself —
+   zero measurement code). Real gaps found and deliberately **not** carried
+   over: no keyboard support at all on its tablist (no arrow keys, no
+   `aria-controls`, no `:focus-visible`), a focusable unlabeled decorative
+   `<button>`, bare emoji with no `aria-hidden`, and a `i < 3 ? span2 :
+   span3` bento grid that silently assumes exactly 5 cards.
+2. **This project's own precedent** — `EngagementQueueIllustration.tsx`
+   (Section 6) already proved the "pure-CSS, zero-JS, narrative-loop"
+   technique (`@property`-registered custom properties, `clip-path` progress
+   fills, a two-layer opacity-gate/continuous-inner-animation sheen split,
+   `grid-template-rows: 0fr↔1fr` keyframed collapse, author-every-keyframe-
+   so-0%-equals-100%-for-free-reduced-motion); `IndustryTabs.tsx`'s existing
+   `useLayoutEffect`+`getBoundingClientRect` indicator measurement and full
+   APG keyboard handling (Arrow/Home/End, roving tabindex) were confirmed
+   solid and worth keeping the *mechanism* of, not the visual language.
+
+### Decisions confirmed with the user before building (`AskUserQuestion`)
+
+| Question | Answer |
+| --- | --- |
+| Animation approach | Motion (`framer-motion`) for the interactive shell **and** the illustrations — not plain CSS |
+| Layout | A bento grid of cards (no left rail) |
+| Illustration set | 6 archetypes, **prop-driven** per industry (not 11 bespoke) |
+| Auto-advance | Yes, with a visible progress indicator |
+
+**`framer-motion@12.43.0`** was added as this project's **first animation
+library dependency**, on the exact major the benchmark is proven against
+with React 19 — a deliberate, user-approved exercise of the exception
+CLAUDE.md §3 already carved out ("Introduce Motion only if a later section
+genuinely needs orchestrated or gesture-driven animation"). This is scoped
+to Section 7 only; every other section stays plain CSS per §3's default.
+
+### The content → illustration mapping
+
+The 11 supplied use cases collapse to exactly **6 distinct visual ideas** —
+"Lead Qualification" repeats 3× (BPO/Insurance/Mortgage) and "Payment
+reminders" repeats 4× (Debt Collection/BPO/Insurance/Mortgage), differing
+only in names/amounts/totals — so each archetype is a single component,
+parameterised via a discriminated-union `IlloSpec` prop rather than rebuilt
+per industry:
+
+| Archetype | Used by | Mechanic |
+| --- | --- | --- |
+| `IdentityCheck` | DC · RPC | 3 masked fields (DOB/ZIP/SSN) flip to checks as a thin verification bar fills; resolves to a timestamped compliance chip |
+| `ReminderCall` | DC · BPO · INS · MTG | Live call card; the agent's outbound script and the customer's reply **crossfade in one fixed-height slot** (zero extra height for a genuine two-sided conversation), the live tag becomes a call timer on resolve. Props: contact/subject/amount/due |
+| `PlanNegotiation` | DC | One balance bar splits into 3 dated installments — a literal read of "flexible repayment options" |
+| `RedialLadder` | DC | 3 attempt rows joined by a downward-drawing connector; rows 1–2 settle muted, row 3 lights up with an expanding ring ping |
+| `LeadFunnel` | BPO · INS · MTG | 4 lead rows (with initials avatars) get verdict badges while a `CountUp` climbs to the real total + a "▲12% this week" delta. Props: total/noun |
+| `ClaimIntake` | INS | A claim form fills field-by-field; the "Photos" field's value slot grows a 3-thumbnail strip instead of text, then a handoff chip pops |
+
+All 11 cards' bullet copy is verbatim from the user's own supplied
+screenshots. Two cards keep real "Learn more" links to already-existing
+routes (`/solutions/payment-reminders`, `/solutions/debt-collection`).
+
+### Round 2 — user rejected the first visual pass on 4 counts, all fixed
+
+A first pass shipped with an icon-tile-over-label tab bar, a saturated peach
+illustration panel with orange spread across every waveform bar/pill/badge,
+and panels sized by `flex:1; min-height` (so no two were ever the same
+size). The user rejected all of it directly ("no icons... exactly like
+metal labs"; "different size, there is no uniform size"; "the light orange
+is making all the illustrations look weird and childish... no premium
+feel"; "need better storytelling").
+
+1. **Tab bar rebuilt to match the benchmark's structure exactly** — one
+   contained rounded track (`max-width:640px`, 6px padding, 200px radius,
+   `rgba(255,255,255,.06)` on the dark section) holding 4 **equal-width,
+   icon-free** pills, with the existing `layoutId` fill sliding between them
+   as a full pill instead of a square tile. Icons dropped entirely (the
+   `HeadsetIcon` wrapper added to `icons.tsx` for this was reverted — zero
+   usages once icons were cut, same precedent as the already-deleted
+   `SyncIcon`). Verified via Playwright bounding-box measurement: all 4
+   tabs report identical width to within 1px.
+2. **Uniform illustration size, fixed architecturally, not by luck.** The
+   panel changed from `flex:1; min-height` (which stretches to whatever
+   slack a card's own variable-length bullet copy leaves behind — the
+   literal reason no two were ever the same size) to a **fixed `height` +
+   `margin-top:auto`**. Since the grid's default `align-items:stretch`
+   already equalises card heights within a row, a fixed-height panel pinned
+   to the card's bottom edge means every illustration aligns on *both*
+   edges regardless of copy length above it. Verified by asserting every
+   `[role="img"]` panel across all four tabs reports **an identical
+   `getBoundingClientRect().height`** (264px) — not just "looks about
+   right."
+   - **A real overflow risk this technique introduces was designed around
+     up front, not discovered after shipping**: a fixed-height panel can
+     silently clip or squash content that's too tall. Fixed by giving
+     `.subCard`/`.chip`/`.counterCard` `flex-shrink: 0` (so they can't be
+     compressed to fit — they'd genuinely overflow, visibly, against
+     `.panel`'s own `overflow: hidden`, rather than squashing text
+     unreadably) and adding a Playwright assertion comparing each
+     `.panelInner`'s natural `scrollHeight` against the panel's fixed
+     `clientHeight` on every one of the 11 cards. **If a future section in
+     this project ever gives an illustration/media slot a fixed height,
+     apply the same `flex-shrink:0` + scrollHeight-vs-clientHeight check**
+     — a fixed height with default `flex-shrink:1` children fails silently
+     (content visually compresses instead of cleanly overflowing).
+3. **Depth/premium-feel — went through two surfaces before landing.** First
+   fix attempt was a **dark "premium glass"** surface (recessed near-black
+   screen, raised dark sub-cards) — confirmed as the direction via
+   `AskUserQuestion` before building, since it was a genuine judgment call.
+   Built, verified (uniform height/no-overflow re-confirmed), screenshotted
+   — and the user rejected it live ("no dont use dark glassmorphism, i need
+   lighter bg"). **Shipped version: a cool, desaturated light-grey panel**
+   (`linear-gradient(160deg, #f5f6f7, #e4e7ea)` — explicitly *not* the
+   original saturated peach) with white sub-cards on a soft shadow, more
+   generous padding (`panelInner` 20px, `subCard` 14×16px, up from 16px/
+   12×14px) per the same message's "proper spacing and padding" ask. Both
+   surface attempts kept the actual fix for the "childish" complaint
+   constant throughout: **orange restraint** — waveform bars, pending-state
+   fills, tracks and avatars are all neutral greys regardless of which
+   surface they sit on; orange survives only on the live dot, the resolved
+   check, small badge text (`Qualified`, `Confirmed`) and progress fills.
+   That restraint, not the light/dark choice, is what actually solves
+   "weird and childish" — **if a future illustration in this project ever
+   reads as too busy/toylike, check for orange (or any single saturated
+   hue) spread across every element first, before assuming the base
+   surface color is the problem.**
+4. **Storytelling enriched per archetype**, deliberately favouring
+   *crossfade-in-place* additions over *appended-row* additions wherever the
+   two competed for the same fixed-height budget: `ReminderCall`'s two-sided
+   reply (crossfades in the existing script slot, zero height cost) and its
+   live-tag-becomes-a-timer; `IdentityCheck`'s thin verification-progress
+   bar + FDCPA tag + timestamped chip; `PlanNegotiation`'s three real dated
+   installments (was three bare labels); `RedialLadder`'s account reference
+   + enriched pending/resolved text (`"Retrying · 6:05 PM"` /
+   `"Connected · 0:42"` — richer copy, not new DOM); `LeadFunnel`'s per-lead
+   initials avatars + a "▲12% this week" delta line; `ClaimIntake`'s
+   3-thumbnail photo strip replacing the "Photos" field's plain text value.
+
+### Architecture
+
+- **New directory `components/sections/solutions/`**: `SolutionsTabs.tsx`
+  (`"use client"` — tab state, autoplay, keyboard nav, the bento grid,
+  `AnimatePresence` panel swap; holds the `INDUSTRIES` content array inline,
+  matching this project's established precedent for single-use static
+  section content — `WhyItWorks`, `CoreFeatures`, `SolutionWorkflows`, and
+  explicitly §20's "no `lib/research.ts`" note) + `.module.css`;
+  `SolutionIllustrations.tsx` (`"use client"` — all 6 illustrations + the
+  shared `useSolutionMotion` hook + primitives + the `IlloSpec` registry, in
+  one file, mirroring the benchmark's own single-`Mockups.tsx` structure for
+  the same reason: one shared narrative grammar needs to stay visible in one
+  place) + `.module.css`.
+- **`Solutions.tsx` stays a server component** — unchanged eyebrow/H2/lead
+  inside its existing `Entrance`; only renders `<SolutionsTabs />` in place
+  of the old static rows. `Solutions.module.css` keeps just the header
+  rules; `.rows`/`.row`/`.text`/`.label`/`.heading`/`.bullets`/`.card` and
+  their two media queries were deleted.
+- **`IndustryTabs.tsx` + `.module.css` deleted outright** — confirmed zero
+  importers first (`FaqTopics.tsx`/`Select.tsx` reference it only in doc
+  comments, as a copy-adapt precedent, never as an import). Its measured-
+  indicator technique is superseded by `layoutId`; its keyboard handler
+  moved into `SolutionsTabs.tsx` verbatim.
+- **`public/assets/solution-card.png` is now unreferenced but left in
+  place** — confirmed zero remaining references — same "measurement
+  reference, not deleted" treatment as `introducing-dros.png`/
+  `footer-wordmark.png`.
+- **Grid arity is `[data-count]`-driven, not index-based**, specifically to
+  avoid the benchmark's own `i<3` bug: `.card{grid-column:span 3}` (2-up,
+  correct for this section's real 2- and 4-card tabs), `[data-count="3"]
+  .card{span 2}` (3-across, no orphan), and a `[data-count="5"]` 3-then-2
+  bento rule kept in reserve (this section has no 5-card tab today, but a
+  future one degrades correctly rather than breaking silently — verified
+  the mobile-breakpoint override actually beats the more-specific
+  `:nth-child` desktop rule via matching selector text + source order, not
+  assumed).
+- **Autoplay** advances the **industry tabs** (not a within-panel rail —
+  the bento-grid choice removed the rail the auto-advance question was
+  originally framed around; flagged to the user as a reconciliation, not
+  silently decided) every 8s via a **self-rescheduling `setTimeout`** gated
+  by one derived `autoplayActive` boolean (`!reduce && !autoplayStopped &&
+  !hovering && !focusedWithin && inView`) — pauses on hover, focus-within,
+  or scrolling away; **stops permanently** on any real tab selection
+  (`autoplayStopped` state, never reset). The progress line is only
+  rendered while `autoplayActive`, so it never implies a countdown that
+  won't fire (WCAG 2.2.2 via hover/focus pause + permanent stop-on-
+  interaction).
+- **Card hover uses `whileHover={{ y: -4 }}`, never a CSS `:hover`
+  transform** — proactively avoiding the exact bug class already documented
+  twice in this file (`Entrance`'s `rise` keyframe's `both` fill pins
+  `transform` indefinitely, silently overriding a same-element CSS `:hover`
+  transition; hit for real on the pricing cards, §23, and flagged again at
+  §27). Since `Entrance` isn't used inside this grid at all (`AnimatePresence`
+  + `variants` own the entrance here), this is a preventative match to the
+  established pattern rather than a bug that was actually hit this round.
+- **Every illustration's `Panel`** carries `role="img"` + a full prose
+  `aria-label` describing the whole animation, with the entire animated
+  subtree `aria-hidden="true"` — the `EngagementQueueIllustration`
+  accessibility pattern, reused verbatim.
+- **Tabs keep full APG semantics** — `id`/`aria-controls`/`aria-labelledby`/
+  `role="tabpanel"`/`tabIndex={0}` on the panel, none of which the old
+  `IndustryTabs.tsx` or the benchmark's own tablist had.
+
+### Verified
+
+Clean `tsc --noEmit` and `next build` (46 routes, unchanged) both before and
+after the round-2 visual fixes. All verification ran on a scratch `next dev`
+server on an isolated port + `distDir` (this project's established
+`.next`-collision avoidance, CLAUDE.md §23/§24/§28 — hit a live, unrelated
+node process holding port 3000 during this round's own final check and
+correctly avoided touching the shared `.next` rather than risking it),
+stopped by PID and confirmed down via a failed curl each time; both
+temporary `next.config.ts`/`tsconfig.json` edits were reverted with `git
+diff`/`git checkout` confirming zero net change before finishing.
+Interaction pass used real Playwright events, not just screenshots: clicking
+each tab actually swaps the card grid to that industry's real card
+count (4/2/3/2, no orphans); full keyboard nav (Tab reaches the tablist,
+ArrowRight/Left wrap, Home/End jump, roving tabindex, `aria-controls`
+resolves to the live panel); autoplay advances once at ~8s and then
+**never again** after a real click (asserted across two full dwell
+windows); autoplay provably pauses while the pointer is inside the section;
+hovering a card forces its status pill to the resolved label; reduced-motion
+emulation lands every one of the 11 cards on its coherent resolved state
+with autoplay never firing. 1516/1280/900/430px: zero console errors, zero
+horizontal overflow, mobile stacks to one column with panels still
+bottom-aligned. A transient Next.js dev-only "1 Issue" indicator badge was
+investigated (did not reproduce on a fresh load, dev-only overlay that never
+ships to production, zero corresponding console/terminal errors, clean
+production build) and not treated as a real defect.
+
+**Approved:** Not yet — not reviewed by the user in this round's final
+light-panel form. Per this project's own updated §7 approval note, Section
+7's *old* form's approval does not carry forward to this new content.
+
+**Next:** Wait for the user's review of the shipped light-panel version.
+Known open items, flagged rather than silently decided: no per-tab intro
+line was written (the benchmark has one; the user's supplied copy doesn't,
+and this project doesn't invent copy silently); the auto-advance-the-tabs
+reconciliation above is worth a second look now that it's live; if a 5th
+card is ever added to any tab, the reserved `[data-count="5"]` bento rule
+has not been exercised against real content yet.

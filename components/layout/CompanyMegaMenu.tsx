@@ -3,22 +3,55 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import {
-  CaseStudyIcon,
-  InfoIcon,
-  MailIcon,
-  NewsIcon,
-  TrendingUpIcon,
-} from "@/components/ui/icons";
+import { ChevronDownIcon } from "@/components/ui/icons";
 import styles from "./CompanyMegaMenu.module.css";
 
-export const COMPANY_ITEMS = [
-  { label: "About Us", href: "/company/about", Icon: InfoIcon },
-  { label: "News", href: "/company/news", Icon: NewsIcon },
-  { label: "Investors & Partners", href: "/company/investors", Icon: TrendingUpIcon },
-  { label: "Careers", href: "/careers", Icon: CaseStudyIcon },
-  { label: "Contact Us", href: "/company/contact", Icon: MailIcon },
+// Two labeled columns, matching SolutionsMegaMenu's treatment: title + a
+// one-line description per item, no icon boxes.
+type CompanyItem = { label: string; href: string; description: string };
+type CompanyGroup = { label: string; items: CompanyItem[] };
+
+export const COMPANY_GROUPS: CompanyGroup[] = [
+  {
+    label: "Who we are",
+    items: [
+      {
+        label: "About Us",
+        href: "/company/about",
+        description: "The team, mission and story behind the voice",
+      },
+      {
+        label: "News",
+        href: "/company/news",
+        description: "Funding, launches and press coverage",
+      },
+      {
+        label: "Careers",
+        href: "/careers",
+        description: "Open roles across engineering and go-to-market",
+      },
+    ],
+  },
+  {
+    label: "Work with us",
+    items: [
+      {
+        label: "Investors & Partners",
+        href: "/company/investors",
+        description: "Our backers and technology partners",
+      },
+      {
+        label: "Contact Us",
+        href: "/company/contact",
+        description: "Reach the right team directly",
+      },
+    ],
+  },
 ];
+
+// Flat list kept for Navbar.tsx's mobile accordion, which renders labels
+// only (no columns, no descriptions) — derived so the two can't drift.
+export const COMPANY_ITEMS = COMPANY_GROUPS.flatMap((group) => group.items);
 
 // There is no "/company" hub page and none is planned — the trigger is a
 // non-navigating button, not a Link. On desktop the mega-menu panel below is
@@ -64,22 +97,25 @@ export function CompanyMegaMenu() {
         onClick={(event) => event.currentTarget.blur()}
       >
         Company
+        <ChevronDownIcon className={styles.chevron} />
       </button>
       <div className={styles.panel}>
         <div className={styles.panelInner}>
-          <p className={styles.colLabel}>Company</p>
-          <ul className={styles.grid}>
-            {COMPANY_ITEMS.map(({ label, href, Icon }) => (
-              <li key={label}>
-                <Link href={href} className={styles.item}>
-                  <span className={styles.iconBox}>
-                    <Icon />
-                  </span>
-                  <span className={styles.itemTitle}>{label}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {COMPANY_GROUPS.map((group) => (
+            <div key={group.label} className={styles.col}>
+              <p className={styles.colLabel}>{group.label}</p>
+              <ul className={styles.colList}>
+                {group.items.map(({ label, href, description }) => (
+                  <li key={label}>
+                    <Link href={href} className={styles.item}>
+                      <span className={styles.itemTitle}>{label}</span>
+                      <span className={styles.itemDesc}>{description}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
     </li>

@@ -1,0 +1,634 @@
+/* Shell -------------------------------------------------------------------
+   A cool, desaturated light panel — not the dark glass this round started
+   with, and not the saturated peach panel before that. Depth here comes
+   from clean elevation (a soft shadow lifting white sub-cards off a grey
+   panel) and generous breathing room, not from a dark recessed screen or a
+   warm tint. Orange stays sparing regardless of surface: the live dot, the
+   resolved check, small badge text and progress fills only.
+   ------------------------------------------------------------------------- */
+
+.panel {
+  --sol-panel-start: #f5f6f7;
+  --sol-panel-end: #e4e7ea;
+  --sol-sub: #ffffff;
+  --sol-hairline: rgba(15, 15, 20, 0.08);
+  --sol-text: #16181c;
+  --sol-text-muted: rgba(15, 15, 20, 0.55);
+  --sol-text-dim: rgba(15, 15, 20, 0.38);
+  --sol-track: rgba(15, 15, 20, 0.09);
+
+  /* Fixed, uniform height across every card in every tab — the mockup
+     panel used to be `flex:1; min-height` and stretched to whatever slack
+     a card's own (variable-length) bullet copy left behind, so no two
+     illustrations were ever the same size. A fixed height + margin-top:auto
+     pins every panel to the card's bottom edge instead, so panels align on
+     both edges regardless of how much text sits above them. */
+  height: 264px;
+  flex: none;
+  margin-top: auto;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--sol-panel-start) 0%, var(--sol-panel-end) 100%);
+  box-shadow: inset 0 0 0 1px rgba(15, 15, 20, 0.05);
+}
+
+/* A single faint warm glow bled into one corner — just enough dimension to
+   feel intentional without tinting the whole surface. */
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 88% 8%, rgba(255, 77, 0, 0.05), transparent 60%);
+  pointer-events: none;
+}
+
+/* Slow ambient light sweep — sells "this surface is alive" even while a
+   card's own working/resolved cycle is mid-dwell. Not symmetric (0% !=
+   100%), so it gets an explicit reduced-motion override below. */
+.panelSheen {
+  position: absolute;
+  inset: -20% -10%;
+  background: linear-gradient(100deg, transparent 40%, rgba(255, 255, 255, 0.55) 50%, transparent 60%);
+  animation: panelSheen 7s var(--ease) infinite;
+  pointer-events: none;
+}
+
+@keyframes panelSheen {
+  0%, 15% { transform: translateX(-60%); }
+  70%, 100% { transform: translateX(60%); }
+}
+
+.panelInner {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Raised white sub-card — the reference's own "white app-UI sub-card on a
+   grey mockup panel" structure. Every consumer keeps flex-shrink: 0 so a
+   too-tall illustration visibly clips against `.panel`'s own
+   overflow:hidden instead of silently squashing — verified in Playwright
+   by asserting `.panelInner`'s natural content height never exceeds
+   `.panel`'s fixed height. */
+.subCard,
+.chip,
+.counterCard {
+  flex-shrink: 0;
+  background: var(--sol-sub);
+  border: 1px solid var(--sol-hairline);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(15, 15, 20, 0.07);
+}
+
+.subCard {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.subCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.subCardTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sol-text);
+}
+
+.microTag {
+  margin-left: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--sol-text-dim);
+  background: rgba(15, 15, 20, 0.05);
+  border-radius: 4px;
+  padding: 2px 5px;
+  vertical-align: middle;
+}
+
+/* Thin verification-progress track (IdentityCheck) ------------------------- */
+
+.thinTrack {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--sol-track);
+  overflow: hidden;
+}
+
+.thinFill {
+  height: 100%;
+  background: var(--brand);
+  border-radius: inherit;
+}
+
+/* Status pill ---------------------------------------------------------- */
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 23px;
+  padding-inline: 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(15, 15, 20, 0.06);
+  color: var(--sol-text-muted);
+  white-space: nowrap;
+}
+
+.statusPill svg {
+  width: 11px;
+  height: 11px;
+  color: var(--sol-text-dim);
+}
+
+.statusPillDone {
+  background: rgba(255, 77, 0, 0.12);
+  color: var(--brand);
+}
+
+.statusPillDone svg {
+  color: var(--brand);
+}
+
+.spinner {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(15, 15, 20, 0.18);
+  border-top-color: rgba(15, 15, 20, 0.55);
+  animation: solutionsSpin 0.8s linear infinite;
+}
+
+@keyframes solutionsSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Live dot / avatar / waveform (ReminderCall) --------------------------- */
+
+.liveTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--sol-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  flex: none;
+}
+
+.callHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.callWho {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.callName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sol-text);
+}
+
+.callSubject {
+  font-size: 11px;
+  color: var(--sol-text-muted);
+}
+
+.waveform {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+}
+
+.waveBar {
+  flex: 1;
+  height: 100%;
+  border-radius: 2px;
+  background: rgba(15, 15, 20, 0.16);
+  transform-origin: center;
+}
+
+/* Crossfading conversation slot — the working-state outbound script and
+   the resolved-state customer reply share this one fixed-height box
+   (absolutely stacked), so the "two-sided conversation" storytelling adds
+   zero height rather than pushing every other row down. */
+.scriptSlot {
+  position: relative;
+  height: 40px;
+  overflow: hidden;
+}
+
+.callScript {
+  position: absolute;
+  inset: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--sol-text-muted);
+  background: rgba(15, 15, 20, 0.035);
+  border-radius: 8px;
+  padding: 7px 9px;
+}
+
+.callReply {
+  color: var(--sol-text);
+  background: rgba(255, 77, 0, 0.06);
+}
+
+.statusRow {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Resolved chip ---------------------------------------------------------- */
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--sol-text);
+}
+
+.chipIcon {
+  width: 13px;
+  height: 13px;
+  color: var(--brand);
+  flex: none;
+}
+
+.chipAmount {
+  font-weight: 700;
+}
+
+.chipDone {
+  color: var(--brand);
+}
+
+.chipPending {
+  color: var(--sol-text-muted);
+  font-weight: 500;
+}
+
+/* Field rows (IdentityCheck / ClaimIntake) -------------------------------- */
+
+.fieldList {
+  display: grid;
+  gap: 8px;
+}
+
+.fieldRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fieldLabel {
+  font-size: 11.5px;
+  color: var(--sol-text-muted);
+}
+
+.fieldValue {
+  position: relative;
+  display: inline-flex;
+  min-width: 78px;
+  height: 16px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.fieldMasked,
+.fieldFilled,
+.fieldCheck {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  translate: 0 -50%;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.fieldMasked {
+  color: var(--sol-text-dim);
+  letter-spacing: 0.05em;
+}
+
+.fieldFilled {
+  color: var(--sol-text);
+}
+
+.fieldCheck {
+  display: inline-flex;
+  color: var(--brand);
+}
+
+/* Photo-thumbnail strip (ClaimIntake "Photos" field) ---------------------- */
+
+.photoStrip {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.photoThumb {
+  width: 14px;
+  height: 11px;
+  border-radius: 2px;
+  background: linear-gradient(160deg, rgba(15, 15, 20, 0.14), rgba(15, 15, 20, 0.05));
+  border: 1px solid rgba(15, 15, 20, 0.12);
+}
+
+/* Balance bar (PlanNegotiation) -------------------------------------------- */
+
+.balanceBar {
+  display: flex;
+  height: 12px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--sol-track);
+}
+
+.balanceSegment {
+  flex: 1;
+  background: rgba(255, 77, 0, 0.85);
+}
+
+.installmentLabels {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.installmentItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.installmentDate {
+  font-size: 9.5px;
+  color: var(--sol-text-dim);
+}
+
+.installmentAmount {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sol-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Ladder (RedialLadder) ----------------------------------------------------- */
+
+.ladder {
+  display: grid;
+  gap: 3px;
+}
+
+.ladderRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.ladderTrack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 12px;
+  flex: none;
+}
+
+.ladderDot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(15, 15, 20, 0.16);
+  margin-top: 3px;
+  flex: none;
+}
+
+.ladderDotDone {
+  background: var(--brand);
+}
+
+.ladderPing {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1.5px solid var(--brand);
+  animation: solutionsPing 1.2s ease-out infinite;
+}
+
+@keyframes solutionsPing {
+  from { transform: scale(0.6); opacity: 0.7; }
+  to { transform: scale(2.2); opacity: 0; }
+}
+
+.ladderConnector {
+  width: 1.5px;
+  flex: 1;
+  min-height: 13px;
+  background: rgba(15, 15, 20, 0.14);
+  transform-origin: top;
+}
+
+.ladderInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 11px;
+}
+
+.ladderTime {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--sol-text);
+}
+
+.ladderStatusMuted {
+  font-size: 10.5px;
+  color: var(--sol-text-dim);
+}
+
+.ladderStatusDone {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+/* Lead funnel ---------------------------------------------------------------- */
+
+.clockBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--sol-text-muted);
+}
+
+.clock {
+  position: relative;
+  display: inline-flex;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1.4px solid rgba(15, 15, 20, 0.3);
+  flex: none;
+}
+
+.clockHand {
+  position: absolute;
+  top: 1px;
+  left: 50%;
+  width: 1.4px;
+  height: 4.5px;
+  background: rgba(15, 15, 20, 0.55);
+  transform-origin: bottom center;
+  translate: -50% 0;
+}
+
+.leadList {
+  display: grid;
+  gap: 6px;
+}
+
+.leadRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.leadLeft {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.leadAvatar {
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: rgba(15, 15, 20, 0.07);
+  color: var(--sol-text-dim);
+  font-size: 7.5px;
+  font-weight: 700;
+  flex: none;
+}
+
+.leadName {
+  font-size: 11.5px;
+  color: var(--sol-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leadBadgeDone,
+.leadBadgeMuted {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  flex: none;
+}
+
+.leadBadgeDone {
+  background: rgba(255, 77, 0, 0.12);
+  color: var(--brand);
+}
+
+.leadBadgeMuted {
+  background: rgba(15, 15, 20, 0.05);
+  color: var(--sol-text-dim);
+}
+
+.counterCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 11px 13px;
+}
+
+.counterNumber {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--sol-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.counterLabel {
+  font-size: 10.5px;
+  color: var(--sol-text-muted);
+}
+
+.counterDelta {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+/* Reduced motion ------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  /* panelSheen's 0% and 100% frames aren't equal (it sweeps left to right),
+     so — unlike most keyframes in this project — the global clamp alone
+     would land it on a permanently-offset frame instead of a neutral one.
+     Same treatment as InitiateCall's Ken Burns backdrop. */
+  .panelSheen {
+    animation: none;
+    opacity: 0;
+  }
+}
