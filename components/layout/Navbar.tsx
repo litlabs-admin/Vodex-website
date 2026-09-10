@@ -80,7 +80,7 @@ export function Navbar({ solid = false }: NavbarProps) {
         <ul className={styles.links}>
           <li>
             <Link href="/products" className={styles.link}>
-              Products
+              Product
             </Link>
           </li>
           <SolutionsMegaMenu />
@@ -140,7 +140,7 @@ export function Navbar({ solid = false }: NavbarProps) {
             className={styles.panelLink}
             onClick={() => setOpen(false)}
           >
-            Products
+            Product
           </Link>
 
           {MOBILE_GROUPS.map((group) => {

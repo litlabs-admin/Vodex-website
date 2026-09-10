@@ -3,22 +3,56 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import {
-  BellIcon,
-  CheckIcon,
-  FunnelIcon,
-  PhoneCallIcon,
-  WorkflowIcon,
-} from "@/components/ui/icons";
+import { ChevronDownIcon } from "@/components/ui/icons";
 import styles from "./SolutionsMegaMenu.module.css";
 
-export const MAIN_SOLUTIONS = [
-  { label: "Payment Reminders", href: "/solutions/payment-reminders", Icon: BellIcon },
-  { label: "Promise-to-Pay Capture", href: "/solutions/promise-to-pay", Icon: CheckIcon },
-  { label: "Lead Qualification", href: "/solutions/lead-qualification", Icon: FunnelIcon },
-  { label: "Debt Collection", href: "/solutions/debt-collection", Icon: PhoneCallIcon },
-  { label: "Collection Software", href: "/solutions/collection-software", Icon: WorkflowIcon },
+// Two labeled columns, matching the supplied reference: title + one-line
+// description per item, no icon boxes (the earlier icon-box treatment is
+// gone from this menu — ResourcesMegaMenu/CompanyMegaMenu keep theirs).
+type SolutionItem = { label: string; href: string; description: string };
+type SolutionGroup = { label: string; items: SolutionItem[] };
+
+export const SOLUTION_GROUPS: SolutionGroup[] = [
+  {
+    label: "By use case",
+    items: [
+      {
+        label: "Payment Reminders",
+        href: "/solutions/payment-reminders",
+        description: "Automate outreach before accounts go delinquent",
+      },
+      {
+        label: "Promise-to-Pay Capture",
+        href: "/solutions/promise-to-pay",
+        description: "Capture and follow up on every PTP commitment",
+      },
+      {
+        label: "Lead Qualification",
+        href: "/solutions/lead-qualification",
+        description: "Qualify inbound and outbound leads at scale",
+      },
+    ],
+  },
+  {
+    label: "By industry",
+    items: [
+      {
+        label: "Debt Collection",
+        href: "/solutions/debt-collection",
+        description: "Compliant voice AI for collections teams",
+      },
+      {
+        label: "Collection Software",
+        href: "/solutions/collection-software",
+        description: "Add a voice layer to your receivables platform",
+      },
+    ],
+  },
 ];
+
+// Flat list kept for Navbar.tsx's mobile accordion, which renders labels
+// only (no columns, no descriptions) — derived so the two can't drift.
+export const MAIN_SOLUTIONS = SOLUTION_GROUPS.flatMap((group) => group.items);
 
 // There is no "/solutions" hub page and none is planned — the trigger is a
 // non-navigating button, not a Link. On desktop the mega-menu panel below is
@@ -65,22 +99,25 @@ export function SolutionsMegaMenu() {
         onClick={(event) => event.currentTarget.blur()}
       >
         Solutions
+        <ChevronDownIcon className={styles.chevron} />
       </button>
       <div className={styles.panel}>
         <div className={styles.panelInner}>
-          <p className={styles.colLabel}>Main Solutions</p>
-          <ul className={styles.solutionsGrid}>
-            {MAIN_SOLUTIONS.map(({ label, href, Icon }) => (
-              <li key={label}>
-                <Link href={href} className={styles.item}>
-                  <span className={styles.iconBox}>
-                    <Icon />
-                  </span>
-                  <span className={styles.itemTitle}>{label}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {SOLUTION_GROUPS.map((group) => (
+            <div key={group.label} className={styles.col}>
+              <p className={styles.colLabel}>{group.label}</p>
+              <ul className={styles.colList}>
+                {group.items.map(({ label, href, description }) => (
+                  <li key={label}>
+                    <Link href={href} className={styles.item}>
+                      <span className={styles.itemTitle}>{label}</span>
+                      <span className={styles.itemDesc}>{description}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
     </li>
