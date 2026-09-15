@@ -6757,3 +6757,52 @@ stopped by PID this round, confirmed down via a failed curl before building, and
 
 **Next:** user review, in particular the Genworks photo compromise and the one
 1.92-ratio blog hero that the 3/2 box suits less well than 16/8 did.
+
+---
+
+## 32. Initiate Call — real backend, Email field, reCAPTCHA v2
+
+Supersedes the "placeholder submit" and "reserved empty captcha slot" notes in §7/§8. The client wants the same Vodex demo agent their Webflow site triggered (`POST https://prod.api.vodex.ai/api/v1/trigger-demo-call`, body `{email, phone, firstName, lastName:"(Home Demo Bot)"}`), plus an Email field and the reCAPTCHA v2 checkbox. Their Webflow snippet was **not** used verbatim: its URL had no `https://` (so it was a relative path), browsers drop a script-set `Referer`, and calling the API from the browser would expose it to scripted abuse.
+
+- **Flow:** `InitiateCallForm` → `POST /api/initiate-call` (`app/api/initiate-call/route.ts`) → Vodex. The route checks, in order: same-origin (`Origin` must match `Host`, or be in `ALLOWED_ORIGINS`), JSON content type and a 4KB body cap, the honeypot `company_website` (filled → fake 200), a minimum 3s fill time (`startedAt`), IP rate limit (5 per 10 min), reCAPTCHA `siteverify` (optional `RECAPTCHA_ALLOWED_HOSTNAMES`), server-side validation (422 with `fieldErrors`), then a per-phone limit (2 per hour). Upstream errors return a generic 502 and are never echoed to the browser.
+- **`lib/initiate-call-validation.ts`** is shared by client and server. The dial code is derived on the server from `countryIso2` (it must exist in `COUNTRIES`); the number is sent as `+<dial><digits>`, at most 15 digits in total.
+- **`lib/rate-limit.ts`** keeps counts in memory, so it's best effort on Vercel (one counter per instance). reCAPTCHA is the real gate. Swap it for Upstash if abuse shows up.
+- **`components/ui/Recaptcha.tsx`** loads Google's script explicitly, once, with no npm dependency. A token is single-use, so the widget resets after any failed submit. If there's no site key it renders nothing and submit shows "Verification unavailable".
+- **Env** (see `.env.example`): `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`, `RECAPTCHA_SECRET_KEY`, and optionally `RECAPTCHA_ALLOWED_HOSTNAMES`, `ALLOWED_ORIGINS` and `VODEX_DEMO_CALL_URL`. `.env.local` holds Google's official always-pass **test** keys, and `VODEX_DEMO_CALL_URL` points at a dead local port so dev never places real calls. Production needs the real keys in Vercel, with the domain added to the reCAPTCHA key.
+- **Layout:** the bar is Name | Email | Phone | Initiate Call. At ≤1280px "Book a Demo" drops below; at ≤900px the bar stacks. The captcha is now visible on mobile too (scaled to 0.88 at ≤360px); the old ≤480px `display:none` was removed.
+- **Verified:** tsc and build are clean. curl showed 403 (bad origin), fake 200 (honeypot), 400 (too fast / no token), 422 (bad fields), 429 (rate limit) and 502 (upstream down). Playwright at 1516/900/430 had no overflow; empty submit shows 3 errors, submitting without the tick shows the robot error, and after the tick the request reaches upstream. **A real call has not been tested** — that needs real keys and the real endpoint.
+
+---
+
+## 32. Contact form → HubSpot (`/company/contact`)
+
+`ContactForm.tsx` no longer fake-submits. It POSTs to HubSpot's public Forms
+Submission API via new `lib/hubspot.ts` (`submitHubspotForm`, portal
+`22244787`, form `b74fe17d-ddca-4e06-ab32-7b306875db88`) — no API key, no
+embed script; our own UI stays.
+
+- **HubSpot is the source of truth for fields** (user's explicit rule). The live
+  definition (`forms-na2.hsforms.com/embed/v3/form/<portal>/<form>/json`) has
+  exactly 4 required fields: `firstname` (labelled "Full Name"), `email`,
+  `phone` (7–20 digits, country-code picker), `message`. So Last name,
+  Company and Country were **removed**; the form is Full name + Email, a
+  dial-code `Select` + Phone number, Message. If the HubSpot form changes,
+  re-fetch that JSON and update `HUBSPOT_NAMES`/`validate()` to match.
+- Validation blocks submit (no request is sent) and shows inline errors:
+  name letters/space/`'.-` only, ≥2 letters, ≤100; email strict regex, no
+  `..`, ≤254; phone digits/separators only, 7–20 digits (HubSpot's rule);
+  message 10–500. Digits can't be typed into name, letters can't be typed into
+  phone, whitespace is stripped from email. Phone sent as `"<dial> <number>"`.
+- HubSpot 400s that name a field (`fields.email` etc.) map back to that field's
+  inline error; network/other failures show a soft `role="alert"` block above
+  the button with inputs preserved.
+- **Fixed the latent `Select.module.css` focus bug** flagged in §8 (transitioned
+  `visibility` stopped the search input receiving focus on open, so typing in
+  the popover did nothing) — same fix as `DialCodeSelect`.
+- Verified with Playwright against a scratch dev server, **HubSpot requests
+  mocked** (no test lead sent to the real CRM): empty/invalid submits send 0
+  requests, success/network-error/field-error paths all render correctly,
+  1516/430px no overflow, no console errors. A real end-to-end submission has
+  not been made yet.
+
+**Approved:** Not yet.

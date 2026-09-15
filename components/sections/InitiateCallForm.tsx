@@ -1,116 +1,152 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Entrance } from "@/components/ui/Entrance";
 import { DialCodeSelect } from "@/components/ui/DialCodeSelect";
-import { ArrowRight, CheckIcon, PhoneIcon, UserIcon } from "@/components/ui/icons";
+import { Recaptcha, RECAPTCHA_SITE_KEY, type RecaptchaHandle } from "@/components/ui/Recaptcha";
+import { ArrowRight, CheckIcon, MailIcon, PhoneIcon, UserIcon } from "@/components/ui/icons";
 import { COUNTRIES } from "@/lib/countries";
+import {
+  validateInitiateCall,
+  type InitiateCallField,
+  type InitiateCallInput,
+} from "@/lib/initiate-call-validation";
 import styles from "./InitiateCall.module.css";
 
-type FieldName = "name" | "phone";
-type Values = { name: string; phone: string; countryIso2: string };
+type FieldName = Exclude<InitiateCallField, "country">;
+const FIELD_ORDER: FieldName[] = ["name", "email", "phone"];
 
-const INITIAL_VALUES: Values = { name: "", phone: "", countryIso2: "US" };
-
-// Same regexes ContactForm.tsx uses, minus the leading "+" on phone — the
-// dial code is a separate control here, so the digits field never carries
-// one itself.
-const NAME_RE = /^[A-Za-zÀ-ſ' -]+$/;
-const PHONE_RE = /^[0-9\s().-]{6,18}$/;
-
-function validate(values: Values): Partial<Record<FieldName, string>> {
-  const errors: Partial<Record<FieldName, string>> = {};
-
-  if (!values.name.trim()) {
-    errors.name = "Your name is required.";
-  } else if (!NAME_RE.test(values.name.trim())) {
-    errors.name = "Enter a valid name.";
-  }
-
-  if (!values.phone.trim()) {
-    errors.phone = "Phone number is required.";
-  } else if (!PHONE_RE.test(values.phone.trim())) {
-    errors.phone = "Enter a valid phone number.";
-  }
-
-  return errors;
-}
+const INITIAL_VALUES: InitiateCallInput = { name: "", email: "", phone: "", countryIso2: "US" };
 
 /**
  * The interactive form bar — split out from `InitiateCall.tsx` (a server
- * component) since it owns state. Placeholder submit, same precedent as
- * `ContactForm.tsx`: this project has no backend anywhere, so there's a
- * simulated delay + success panel with a comment marking where a real POST
- * goes, rather than a fake claim that a call was actually placed.
+ * component) since it owns state. Submits to `/api/initiate-call`, which
+ * verifies reCAPTCHA, re-validates, rate-limits and only then asks the Vodex
+ * API to place the demo call. Validation rules live in
+ * `lib/initiate-call-validation.ts`, shared with that route.
  */
 export function InitiateCallForm() {
-  const [values, setValues] = useState<Values>(INITIAL_VALUES);
+  const [values, setValues] = useState<InitiateCallInput>(INITIAL_VALUES);
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
+  const [serverErrors, setServerErrors] = useState<Partial<Record<InitiateCallField, string>>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
+  const [formError, setFormError] = useState<string | null>(null);
   const [shakeField, setShakeField] = useState<FieldName | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [honeypot, setHoneypot] = useState("");
 
+  const startedAt = useRef(0);
+  const recaptchaRef = useRef<RecaptchaHandle>(null);
   const fieldRefs = useRef<Partial<Record<FieldName, HTMLDivElement | null>>>({});
 
-  const errors = validate(values);
+  useEffect(() => {
+    startedAt.current = Date.now();
+  }, []);
+
+  const { errors: clientErrors } = validateInitiateCall(values);
+  const errors = { ...clientErrors, ...serverErrors };
   const dial = COUNTRIES.find((c) => c.iso2 === values.countryIso2)?.dial ?? "+1";
   const fullPhone = `${dial} ${values.phone}`.trim();
 
   function setValue(field: FieldName, value: string) {
     setValues((v) => ({ ...v, [field]: value }));
+    setServerErrors((e) => ({ ...e, [field]: undefined }));
   }
 
   function setCountry(iso2: string) {
     setValues((v) => ({ ...v, countryIso2: iso2 }));
+    setServerErrors((e) => ({ ...e, country: undefined, phone: undefined }));
   }
 
-  function setTouchedField(field: FieldName) {
-    setTouched((t) => ({ ...t, [field]: true }));
+  function flagFirstInvalid(errs: Partial<Record<InitiateCallField, string>>) {
+    setTouched({ name: true, email: true, phone: true });
+    const first = FIELD_ORDER.find((f) => errs[f]) ?? (errs.country ? "phone" : undefined);
+    if (!first) return;
+    setShakeField(first);
+    fieldRefs.current[first]?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => setShakeField(null), 350);
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (status === "submitting") return;
+    setFormError(null);
 
-    const nextErrors = validate(values);
+    const { errors: nextErrors } = validateInitiateCall(values);
     if (Object.keys(nextErrors).length > 0) {
-      setTouched({ name: true, phone: true });
-      const firstInvalid = (["name", "phone"] as FieldName[]).find((f) => nextErrors[f]);
-      if (firstInvalid) {
-        setShakeField(firstInvalid);
-        fieldRefs.current[firstInvalid]?.scrollIntoView({ behavior: "smooth", block: "center" });
-        setTimeout(() => setShakeField(null), 350);
-      }
+      flagFirstInvalid(nextErrors);
+      return;
+    }
+    if (!RECAPTCHA_SITE_KEY) {
+      setFormError("Verification is unavailable right now. Please book a demo instead.");
+      return;
+    }
+    if (!captchaToken) {
+      setFormError("Please confirm you're not a robot.");
       return;
     }
 
-    // Placeholder submit — no backend/telephony provider is wired up yet, per
-    // this project's established ContactForm.tsx precedent. Swap this
-    // simulated delay for a real POST (an API route that kicks off the
-    // outbound call) once one is chosen, sending { name: values.name, phone: fullPhone }.
     setStatus("submitting");
-    setTimeout(() => setStatus("success"), 1200);
+    try {
+      const res = await fetch("/api/initiate-call", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...values,
+          recaptchaToken: captchaToken,
+          startedAt: startedAt.current,
+          company_website: honeypot,
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        fieldErrors?: Partial<Record<InitiateCallField, string>>;
+      };
+
+      if (res.ok) {
+        setStatus("success");
+        return;
+      }
+      if (res.status === 422 && data.fieldErrors) {
+        setServerErrors(data.fieldErrors);
+        flagFirstInvalid(data.fieldErrors);
+      }
+      setFormError(data.error ?? "Something went wrong. Please try again.");
+    } catch {
+      setFormError("Network error. Check your connection and try again.");
+    }
+    // Tokens are single-use: any failed attempt needs a fresh tick.
+    recaptchaRef.current?.reset();
+    setStatus("idle");
   }
 
   function resetForm() {
     setValues(INITIAL_VALUES);
     setTouched({});
+    setServerErrors({});
+    setFormError(null);
+    setCaptchaToken(null);
+    startedAt.current = Date.now();
     setStatus("idle");
   }
+
+  const visibleErrors = [
+    touched.name && errors.name,
+    touched.email && errors.email,
+    touched.phone && (errors.phone ?? errors.country),
+    formError,
+  ].filter(Boolean) as string[];
 
   return (
     <>
       <div className={styles.formRow}>
         {/* Entrance wraps a plain, unstyled positioning element — the bar's
-            own hover/focus-within visuals live on a *nested* child, never on
-            the element Entrance itself animates. Entrance's `rise` keyframe
-            runs with a `both` fill mode that keeps pinning `transform`
-            after it finishes, which silently overrides any :hover/
-            :focus-within transform declared on that same element (hit and
-            documented for the pricing cards, §23 of CLAUDE.md) — splitting
-            outer-gate / inner-effect avoids it here too. */}
+            own hover/focus-within visuals live on a nested child, never on
+            the element Entrance itself animates (see CLAUDE.md §23). */}
         <Entrance delay={280} className={styles.barSlot}>
           {status === "success" ? (
-            <div className={styles.success}>
+            <div className={styles.success} role="status">
               <span className={styles.successIcon}>
                 <CheckIcon />
               </span>
@@ -123,11 +159,22 @@ export function InitiateCallForm() {
               </button>
             </div>
           ) : (
-            <form className={styles.bar} onSubmit={handleSubmit} noValidate>
-              <div
-                className={styles.cell}
-                ref={(el) => { fieldRefs.current.name = el; }}
-              >
+            <form id="initiate-call-form" className={styles.bar} onSubmit={handleSubmit} noValidate>
+              {/* Honeypot — invisible to people, tempting to bots. */}
+              <div className={styles.honeypot} aria-hidden="true">
+                <label htmlFor="initiate-call-company-website">Company website</label>
+                <input
+                  id="initiate-call-company-website"
+                  name="company_website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                />
+              </div>
+
+              <div className={styles.cell} ref={(el) => { fieldRefs.current.name = el; }}>
                 <UserIcon className={styles.cellIcon} />
                 <label className="visually-hidden" htmlFor="initiate-call-name">
                   Your Name
@@ -138,17 +185,40 @@ export function InitiateCallForm() {
                   type="text"
                   placeholder="Your Name"
                   autoComplete="name"
+                  maxLength={60}
                   value={values.name}
                   onChange={(e) => setValue("name", e.target.value)}
-                  onBlur={() => setTouchedField("name")}
+                  onBlur={() => setTouched((t) => ({ ...t, name: true }))}
                   aria-invalid={Boolean(touched.name && errors.name)}
                 />
               </div>
 
               <div className={styles.divider} aria-hidden="true" />
 
+              <div className={styles.cell} ref={(el) => { fieldRefs.current.email = el; }}>
+                <MailIcon className={styles.cellIcon} />
+                <label className="visually-hidden" htmlFor="initiate-call-email">
+                  Email
+                </label>
+                <input
+                  id="initiate-call-email"
+                  className={`${styles.cellInput} ${shakeField === "email" ? styles.shake : ""}`}
+                  type="email"
+                  inputMode="email"
+                  placeholder="Email"
+                  autoComplete="email"
+                  maxLength={254}
+                  value={values.email}
+                  onChange={(e) => setValue("email", e.target.value)}
+                  onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+                  aria-invalid={Boolean(touched.email && errors.email)}
+                />
+              </div>
+
+              <div className={styles.divider} aria-hidden="true" />
+
               <div
-                className={styles.cell}
+                className={`${styles.cell} ${styles.phoneCell}`}
                 ref={(el) => { fieldRefs.current.phone = el; }}
               >
                 <PhoneIcon className={styles.cellIcon} />
@@ -166,15 +236,21 @@ export function InitiateCallForm() {
                   type="tel"
                   inputMode="tel"
                   placeholder="Phone Number"
-                  autoComplete="tel"
+                  autoComplete="tel-national"
+                  maxLength={24}
                   value={values.phone}
                   onChange={(e) => setValue("phone", e.target.value)}
-                  onBlur={() => setTouchedField("phone")}
-                  aria-invalid={Boolean(touched.phone && errors.phone)}
+                  onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
+                  aria-invalid={Boolean(touched.phone && (errors.phone || errors.country))}
                 />
               </div>
 
-              <button type="submit" className={styles.submit} disabled={status === "submitting"}>
+              <button
+                type="submit"
+                className={styles.submit}
+                disabled={status === "submitting"}
+                aria-busy={status === "submitting"}
+              >
                 {status === "submitting" ? (
                   <>
                     <span className={styles.spinner} aria-hidden="true" />
@@ -198,19 +274,19 @@ export function InitiateCallForm() {
         </Entrance>
       </div>
 
-      {(touched.name && errors.name) || (touched.phone && errors.phone) ? (
+      {visibleErrors.length > 0 && status !== "success" ? (
         <div className={styles.formErrors} role="alert">
-          {touched.name && errors.name ? <p>{errors.name}</p> : null}
-          {touched.phone && errors.phone ? <p>{errors.phone}</p> : null}
+          {visibleErrors.map((msg) => (
+            <p key={msg}>{msg}</p>
+          ))}
         </div>
       ) : null}
 
-      {/* reCAPTCHA mount point — the widget renders here once a site key
-          exists. Sized to reCAPTCHA v2's own 304x78 footprint so dropping it
-          in later causes no layout shift. */}
-      <Entrance delay={360} className={styles.captchaSlot} aria-hidden="true">
-        {null}
-      </Entrance>
+      {status !== "success" ? (
+        <Entrance delay={360} className={styles.captchaSlot}>
+          <Recaptcha ref={recaptchaRef} onChange={setCaptchaToken} theme="dark" />
+        </Entrance>
+      ) : null}
 
       <Entrance delay={440}>
         <p className={styles.fineprint}>

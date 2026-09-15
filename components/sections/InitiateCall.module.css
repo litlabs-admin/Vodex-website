@@ -132,9 +132,9 @@
   padding-inline: 14px;
 }
 
-.cell:nth-child(3) {
+.phoneCell {
   /* the phone cell (icon + dial select + input) needs more room than name */
-  flex: 1.35 1 0;
+  flex: 1.75 1 0;
 }
 
 .cellIcon {
@@ -335,8 +335,17 @@
 .captchaSlot {
   margin-top: 20px;
   width: 304px;
-  max-width: 100%;
-  height: 78px;
+  min-height: 78px;
+}
+
+/* Honeypot: off-screen, not display:none (some bots skip hidden inputs). */
+.honeypot {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 
 /* --- Fine print ------------------------------------------------------------ */
@@ -424,26 +433,19 @@
   }
 }
 
-@media (max-width: 900px) {
+/* Four segments + Book a Demo no longer fit one row: demo button drops below. */
+@media (max-width: 1280px) {
   .formRow {
     flex-direction: column;
   }
 
-  .demoButton {
+  .demoWrap .demoButton {
     width: 100%;
     height: 52px;
   }
 }
 
-@media (max-width: 720px) {
-  .section {
-    padding-block: 56px;
-  }
-
-  .titleBreak {
-    display: none;
-  }
-
+@media (max-width: 900px) {
   .bar {
     flex-direction: column;
     align-items: stretch;
@@ -455,7 +457,7 @@
     min-height: 52px;
   }
 
-  .cell:nth-child(3) {
+  .phoneCell {
     flex: 1 1 0;
   }
 
@@ -474,9 +476,20 @@
   }
 }
 
-@media (max-width: 480px) {
-  .captchaSlot {
+@media (max-width: 720px) {
+  .section {
+    padding-block: 56px;
+  }
+
+  .titleBreak {
     display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .captchaSlot {
+    transform: scale(0.88);
+    transform-origin: left top;
   }
 }
 

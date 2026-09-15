@@ -52,7 +52,10 @@
   opacity: 0;
   transform: translateY(-6px);
   visibility: hidden;
-  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), visibility var(--dur);
+  /* No `visibility` in this list: a transitioned visibility keeps the panel
+     hidden long enough that the search input's focus-on-open silently fails
+     (same fix as DialCodeSelect). */
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
 
 .panel[data-open="true"] {

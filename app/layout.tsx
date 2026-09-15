@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Ancizar_Serif, Inter } from "next/font/google";
 import "./globals.css";
 
@@ -82,6 +83,28 @@ export default function RootLayout({
           }}
         />
         {children}
+
+        {/* Google Consent Mode v2 defaults — must run before gtag config.
+            Ketch's smart tag updates these once the visitor chooses. */}
+        <Script id="ga-consent-default" strategy="beforeInteractive">
+          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});`}
+        </Script>
+
+        {/* Ketch consent banner (vodex / website_smart_tag). */}
+        <Script id="ketch-boot" strategy="beforeInteractive">
+          {`!function(){window.semaphore=window.semaphore||[],window.ketch=function(){window.semaphore.push(arguments)};var e=document.createElement("script");e.type="text/javascript",e.src="https://global.ketchcdn.com/web/v3/config/vodex/website_smart_tag/boot.js",e.defer=e.async=!0,document.getElementsByTagName("head")[0].appendChild(e)}();`}
+        </Script>
+
+        {/* Google Analytics 4 */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-1PCZCW5M7M"
+          strategy="afterInteractive"
+        />
+        <Script id="ga-config" strategy="afterInteractive">
+          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());gtag('config','G-1PCZCW5M7M');`}
+        </Script>
       </body>
     </html>
   );
