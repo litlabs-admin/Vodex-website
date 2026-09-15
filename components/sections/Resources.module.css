@@ -45,21 +45,47 @@
   gap: 24px;
 }
 
+.cardWrap {
+  height: 100%;
+}
+
 .card {
+  position: relative;
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   background: #f7f7f7;
-  transition: transform var(--dur) var(--ease);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
 
 .card:hover {
   transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
 }
 
 .thumb {
   position: relative;
   aspect-ratio: 3 / 2;
+  overflow: hidden;
+}
+
+/* News thumbnails are outlet logos: scale-down on white, padded, never
+   enlarged or cropped (CLAUDE.md §31). */
+.thumb[data-fit="logo"] {
+  background: #fff;
+}
+
+.thumb[data-fit="logo"] img {
+  padding: 28px;
+}
+
+/* Stretched link: the whole card activates the title link, with one link
+   announced per card (same pattern as BlogPostCard). */
+.titleLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
 }
 
 .body {
@@ -88,6 +114,10 @@
   font-size: 14px;
   line-height: 1.6;
   color: var(--fg-muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 
 /* Pushes the divider + button to the card's bottom edge regardless of how
@@ -113,10 +143,11 @@
   color: #fff;
   font-size: 14px;
   font-weight: 600;
+  width: fit-content;
   transition: background-color var(--dur) var(--ease);
 }
 
-.readMore:hover {
+.card:hover .readMore {
   background: #000;
 }
 
@@ -124,7 +155,7 @@
   transition: transform var(--dur) var(--ease);
 }
 
-.readMore:hover svg {
+.card:hover .readMore svg {
   transform: translateX(4px);
 }
 

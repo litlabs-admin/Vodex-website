@@ -44,43 +44,127 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.cardWrap {
+  height: 100%;
 }
 
 .card {
   position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   border-radius: 0;
-  aspect-ratio: 324 / 294;
+  background: #f7f7f7;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
+}
+
+.thumb {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
   background: #111;
 }
 
-.card img {
-  object-fit: cover;
+.thumb img {
+  transition: transform 420ms var(--ease);
 }
 
-.scrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.78) 0%,
-    rgba(0, 0, 0, 0.15) 45%,
-    transparent 70%
-  );
+.card:hover .thumb[data-fit="cover"] img {
+  transform: scale(1.05);
 }
 
-.caption {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 20px;
-  text-align: center;
-  font-size: 15px;
+/* News thumbnails are outlet logos — scale-down on white, never cropped or
+   zoomed (CLAUDE.md §31). */
+.thumb[data-fit="logo"] {
+  background: #fff;
+}
+
+.thumb[data-fit="logo"] img {
+  padding: 24px;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 18px 22px;
+}
+
+.category {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg-muted);
+}
+
+.cardTitle {
+  margin-top: 8px;
+  font-size: 17px;
   font-weight: 600;
   line-height: 1.35;
+  color: var(--fg);
+}
+
+.titleLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.excerpt {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--fg-muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.divider {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 18px;
+  border: none;
+  border-bottom: 1px solid var(--hairline-strong);
+}
+
+.readMore {
+  margin-top: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  height: 40px;
+  padding-inline: 16px;
+  border-radius: var(--radius-btn);
+  background: var(--ink);
   color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.card:hover .readMore {
+  background: #000;
+}
+
+.readMore svg {
+  transition: transform var(--dur) var(--ease);
+}
+
+.card:hover .readMore svg {
+  transform: translateX(4px);
 }
 
 @media (max-width: 1100px) {
@@ -91,11 +175,10 @@
   .band {
     margin-top: 40px;
   }
-}
 
-@media (max-width: 900px) {
   .grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
   }
 }
 

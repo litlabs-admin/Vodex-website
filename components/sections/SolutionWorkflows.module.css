@@ -98,12 +98,6 @@
   line-height: 1.3;
 }
 
-.arrow {
-  flex: none;
-  width: 16px;
-  height: 16px;
-}
-
 .cardDescription {
   margin-top: 8px;
   font-size: 14px;
@@ -111,8 +105,8 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
-/* "panel" variant — photo + light body (title/description/divider/Read
-   More), no icon. Column count is caller-driven via --cols (e.g. 4 for
+/* "panel" variant — photo + light body (title/description),
+   no icon. Column count is caller-driven via --cols (e.g. 4 for
    "Four core workflows"), unlike .grid's fixed 3. */
 .gridPanel {
   display: grid;
@@ -152,41 +146,6 @@
   font-size: 14px;
   line-height: 1.6;
   color: var(--fg-muted);
-}
-
-.panelDivider {
-  width: 100%;
-  margin-top: auto;
-  padding-top: 20px;
-  border: none;
-  border-top: 1px solid var(--hairline-strong);
-}
-
-.panelReadMore {
-  margin-top: 20px;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  height: 40px;
-  padding-inline: 16px;
-  border-radius: 10px;
-  background: var(--ink);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  transition: background-color var(--dur) var(--ease);
-}
-
-.panelReadMore:hover {
-  background: #000;
-}
-
-.panelReadMore svg {
-  transition: transform var(--dur) var(--ease);
-}
-
-.panelReadMore:hover svg {
-  transform: translateX(4px);
 }
 
 .closing {

@@ -50,6 +50,7 @@
 }
 
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -90,11 +91,19 @@
   text-underline-offset: 3px;
 }
 
+/* Stretched link: the whole card opens the post (same pattern as
+   BlogPostCard), so "Read More" is decoration only. */
+.titleLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
 .readMore svg {
   transition: transform var(--dur) var(--ease);
 }
 
-.readMore:hover svg {
+.card:hover .readMore svg {
   transform: translateX(4px);
 }
 

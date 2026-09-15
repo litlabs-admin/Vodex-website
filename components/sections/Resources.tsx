@@ -1,37 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
-import { ArrowRight } from "@/components/ui/icons";
+import { ArrowRight, ExternalLinkIcon } from "@/components/ui/icons";
+import { resolveResources, type ResourceRef } from "@/lib/resource-refs";
 import styles from "./Resources.module.css";
 
-const POSTS = [
-  {
-    category: "Debt Collection",
-    title: "Why most agencies are stuck below 25% RPC — and what's actually working now",
-    excerpt:
-      "What thousands of calls taught us about lifting right-party contact rates without burning out collectors.",
-    href: "/resources/rpc-rates",
-    thumb: "/assets/resources-1.jpg",
-  },
-  {
-    category: "AI & Technology",
-    title: "AI Agents vs. IVR: why conversational AI is the better call",
-    excerpt:
-      "Voice AI doesn't just answer calls — it closes loops, captures outcomes, and keeps you compliant.",
-    href: "/resources/ai-vs-ivr",
-    thumb: "/assets/resources-2.jpg",
-  },
-  {
-    category: "Voice Technology",
-    title: "How AI voice agents are transforming BPOs and contact centers",
-    excerpt:
-      "Long hold times and repetitive calls are becoming relics of the past. Here's what's replacing them.",
-    href: "/resources/bpo-transformation",
-    thumb: "/assets/resources-3.jpg",
-  },
+/** Landing page default — real posts, see lib/resource-refs.ts. */
+const DEFAULT_ITEMS: ResourceRef[] = [
+  { type: "blog", slug: "how-voice-ai-can-finally-move-your-right-party-contact-above-30" },
+  { type: "blog", slug: "ai-agents-vs-ivr-why-conversational-ai-is-the-better-call" },
+  { type: "blog", slug: "how-ai-voice-agents-are-transforming-bpos-and-contact-centers" },
 ];
 
-export function Resources() {
+type ResourcesProps = {
+  items?: ResourceRef[];
+};
+
+export function Resources({ items = DEFAULT_ITEMS }: ResourcesProps) {
+  const resources = resolveResources(items);
+
   return (
     <section className={styles.section} aria-labelledby="resources-title">
       <div className="container">
@@ -47,27 +34,41 @@ export function Resources() {
         </Entrance>
 
         <div className={styles.grid}>
-          {POSTS.map(({ category, title, excerpt, href, thumb }, i) => (
-            <Entrance key={title} delay={i * 70} as="article" className={styles.card}>
-              <div className={styles.thumb}>
-                <Image
-                  src={thumb}
-                  alt={`${category} article thumbnail`}
-                  fill
-                  sizes="(max-width: 820px) 480px, 380px"
-                  style={{ objectFit: "cover" }}
-                />
-              </div>
-              <div className={styles.body}>
-                <p className={styles.category}>{category}</p>
-                <h3 className={styles.cardTitle}>{title}</h3>
-                <p className={styles.excerpt}>{excerpt}</p>
-                <hr className={styles.divider} />
-                <Link href={href} className={styles.readMore}>
-                  Read More
-                  <ArrowRight />
-                </Link>
-              </div>
+          {resources.map((r, i) => (
+            // Entrance gates the reveal on an outer wrapper; the hover lift
+            // lives on the inner card so `rise`'s fill mode can't pin its
+            // transform (CLAUDE.md §23).
+            <Entrance key={r.key} delay={i * 70} className={styles.cardWrap}>
+              <article className={styles.card}>
+                <div className={styles.thumb} data-fit={r.thumbFit}>
+                  <Image
+                    src={r.thumb}
+                    alt=""
+                    fill
+                    sizes="(max-width: 820px) 480px, 380px"
+                    style={{ objectFit: r.thumbFit === "logo" ? "scale-down" : "cover" }}
+                  />
+                </div>
+                <div className={styles.body}>
+                  <p className={styles.category}>{r.category}</p>
+                  <h3 className={styles.cardTitle}>
+                    <Link
+                      href={r.href}
+                      className={styles.titleLink}
+                      {...(r.external && { target: "_blank", rel: "noopener noreferrer" })}
+                    >
+                      {r.title}
+                      {r.external && <span className="visually-hidden"> (opens in a new tab)</span>}
+                    </Link>
+                  </h3>
+                  <p className={styles.excerpt}>{r.excerpt}</p>
+                  <hr className={styles.divider} />
+                  <span className={styles.readMore} aria-hidden="true">
+                    Read More
+                    {r.external ? <ExternalLinkIcon /> : <ArrowRight />}
+                  </span>
+                </div>
+              </article>
             </Entrance>
           ))}
         </div>

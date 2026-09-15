@@ -2,20 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
 import { ArrowRight } from "@/components/ui/icons";
+import { resolveResources, type ResourceRef } from "@/lib/resource-refs";
 import styles from "./SolutionBlogCards.module.css";
-
-type Post = {
-  title: string;
-  href: string;
-  src: string;
-};
 
 type SolutionBlogCardsProps = {
   lead: string;
-  posts: Post[];
+  /** Real posts by slug — title and thumbnail come from the post itself. */
+  posts: ResourceRef[];
 };
 
 export function SolutionBlogCards({ lead, posts }: SolutionBlogCardsProps) {
+  const resources = resolveResources(posts);
+
   return (
     <section className={styles.section} aria-labelledby="blog-cards-title">
       <div className="container">
@@ -28,11 +26,11 @@ export function SolutionBlogCards({ lead, posts }: SolutionBlogCardsProps) {
         </Entrance>
 
         <div className={styles.grid}>
-          {posts.map(({ title, href, src }, i) => (
-            <Entrance key={title} delay={i * 70} as="article" className={styles.card}>
+          {resources.map((r, i) => (
+            <Entrance key={r.key} delay={i * 70} as="article" className={styles.card}>
               <div className={styles.thumb}>
                 <Image
-                  src={src}
+                  src={r.thumb}
                   alt=""
                   fill
                   sizes="(max-width: 1100px) 100vw, 33vw"
@@ -40,11 +38,15 @@ export function SolutionBlogCards({ lead, posts }: SolutionBlogCardsProps) {
                 />
               </div>
               <div className={styles.body}>
-                <h3 className={styles.cardTitle}>{title}</h3>
-                <Link href={href} className={styles.readMore}>
+                <h3 className={styles.cardTitle}>
+                  <Link href={r.href} className={styles.titleLink}>
+                    {r.title}
+                  </Link>
+                </h3>
+                <span className={styles.readMore} aria-hidden="true">
                   Read More
                   <ArrowRight />
-                </Link>
+                </span>
               </div>
             </Entrance>
           ))}

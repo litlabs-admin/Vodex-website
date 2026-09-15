@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
-import { ArrowRight } from "@/components/ui/icons";
 import styles from "./ResearchTts.module.css";
 import tts1 from "@/public/assets/research-tts-1.jpg";
 import tts2 from "@/public/assets/research-tts-2.jpg";
@@ -13,28 +12,24 @@ const CARDS = [
     title: "Orpheus core architecture",
     description:
       "Our pretrained TTS model is built on the Orpheus core architecture, tuned for production conversation rather than demos.",
-    href: "/resources/research#orpheus-core-architecture",
     src: tts1,
   },
   {
     title: "21,000+ hours of training data",
     description:
       "Trained on more than 21,000 hours of diverse, expressive speech, so the model has heard how people actually talk.",
-    href: "/resources/research#training-data",
     src: tts2,
   },
   {
     title: "Zen-Tokenizer inside",
     description:
       "Our proprietary neural audio codec is integrated at the audio tokenization layer, not bolted on afterward.",
-    href: "/resources/research#zen-tokenizer",
     src: tts3,
   },
   {
     title: "Narrowband and wideband",
     description:
       "Supports both 8kHz telephony pipelines and 16kHz wideband audio from the same stack.",
-    href: "/resources/research#narrowband-wideband",
     src: tts4,
   },
 ];
@@ -57,7 +52,7 @@ export function ResearchTts() {
         </Entrance>
 
         <div className={styles.grid}>
-          {CARDS.map(({ title, description, href, src }, i) => (
+          {CARDS.map(({ title, description, src }, i) => (
             <Entrance key={title} delay={i * 70} as="article" className={styles.card}>
               <div className={styles.thumb}>
                 <Image
@@ -71,11 +66,6 @@ export function ResearchTts() {
               <div className={styles.body}>
                 <h3 className={styles.cardTitle}>{title}</h3>
                 <p className={styles.description}>{description}</p>
-                <hr className={styles.divider} />
-                <Link href={href} className={styles.readMore}>
-                  Read More
-                  <ArrowRight />
-                </Link>
               </div>
             </Entrance>
           ))}

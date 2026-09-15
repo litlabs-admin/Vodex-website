@@ -62,19 +62,17 @@
 /* Dial-code picker + number, mirroring HubSpot's country-code phone field. */
 .phoneRow {
   display: grid;
-  grid-template-columns: minmax(0, 150px) minmax(0, 1fr);
+  grid-template-columns: 160px minmax(0, 1fr);
   gap: 12px;
   align-items: start;
 }
 
-/* The option label carries flag + dial + country name (so search matches
-   either); the narrow trigger truncates it to show just flag + dial. */
-.dialSelect button[aria-haspopup] > span:nth-child(2) {
-  display: block;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  min-width: 0;
+/* The trigger shows only flag + dial (`triggerLabel`); the option list keeps
+   the country name, so its panel is wider than the narrow trigger. */
+.dialSelect div[role="presentation"] {
+  right: auto;
+  width: 300px;
+  max-width: calc(100vw - 2 * var(--page-x));
 }
 
 .formError {
@@ -271,7 +269,7 @@
   }
 
   .phoneRow {
-    grid-template-columns: minmax(0, 142px) minmax(0, 1fr);
+    grid-template-columns: 140px minmax(0, 1fr);
   }
 }
 

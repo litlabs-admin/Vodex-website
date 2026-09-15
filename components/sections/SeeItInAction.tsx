@@ -1,7 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
-import { ExternalLinkIcon } from "@/components/ui/icons";
 import styles from "./SeeItInAction.module.css";
 
 const CARDS = [
@@ -9,21 +7,18 @@ const CARDS = [
     title: "Upcoming payment reminders",
     description:
       "Timely, structured calls before the due date keep accounts current and reduce delinquency without manual dialing.",
-    href: "/products#upcoming-payment-reminders",
     src: "/assets/action-1.jpg",
   },
   {
     title: "Payment plan negotiation",
     description:
       "Agents offer flexible repayment options in conversation, capturing promise-to-pay commitments on the call.",
-    href: "/products#payment-plan-negotiation",
     src: "/assets/action-2.jpg",
   },
   {
     title: "Overdue payment reminders",
     description:
       "Persistent, compliant follow-up on past-due accounts, with outcomes and disposition codes written back to your system.",
-    href: "/products#overdue-payment-reminders",
     src: "/assets/action-3.jpg",
   },
 ];
@@ -44,9 +39,9 @@ export function SeeItInAction() {
         </Entrance>
 
         <div className={styles.grid}>
-          {CARDS.map(({ title, description, href, src }, i) => (
+          {CARDS.map(({ title, description, src }, i) => (
             <Entrance key={title} delay={i * 70} as="article" className={styles.card}>
-              <Link href={href} className={styles.thumb}>
+              <div className={styles.thumb}>
                 <Image
                   src={src}
                   alt=""
@@ -57,9 +52,8 @@ export function SeeItInAction() {
                 <div className={styles.scrim} />
                 <div className={styles.overlayTitle}>
                   <span>{title}</span>
-                  <ExternalLinkIcon className={styles.arrow} />
                 </div>
-              </Link>
+              </div>
               <div className={styles.body}>
                 <p className={styles.description}>{description}</p>
               </div>

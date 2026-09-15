@@ -8,6 +8,8 @@ export type SelectOption = {
   value: string;
   label: string;
   meta?: string;
+  /** Shorter text shown in the closed trigger (defaults to `label`). */
+  triggerLabel?: string;
 };
 
 type SelectProps = {
@@ -148,7 +150,7 @@ export function Select({
             {label}
             {required ? " *" : ""}
           </span>
-          <span className={styles.value}>{selected?.label ?? ""}</span>
+          <span className={styles.value}>{selected?.triggerLabel ?? selected?.label ?? ""}</span>
           <ChevronDownIcon className={styles.chevron} data-open={open} />
         </button>
 

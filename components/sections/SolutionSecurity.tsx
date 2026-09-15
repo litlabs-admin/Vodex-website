@@ -1,27 +1,35 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
+import { ArrowRight, ExternalLinkIcon } from "@/components/ui/icons";
+import { resolveResources, type ResourceRef } from "@/lib/resource-refs";
 import styles from "./SolutionSecurity.module.css";
 
-const ITEMS = [
-  {
-    caption: "Encrypted call recordings & scheduling details",
-    src: "/assets/security-1.jpg",
-  },
-  {
-    caption: "Consent checks before sharing information",
-    src: "/assets/security-2.jpg",
-  },
-  {
-    caption: "Full audit trails for compliance tracking",
-    src: "/assets/security-3.jpg",
-  },
-  {
-    caption: "ISO 27001, SOC 2, and HIPAA compliant",
-    src: "/assets/security-4.jpg",
-  },
-];
+/** Shared closing card — the certifications page, not a post. */
+export const COMPLIANCE_PAGE_REF: ResourceRef = {
+  type: "page",
+  href: "/resources/compliance",
+  title: "ISO 27001, SOC 2, and HIPAA compliant",
+  excerpt:
+    "The certifications, frameworks and security practices behind every Vodex conversation.",
+  category: "Compliance",
+  thumb: "/assets/security-4.jpg",
+};
 
-export function SolutionSecurity() {
+type SolutionSecurityProps = {
+  /** Real resources by slug, chosen per solution page. */
+  items: ResourceRef[];
+};
+
+/**
+ * "Security & Compliance" resource grid on the solutions pages. Each card is
+ * a real resource (post, video, news, or the compliance page) with a short
+ * gist — card shape copy-adapted from Resources.tsx, kept to 4 columns in
+ * the 1327px band.
+ */
+export function SolutionSecurity({ items }: SolutionSecurityProps) {
+  const resources = resolveResources(items);
+
   return (
     <section className={styles.section} aria-labelledby="security-title">
       <div className="container">
@@ -38,17 +46,42 @@ export function SolutionSecurity() {
 
         <div className={styles.band}>
           <div className={styles.grid}>
-            {ITEMS.map(({ caption, src }, i) => (
-              <Entrance key={caption} delay={i * 60} as="article" className={styles.card}>
-                <Image
-                  src={src}
-                  alt=""
-                  fill
-                  sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, (max-width: 1327px) 25vw, 322px"
-                  style={{ objectFit: "cover" }}
-                />
-                <div className={styles.scrim} />
-                <p className={styles.caption}>{caption}</p>
+            {resources.map((r, i) => (
+              // Outer Entrance gates the reveal; the inner card owns the
+              // hover lift (CLAUDE.md §23).
+              <Entrance key={r.key} delay={i * 60} className={styles.cardWrap}>
+                <article className={styles.card}>
+                  <div className={styles.thumb} data-fit={r.thumbFit}>
+                    <Image
+                      src={r.thumb}
+                      alt=""
+                      fill
+                      sizes="(max-width: 560px) 100vw, (max-width: 1100px) 50vw, 322px"
+                      style={{ objectFit: r.thumbFit === "logo" ? "scale-down" : "cover" }}
+                    />
+                  </div>
+                  <div className={styles.body}>
+                    <p className={styles.category}>{r.category}</p>
+                    <h3 className={styles.cardTitle}>
+                      <Link
+                        href={r.href}
+                        className={styles.titleLink}
+                        {...(r.external && { target: "_blank", rel: "noopener noreferrer" })}
+                      >
+                        {r.title}
+                        {r.external && (
+                          <span className="visually-hidden"> (opens in a new tab)</span>
+                        )}
+                      </Link>
+                    </h3>
+                    <p className={styles.excerpt}>{r.excerpt}</p>
+                    <hr className={styles.divider} />
+                    <span className={styles.readMore} aria-hidden="true">
+                      Read More
+                      {r.external ? <ExternalLinkIcon /> : <ArrowRight />}
+                    </span>
+                  </div>
+                </article>
               </Entrance>
             ))}
           </div>

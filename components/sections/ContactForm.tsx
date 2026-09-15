@@ -97,6 +97,7 @@ function flag(iso2: string) {
 const DIAL_OPTIONS = COUNTRIES.map((c) => ({
   value: c.iso2,
   label: `${flag(c.iso2)} ${c.dial} ${c.name}`,
+  triggerLabel: `${flag(c.iso2)} ${c.dial}`,
 }));
 
 export function ContactForm() {

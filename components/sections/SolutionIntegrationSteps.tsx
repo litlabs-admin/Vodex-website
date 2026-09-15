@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
-import { ArrowRight } from "@/components/ui/icons";
 import styles from "./SolutionIntegrationSteps.module.css";
 
 type Step = {
@@ -26,7 +25,7 @@ type SolutionIntegrationStepsProps = {
 
 /**
  * Light 4-card grid — copy-adapted from WhyItWorks (photo + light body +
- * title/description/divider/Read More, no icon), plus an optional closing
+ * title/description, no icon), plus an optional closing
  * cross-sell line matching SolutionIndustries' pattern.
  */
 export function SolutionIntegrationSteps({
@@ -62,11 +61,6 @@ export function SolutionIntegrationSteps({
               <div className={styles.body}>
                 <h3 className={styles.cardTitle}>{title}</h3>
                 <p className={styles.description}>{description}</p>
-                <hr className={styles.divider} />
-                <Link href="/solutions" className={styles.readMore}>
-                  Read More
-                  <ArrowRight />
-                </Link>
               </div>
             </Entrance>
           ))}

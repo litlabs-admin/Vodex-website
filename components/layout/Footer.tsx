@@ -46,7 +46,7 @@ const COLUMNS: Array<{
       { label: "About Us", href: "/company/about" },
       { label: "News", href: "/company/news" },
       { label: "Investors & Partners", href: "/company/investors" },
-      { label: "Careers", href: "/careers", external: true },
+      { label: "Careers", href: "https://careers.vodex.ai/", external: true },
       { label: "Contact Us", href: "/company/contact" },
     ],
   },

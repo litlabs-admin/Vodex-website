@@ -6769,7 +6769,7 @@ Supersedes the "placeholder submit" and "reserved empty captcha slot" notes in �
 - **`lib/rate-limit.ts`** keeps counts in memory, so it's best effort on Vercel (one counter per instance). reCAPTCHA is the real gate. Swap it for Upstash if abuse shows up.
 - **`components/ui/Recaptcha.tsx`** loads Google's script explicitly, once, with no npm dependency. A token is single-use, so the widget resets after any failed submit. If there's no site key it renders nothing and submit shows "Verification unavailable".
 - **Env** (see `.env.example`): `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`, `RECAPTCHA_SECRET_KEY`, and optionally `RECAPTCHA_ALLOWED_HOSTNAMES`, `ALLOWED_ORIGINS` and `VODEX_DEMO_CALL_URL`. `.env.local` holds Google's official always-pass **test** keys, and `VODEX_DEMO_CALL_URL` points at a dead local port so dev never places real calls. Production needs the real keys in Vercel, with the domain added to the reCAPTCHA key.
-- **Layout:** the bar is Name | Email | Phone | Initiate Call. At ≤1280px "Book a Demo" drops below; at ≤900px the bar stacks. The captcha is now visible on mobile too (scaled to 0.88 at ≤360px); the old ≤480px `display:none` was removed.
+- **Layout (revised after user said the one-row bar felt cluttered):** a glass card holding a 2×2 grid (Name | Email / Phone | Initiate Call), each field its own outlined 56px control (hover, focus ring, red border via `:has([aria-invalid])`); no dividers. Inline errors sit directly under the card; "Book a Demo" sits below them; the card is capped at 820px. At ≤640px the grid is a single column. The captcha stays visible on mobile (scaled to 0.88 at ≤360px).
 - **Verified:** tsc and build are clean. curl showed 403 (bad origin), fake 200 (honeypot), 400 (too fast / no token), 422 (bad fields), 429 (rate limit) and 502 (upstream down). Playwright at 1516/900/430 had no overflow; empty submit shows 3 errors, submitting without the tick shows the robot error, and after the tick the request reaches upstream. **A real call has not been tested** — that needs real keys and the real endpoint.
 
 ---
@@ -6804,5 +6804,30 @@ embed script; our own UI stays.
   requests, success/network-error/field-error paths all render correctly,
   1516/430px no overflow, no console errors. A real end-to-end submission has
   not been made yet.
+
+**Approved:** Not yet.
+- **Bug fixed (user reported that invalid fields weren't validated):** the rules were running and blocking submit, but no messages ever showed. `errors = { ...clientErrors, ...serverErrors }` combined with `setServerErrors({ ...e, [field]: undefined })` on every keystroke, so an `undefined` value overwrote the real client error. Now server errors are merged only when truthy, and they're cleared by deleting keys (`withoutKeys`). **Never spread an object whose values may be `undefined` over one holding real values.** Inputs are also sanitized as you type or paste (`SANITIZE`): name keeps only letters, spaces, `'` and `-`; email drops whitespace; phone keeps only digits and ` ().-`. Verified in the browser: name `dsada123!` → `dsada`, email `dasd asda` → an email error, phone `fdsf` → empty → "Phone number is required", with 0 API requests. Once the fields are fixed, the errors clear and submit asks for the captcha.
+
+---
+
+## 33. Resource card sections link to real content
+
+Mock resource cards are replaced with real migrated content (§28). **New `lib/resource-refs.ts`** (`server-only`): pages list a `ResourceRef` (`blog` | `case-study` | `video` | `news` by slug, or a `page` with inline copy), and `resolveResources()` reads title/excerpt/category/thumb/href from the content itself. An unknown slug **throws**, so a renamed post fails `next build`. Blog links go to `/resources/blog/[slug]` and case studies to their detail page; videos go to `/resources/videos` (no detail page); news opens `articleUrl` in a new tab with a `scale-down` logo thumb (§31).
+
+| Section | Page | Cards |
+| --- | --- | --- |
+| `Resources` (`items` prop, defaults to the landing trio) | `/` | RPC post, AI Agents vs IVR, BPOs & contact centers |
+| same | `/resources/call-samples` | What Makes Effective Voice AI Agents, Human vs AI Agents, What Voice AI Can and Can't Do |
+| `SolutionBlogCards` (`posts: ResourceRef[]`) | `/solutions/debt-collection` | RPC, CFPB compliance, PTP capture |
+| `SolutionSecurity` (`items` now required) | `/solutions/payment-reminders` | FDCPA post, CFPB post, Payment Reminders demo video, `COMPLIANCE_PAGE_REF` |
+| same | `/solutions/promise-to-pay` | PTP post, CFPB post, FDCPA post, compliance page |
+| same | `/solutions/lead-qualification` | Krisp partnership (news), Human vs AI Agents, Keep Call Centers in America Act, compliance page |
+
+- `SolutionSecurity` changed from caption-only photo tiles to Resources-style cards (per user): photo, `#f7f7f7` body with category, title and a 3-line clamped gist, divider, Read More. It keeps the "Security & Compliance" heading, sharp corners, 4 columns (2 at ≤1100px, 1 at ≤560px). `COMPLIANCE_PAGE_REF` → `/resources/compliance` keeps `security-4.jpg`; `security-1..3.jpg` are now unreferenced but left in place.
+- Every card is one stretched link (`.titleLink::after`, same as `BlogPostCard`). In `Resources`/`SolutionSecurity`, `Entrance` wraps a `.cardWrap`, and the hover lift sits on the inner card (the §23 fill-mode bug). `Resources.tsx`'s old 404 hrefs (`/resources/rpc-rates` etc.) and its non-existent "Voice Technology" category are gone.
+- **Feature-card "Read More" removed (follow-up, user decision):** it's gone from `SolutionIndustries`, `SolutionWorkflows` (scrim title arrow + panel Read More), `SolutionIntegrationSteps`, `SolutionWhyUs`, `ComplianceSecurityPractices` and `ResearchTts` (Read More + divider), plus `ResearchVoices` (decorative arrow). Their dead `href`s and the `.readMore`/`.divider`/`.arrow` CSS are gone too.
+  - What stays: section closing lines ("See Vodex for Debt Collection"), and `AboutMissionVision`/`ContactOffices` "Learn More" (they reach a real page). `WhyItWorks`/`SeeItInAction` already had none.
+  - **Don't give an informational card a Read More unless it links to a real resource.**
+- Verified: tsc and `next build` clean; `next start` + Playwright at 1516/430 across all 6 pages showed every card href 200 (Krisp external `_blank`), all images loaded, no overflow, no app console errors.
 
 **Approved:** Not yet.

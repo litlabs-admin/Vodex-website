@@ -46,7 +46,16 @@ export default function CallSamplesPage() {
           bgImage={callSamplesHeroBg}
         />
         <CallSamples />
-        <Resources />
+        <Resources
+          items={[
+            { type: "blog", slug: "what-makes-effective-voice-ai-agents" },
+            { type: "blog", slug: "human-agents-vs-ai-agents-why-smart-teams-use-both" },
+            {
+              type: "blog",
+              slug: "what-ai-voice-agents-can-and-cant-do-in-2025-cutting-through-the-myths",
+            },
+          ]}
+        />
         <EnterpriseBand />
         <FinalCta />
       </main>

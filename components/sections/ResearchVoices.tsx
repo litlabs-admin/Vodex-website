@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
-import { ExternalLinkIcon } from "@/components/ui/icons";
 import styles from "./ResearchVoices.module.css";
 import shreya from "@/public/assets/research-voice-shreya.png";
 import shweta from "@/public/assets/research-voice-shweta.png";
@@ -65,7 +64,6 @@ export function ResearchVoices() {
                 className={styles.portrait}
                 sizes="(max-width: 900px) 100vw, 33vw"
               />
-              <ExternalLinkIcon className={styles.arrow} />
             </Entrance>
           ))}
         </div>

@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
-import { ArrowRight } from "@/components/ui/icons";
 import styles from "./ComplianceSecurityPractices.module.css";
 
 const CARDS = [
@@ -9,28 +8,24 @@ const CARDS = [
     title: "Encryption everywhere",
     description:
       "All call artifacts, recordings, and transcripts are encrypted in transit and at rest.",
-    href: "/resources/compliance#encryption-everywhere",
     src: "/assets/compliance-security-1.png",
   },
   {
     title: "Role-based access control",
     description:
       "Access to borrower data is scoped by role, so people only see what their job requires.",
-    href: "/resources/compliance#role-based-access-control",
     src: "/assets/compliance-security-2.jpg",
   },
   {
     title: "Multi-factor authentication",
     description:
       "MFA protects every platform account handling sensitive borrower information.",
-    href: "/resources/compliance#multi-factor-authentication",
     src: "/assets/compliance-security-3.png",
   },
   {
     title: "Audit-ready records",
     description:
       "Detailed audit logs, with recordings and transcripts indexed, searchable, and exportable.",
-    href: "/resources/compliance#audit-ready-records",
     src: "/assets/compliance-security-4.jpg",
   },
 ];
@@ -51,7 +46,7 @@ export function ComplianceSecurityPractices() {
         </Entrance>
 
         <div className={styles.grid}>
-          {CARDS.map(({ title, description, href, src }, i) => (
+          {CARDS.map(({ title, description, src }, i) => (
             <Entrance key={title} delay={i * 70} as="article" className={styles.card}>
               <div className={styles.thumb}>
                 <Image
@@ -65,11 +60,6 @@ export function ComplianceSecurityPractices() {
               <div className={styles.body}>
                 <h3 className={styles.cardTitle}>{title}</h3>
                 <p className={styles.description}>{description}</p>
-                <hr className={styles.divider} />
-                <Link href={href} className={styles.readMore}>
-                  Read More
-                  <ArrowRight />
-                </Link>
               </div>
             </Entrance>
           ))}

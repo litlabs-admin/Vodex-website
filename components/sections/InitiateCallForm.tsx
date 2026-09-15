@@ -17,6 +17,21 @@ import styles from "./InitiateCall.module.css";
 type FieldName = Exclude<InitiateCallField, "country">;
 const FIELD_ORDER: FieldName[] = ["name", "email", "phone"];
 
+// Strip characters that can never be valid as they're typed or pasted, so bad
+// input can't even reach the field. Full rules still run in
+// lib/initiate-call-validation.ts on both client and server.
+const SANITIZE: Record<FieldName, (v: string) => string> = {
+  name: (v) => v.replace(/[^A-Za-zÀ-ſ' -]/g, "").replace(/\s{2,}/g, " ").slice(0, 60),
+  email: (v) => v.replace(/\s/g, "").slice(0, 254),
+  phone: (v) => v.replace(/[^0-9\s().-]/g, "").slice(0, 24),
+};
+
+function withoutKeys<T extends object>(obj: T, keys: string[]): T {
+  const next = { ...obj } as Record<string, unknown>;
+  for (const k of keys) delete next[k];
+  return next as T;
+}
+
 const INITIAL_VALUES: InitiateCallInput = { name: "", email: "", phone: "", countryIso2: "US" };
 
 /**
@@ -45,18 +60,25 @@ export function InitiateCallForm() {
   }, []);
 
   const { errors: clientErrors } = validateInitiateCall(values);
-  const errors = { ...clientErrors, ...serverErrors };
+  // Server errors only add to client ones. Never spread `undefined` over a
+  // client error, or a field that's still invalid silently loses its message.
+  const errors: Partial<Record<InitiateCallField, string>> = { ...clientErrors };
+  for (const [key, msg] of Object.entries(serverErrors)) {
+    if (msg) errors[key as InitiateCallField] = msg;
+  }
   const dial = COUNTRIES.find((c) => c.iso2 === values.countryIso2)?.dial ?? "+1";
   const fullPhone = `${dial} ${values.phone}`.trim();
 
-  function setValue(field: FieldName, value: string) {
+  function setValue(field: FieldName, raw: string) {
+    const value = SANITIZE[field](raw);
     setValues((v) => ({ ...v, [field]: value }));
-    setServerErrors((e) => ({ ...e, [field]: undefined }));
+    setServerErrors((e) => withoutKeys(e, [field]));
+    setFormError(null);
   }
 
   function setCountry(iso2: string) {
     setValues((v) => ({ ...v, countryIso2: iso2 }));
-    setServerErrors((e) => ({ ...e, country: undefined, phone: undefined }));
+    setServerErrors((e) => withoutKeys(e, ["country", "phone"]));
   }
 
   function flagFirstInvalid(errs: Partial<Record<InitiateCallField, string>>) {
@@ -193,8 +215,6 @@ export function InitiateCallForm() {
                 />
               </div>
 
-              <div className={styles.divider} aria-hidden="true" />
-
               <div className={styles.cell} ref={(el) => { fieldRefs.current.email = el; }}>
                 <MailIcon className={styles.cellIcon} />
                 <label className="visually-hidden" htmlFor="initiate-call-email">
@@ -214,8 +234,6 @@ export function InitiateCallForm() {
                   aria-invalid={Boolean(touched.email && errors.email)}
                 />
               </div>
-
-              <div className={styles.divider} aria-hidden="true" />
 
               <div
                 className={`${styles.cell} ${styles.phoneCell}`}
@@ -267,6 +285,14 @@ export function InitiateCallForm() {
           )}
         </Entrance>
 
+        {visibleErrors.length > 0 && status !== "success" ? (
+          <div className={styles.formErrors} role="alert">
+            {visibleErrors.map((msg) => (
+              <p key={msg}>{msg}</p>
+            ))}
+          </div>
+        ) : null}
+
         <Entrance delay={280} className={styles.demoWrap}>
           <Button href="/demo" variant="light" size="lg" className={styles.demoButton}>
             Book a Demo
@@ -274,13 +300,6 @@ export function InitiateCallForm() {
         </Entrance>
       </div>
 
-      {visibleErrors.length > 0 && status !== "success" ? (
-        <div className={styles.formErrors} role="alert">
-          {visibleErrors.map((msg) => (
-            <p key={msg}>{msg}</p>
-          ))}
-        </div>
-      ) : null}
 
       {status !== "success" ? (
         <Entrance delay={360} className={styles.captchaSlot}>

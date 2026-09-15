@@ -7,7 +7,7 @@ import { SolutionIndustryStrip } from "@/components/sections/SolutionIndustryStr
 import { SolutionWorkflows } from "@/components/sections/SolutionWorkflows";
 import { SolutionComparison } from "@/components/sections/SolutionComparison";
 import { SolutionResults } from "@/components/sections/SolutionResults";
-import { SolutionSecurity } from "@/components/sections/SolutionSecurity";
+import { COMPLIANCE_PAGE_REF, SolutionSecurity } from "@/components/sections/SolutionSecurity";
 import { Faq } from "@/components/sections/Faq";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
@@ -148,7 +148,14 @@ export default function LeadQualificationPage() {
           lead="Results our clients report when voice AI runs the PTP conversation end to end."
           stats={RESULTS_STATS}
         />
-        <SolutionSecurity />
+        <SolutionSecurity
+          items={[
+            { type: "news", slug: "krisp-and-vodex-partner-to-perfect-genai-powered-voicebot-calls-for-high-quality-lead-qualification" },
+            { type: "blog", slug: "human-agents-vs-ai-agents-why-smart-teams-use-both" },
+            { type: "blog", slug: "10-things-contact-center-ops-leaders-should-know-about-the-keep-call-centers-in-america-act-s-2495" },
+            COMPLIANCE_PAGE_REF,
+          ]}
+        />
         <Faq />
         <EnterpriseBand />
         <FinalCta />

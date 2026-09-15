@@ -9,6 +9,7 @@ import { SolutionWhyUs } from "@/components/sections/SolutionWhyUs";
 import { SolutionWorkflows } from "@/components/sections/SolutionWorkflows";
 import { SolutionIntegration } from "@/components/sections/SolutionIntegration";
 import { SolutionBlogCards } from "@/components/sections/SolutionBlogCards";
+import type { ResourceRef } from "@/lib/resource-refs";
 import { Faq } from "@/components/sections/Faq";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
@@ -28,21 +29,18 @@ const WHY_CARDS = [
     description:
       "Maintain regular contact with debtors through automated calls, reducing human errors.",
     Icon: PhoneCallIcon,
-    href: "/solutions/debt-collection#consistent-outreach",
     src: "/assets/why-vodex-1.jpg",
   },
   {
     title: "Operational Scalability",
     description: "Handle high call volumes without increasing manpower.",
     Icon: SignalTowerIcon,
-    href: "/solutions/debt-collection#operational-scalability",
     src: "/assets/why-vodex-2.jpg",
   },
   {
     title: "Effortless Compliance",
     description: "Simplified compliance with FDCPA, TCPA and other regulations.",
     Icon: SparkleIcon,
-    href: "/solutions/debt-collection#effortless-compliance",
     src: "/assets/why-vodex-3.jpg",
   },
 ];
@@ -89,22 +87,10 @@ const INTEGRATION_ITEMS = [
   "Audit-ready recordings and transcripts",
 ];
 
-const BLOG_POSTS = [
-  {
-    title: "Why Most Agencies Are Stuck Below 25% RPC And What's Actually Working Now",
-    href: "/resources/blog",
-    src: "/assets/debt-collection-blog-1.jpg",
-  },
-  {
-    title: "Voice AI in Collections for CFPB Compliance and Reduced AHTs",
-    href: "/resources/blog",
-    src: "/assets/debt-collection-blog-2.jpg",
-  },
-  {
-    title: "How to Automate Promise-to-Pay (PTP) Capture with Voice AI",
-    href: "/resources/blog",
-    src: "/assets/debt-collection-blog-3.jpg",
-  },
+const BLOG_POSTS: ResourceRef[] = [
+  { type: "blog", slug: "how-voice-ai-can-finally-move-your-right-party-contact-above-30" },
+  { type: "blog", slug: "voice-ai-in-collections-for-cfpb-compliance-and-reduced-ahts" },
+  { type: "blog", slug: "how-to-automate-promise-to-pay-ptp-capture-with-voice-ai" },
 ];
 
 export const metadata: Metadata = {

@@ -1,15 +1,12 @@
 import type { ComponentType, ReactNode, SVGProps } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
-import { ArrowRight } from "@/components/ui/icons";
 import styles from "./SolutionWhyUs.module.css";
 
 type WhyCard = {
   title: string;
   description: string;
   Icon: ComponentType<SVGProps<SVGSVGElement>>;
-  href: string;
   src: string;
 };
 
@@ -32,7 +29,7 @@ export function SolutionWhyUs({ heading, lead, cards }: SolutionWhyUsProps) {
         </Entrance>
 
         <div className={styles.grid}>
-          {cards.map(({ title, description, Icon, href, src }, i) => (
+          {cards.map(({ title, description, Icon, src }, i) => (
             <Entrance key={title} delay={i * 70} as="article" className={styles.card}>
               <div className={styles.thumb}>
                 <Image
@@ -49,11 +46,6 @@ export function SolutionWhyUs({ heading, lead, cards }: SolutionWhyUsProps) {
                   {title}
                 </h3>
                 <p className={styles.description}>{description}</p>
-                <hr className={styles.divider} />
-                <Link href={href} className={styles.readMore}>
-                  Read More
-                  <ArrowRight />
-                </Link>
               </div>
             </Entrance>
           ))}

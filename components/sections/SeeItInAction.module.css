@@ -97,17 +97,6 @@
   font-weight: 600;
 }
 
-.arrow {
-  flex: none;
-  width: 16px;
-  height: 16px;
-  transition: transform var(--dur) var(--ease);
-}
-
-.card:hover .arrow {
-  transform: translate(2px, -2px);
-}
-
 /* Solid-black body panel, distinct from the section's --ink background —
    matches the reference, where this panel samples pure #000. `flex: 1`
    makes it fill the card's full stretched height (the grid's default

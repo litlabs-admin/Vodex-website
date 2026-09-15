@@ -27,7 +27,7 @@ export const COMPANY_GROUPS: CompanyGroup[] = [
       },
       {
         label: "Careers",
-        href: "/careers",
+        href: "https://careers.vodex.ai/",
         description: "Open roles across engineering and go-to-market",
       },
     ],

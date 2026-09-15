@@ -3,8 +3,6 @@ import { Entrance } from "@/components/ui/Entrance";
 import { Logo } from "@/components/ui/Logo";
 import styles from "./AboutLeadership.module.css";
 import anshul from "@/public/assets/about-leader-anshul.jpg";
-import kumar from "@/public/assets/about-leader-kumar.jpg";
-import deb from "@/public/assets/about-leader-deb.jpg";
 
 type Leader = {
   name: string;
@@ -14,12 +12,6 @@ type Leader = {
 
 const LEADERS: Leader[] = [
   { name: "Anshul Shrivastava", role: "CEO & Co-Founder", photo: anshul },
-  { name: "Kumar Saurav", role: "CTO & Co-Founder", photo: kumar },
-  { name: "Deb Biswas", role: "Advisor", photo: deb },
-  // No headshot was supplied for Yash Kotak — the reference PDF itself has
-  // no visible photo for him either, so this renders an empty placeholder
-  // circle rather than a stand-in image.
-  { name: "Yash Kotak", role: "Advisor" },
 ];
 
 export function AboutLeadership() {
@@ -47,7 +39,7 @@ export function AboutLeadership() {
                     src={photo}
                     alt={name}
                     fill
-                    sizes="(max-width: 900px) 45vw, 300px"
+                    sizes="(max-width: 480px) 90vw, 340px"
                     className={styles.photo}
                   />
                 ) : (

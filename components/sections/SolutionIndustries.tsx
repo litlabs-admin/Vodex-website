@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ComponentType, ReactNode } from "react";
 import { Entrance } from "@/components/ui/Entrance";
-import { ArrowRight } from "@/components/ui/icons";
 import styles from "./SolutionIndustries.module.css";
 
 type IndustryCard = {
@@ -58,11 +57,6 @@ export function SolutionIndustries({
                   <h3 className={styles.cardTitle}>{title}</h3>
                 </div>
                 <p className={styles.description}>{description}</p>
-                <hr className={styles.divider} />
-                <Link href="/solutions" className={styles.readMore}>
-                  Read More
-                  <ArrowRight />
-                </Link>
               </div>
             </Entrance>
           ))}

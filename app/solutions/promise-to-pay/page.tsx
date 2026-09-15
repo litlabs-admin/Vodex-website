@@ -7,7 +7,7 @@ import { SolutionIndustries } from "@/components/sections/SolutionIndustries";
 import { SolutionWorkflows } from "@/components/sections/SolutionWorkflows";
 import { SolutionComparison } from "@/components/sections/SolutionComparison";
 import { SolutionResults } from "@/components/sections/SolutionResults";
-import { SolutionSecurity } from "@/components/sections/SolutionSecurity";
+import { COMPLIANCE_PAGE_REF, SolutionSecurity } from "@/components/sections/SolutionSecurity";
 import { Faq } from "@/components/sections/Faq";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
@@ -138,7 +138,14 @@ export default function PromiseToPayPage() {
           lead="Results our clients report when voice AI runs the PTP conversation end to end."
           stats={RESULTS_STATS}
         />
-        <SolutionSecurity />
+        <SolutionSecurity
+          items={[
+            { type: "blog", slug: "how-to-automate-promise-to-pay-ptp-capture-with-voice-ai" },
+            { type: "blog", slug: "voice-ai-in-collections-for-cfpb-compliance-and-reduced-ahts" },
+            { type: "blog", slug: "how-debt-collectors-can-stay-compliant-with-fdcpa-using-gen-ai" },
+            COMPLIANCE_PAGE_REF,
+          ]}
+        />
         <Faq />
         <EnterpriseBand />
         <FinalCta />

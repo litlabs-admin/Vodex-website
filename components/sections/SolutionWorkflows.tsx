@@ -2,7 +2,6 @@ import type { CSSProperties, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
-import { ArrowRight, ExternalLinkIcon } from "@/components/ui/icons";
 import styles from "./SolutionWorkflows.module.css";
 
 type Workflow = {
@@ -24,7 +23,7 @@ type SolutionWorkflowsProps = {
   workflows: Workflow[];
   /** "scrim" (default) overlays title/description on the photo, matching
    * every existing usage. "panel" renders a separate light body below the
-   * photo (title + description + divider + Read More), no icon — the card
+   * photo (title + description), no icon — the card
    * shape "Four core workflows" on the Collection Software page needs. */
   variant?: "scrim" | "panel";
   columns?: number;
@@ -75,11 +74,6 @@ export function SolutionWorkflows({
                   <div className={styles.panelBody}>
                     <h3 className={styles.panelTitle}>{title}</h3>
                     <p className={styles.panelDescription}>{description}</p>
-                    <hr className={styles.panelDivider} />
-                    <Link href="/solutions" className={styles.panelReadMore}>
-                      Read More
-                      <ArrowRight />
-                    </Link>
                   </div>
                 </Entrance>
               ) : (
@@ -95,7 +89,6 @@ export function SolutionWorkflows({
                   <div className={styles.copy}>
                     <p className={styles.cardTitle}>
                       {title}
-                      <ExternalLinkIcon className={styles.arrow} />
                     </p>
                     <p className={styles.cardDescription}>{description}</p>
                   </div>
