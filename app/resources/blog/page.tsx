@@ -8,12 +8,14 @@ import { BlogExplorer } from "@/components/sections/BlogExplorer";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { CATEGORIES, getFeaturedPost, getGridPosts } from "@/lib/blog-posts";
 import blogHeroBg from "@/public/assets/blog-hero-bg.jpg";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Vodex — Blog",
+export const metadata: Metadata = pageMetadata({
+  title: "Vodex | Blogs",
   description:
-    "Field notes from thousands of AI-run conversations. Collections, compliance, and the future of voice.",
-};
+    "Explore our blogs for insightful articles on generative AI-driven solutions, industry trends, and best practices. Stay informed and inspired.",
+  path: "/resources/blog",
+});
 
 export default function BlogIndexPage() {
   const featured = getFeaturedPost();

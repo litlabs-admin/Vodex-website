@@ -9,12 +9,16 @@ import { ContactOffices } from "@/components/sections/ContactOffices";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import pricingHeroBg from "@/public/assets/collection-software-hero-bg.jpg";
+import { pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { faqPageSchema } from "@/lib/structured-data";
 
-export const metadata: Metadata = {
-  title: "Vodex — Pricing",
+export const metadata: Metadata = pageMetadata({
+  title: "Flexible Voice AI Pricing — Only Pay for Connected Calls | Vodex",
   description:
-    "No commitments to get started. Enterprise plans are available for teams with advanced requirements.",
-};
+    "Choose from Free, Basic, Growth, Pro, or Enterprise plans. Vodex offers usage-based voice AI pricing to fit every stage of your business.",
+  path: "/pricing",
+});
 
 /* Pricing-specific FAQs, passed as a prop so the shared `Faq` component's
    default set (used on every other page) is untouched. */
@@ -90,6 +94,7 @@ export default function PricingPage() {
         />
         <PricingPlans />
         <Faq items={PRICING_FAQS} />
+        <JsonLd data={faqPageSchema(PRICING_FAQS)} />
         <ContactOffices />
         <EnterpriseBand />
         <FinalCta />

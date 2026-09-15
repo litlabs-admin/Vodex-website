@@ -9,12 +9,14 @@ import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { CATEGORIES, getFeaturedPost, getGridPosts } from "@/lib/news";
 import newsHeroBg from "@/public/assets/enterprise-bg.jpg";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Vodex — News",
+export const metadata: Metadata = pageMetadata({
+  title: "Vodex | News",
   description:
-    "Press releases, funding milestones, events and features covering Vodex's work in Gen AI voice agents.",
-};
+    "Explore the Vodex news page for the latest updates on our AI solutions, company milestones, and industry insights. Stay informed about our journey.",
+  path: "/company/news",
+});
 
 /**
  * Built with the Blog page's own components/pattern (SolutionHero →

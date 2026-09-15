@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Ancizar_Serif, Inter } from "next/font/google";
+import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const inter = Inter({
@@ -21,10 +22,32 @@ const ancizar = Ancizar_Serif({
   fallback: ["Iowan Old Style", "Georgia", "serif"],
 });
 
+const HOME_TITLE = "Voice AI for Debt Collection & Automated Outreach | Vodex";
+const HOME_DESCRIPTION =
+  "Boost recovery with enterprise Voice AI for debt collection. Automate right-party contact, payment reminders, and promise-to-pay capture with fully compliant, 24/7 conversational agents.";
+
+// Site-wide fallbacks only. Canonical/og:url are deliberately absent here —
+// inherited by every route they'd all point at "/"; pages set their own via
+// pageMetadata() in lib/seo.ts.
 export const metadata: Metadata = {
-  title: "Vodex — GenAI voice agents that turn outreach into revenue",
-  description:
-    "GenAI-powered voice agents for enterprise engagement. Make reminders, collections, follow-ups, qualification, payment negotiation and more easy without the extra overhead.",
+  metadataBase: new URL(SITE_URL),
+  title: HOME_TITLE,
+  description: HOME_DESCRIPTION,
+  openGraph: {
+    siteName: SITE_NAME,
+    locale: "en_US",
+    type: "website",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@vodexsocial",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
+  },
 };
 
 export default function RootLayout({

@@ -23,3 +23,18 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Post FAQs migrated from Webflow frontmatter — also the source of the
+   page's FAQPage JSON-LD, so they must stay visible on the page. */
+.faqs {
+  margin-top: 56px;
+}
+
+.faqsTitle {
+  margin-bottom: 20px;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}

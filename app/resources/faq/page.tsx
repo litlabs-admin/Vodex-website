@@ -8,12 +8,14 @@ import { FaqHumanSupport } from "@/components/sections/FaqHumanSupport";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import faqHeroBg from "@/public/assets/results-bg.jpg";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Vodex — FAQ",
+export const metadata: Metadata = pageMetadata({
+  title: "Frequently Asked Questions | Vodex",
   description:
-    "Everything you need to know about putting GenAI voice agents to work, from platform basics to collections-specific compliance, performance, and pricing.",
-};
+    "Find answers to frequently asked questions about Vodex’s products and services. Get the information you need quickly.",
+  path: "/resources/faq",
+});
 
 /**
  * This page has three

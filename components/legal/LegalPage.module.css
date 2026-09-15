@@ -1,0 +1,180 @@
+/* ---------- Intro ---------- */
+
+.header {
+  background: var(--bg);
+  padding-block: calc(var(--header-h) + 64px) 0;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.eyebrowDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.title {
+  margin-top: 20px;
+  max-width: 820px;
+  margin-inline: auto;
+  font-size: var(--fs-display);
+  font-weight: 600;
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  color: var(--fg);
+}
+
+.intro {
+  margin-top: 20px;
+  max-width: 640px;
+  margin-inline: auto;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}
+
+.updated {
+  color: var(--fg);
+}
+
+/* ---------- Document grid ---------- */
+
+.content {
+  background: var(--bg);
+  padding-block: 64px 112px;
+}
+
+.grid {
+  max-width: 1000px;
+  margin-inline: auto;
+  display: grid;
+  gap: 48px;
+}
+
+/* Grid items default to min-width:auto — without this a long unbroken URL in
+   the legal copy would widen the column past the viewport on phones. */
+.doc {
+  min-width: 0;
+}
+
+@media (min-width: 901px) {
+  .grid {
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 64px;
+  }
+
+  .gridNoToc {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- Sections ----------
+   Selectors are two classes deep on purpose: they must beat ArticleBody's
+   element rules (`.body h2`, `.body p`, one class + one element). */
+
+.section {
+  overflow-wrap: anywhere;
+}
+
+.section + .section {
+  margin-top: 56px;
+  padding-top: 56px;
+  border-top: 1px solid var(--hairline);
+}
+
+.doc .section > h2 {
+  margin-top: 0;
+  font-size: clamp(22px, 2.2vw, 28px);
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+/* Section label, drawn inside the h2 box so the heading's top edge (what
+   TOC jumps and ArticleToc's active line measure) is the label's top. */
+.section > h2[data-number]::before {
+  content: attr(data-number);
+  display: block;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--brand);
+}
+
+/* Not yet revealed = still translated down 28px (LegalSection's LIFT). */
+.section.pending > h2 {
+  scroll-margin-top: calc(96px + 28px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+.section.preamble > :first-child {
+  margin-top: 0;
+}
+
+/* ---------- Closing contact ---------- */
+
+.section.contact {
+  text-align: center;
+}
+
+.doc > .section.contact {
+  margin-top: 56px;
+  padding-top: 48px;
+  border-top: 1px solid var(--hairline);
+}
+
+.contactLead {
+  font-size: 15px;
+  color: var(--fg-muted);
+}
+
+.contactLink {
+  display: inline-block;
+  margin-top: 8px;
+  max-width: 100%;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--brand);
+  text-underline-offset: 4px;
+  transition: color var(--dur) var(--ease);
+}
+
+.contactLink:hover {
+  color: var(--brand-hover);
+  text-decoration: underline;
+}
+
+@media (max-width: 720px) {
+  .header {
+    padding-block: calc(var(--header-h) + 40px) 0;
+  }
+
+  .content {
+    padding-block: 40px 80px;
+  }
+
+  .section + .section {
+    margin-top: 40px;
+    padding-top: 40px;
+  }
+}

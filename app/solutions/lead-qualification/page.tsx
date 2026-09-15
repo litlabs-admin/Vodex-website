@@ -12,6 +12,7 @@ import { Faq } from "@/components/sections/Faq";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import solutionHeroBg from "@/public/assets/collection-software-hero-bg.jpg";
+import { pageMetadata } from "@/lib/seo";
 
 const INDUSTRIES = [
   {
@@ -107,11 +108,12 @@ const RESULTS_STATS = [
   },
 ];
 
-export const metadata: Metadata = {
-  title: "Vodex — AI Voice Agents for Loan & Borrower Lead Qualification",
+export const metadata: Metadata = pageMetadata({
+  title: "Voice AI Lead Qualification for Loans & Collections | Vodex",
   description:
-    "Automate borrower screening and pre-qualification with natural conversations that verify intent, financial readiness, and eligibility for credit or repayment programs.",
-};
+    "Automate borrower screening with Voice AI. Verify intent, eligibility, and financial readiness in minutes—improve qualification accuracy and grow your collections pipeline.",
+  path: "/solutions/lead-qualification",
+});
 
 export default function LeadQualificationPage() {
   return (

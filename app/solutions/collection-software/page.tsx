@@ -20,6 +20,7 @@ import {
   CheckIcon,
 } from "@/components/ui/icons";
 import solutionHeroBg from "@/public/assets/collection-software-hero-bg.jpg";
+import { pageMetadata } from "@/lib/seo";
 
 const STEPS = [
   {
@@ -132,11 +133,12 @@ const CLOSING = {
   href: "/solutions/debt-collection",
 };
 
-export const metadata: Metadata = {
-  title: "Vodex — API-First Voice AI for Collection Software",
+export const metadata: Metadata = pageMetadata({
+  title: "Voice AI Integration for Debt Collection Software | Vodex",
   description:
-    "Add compliant, API-first Voice AI into your debt collection software. Run payment reminders, capture promises-to-pay, and write outcomes back to your platform.",
-};
+    "Upgrade your collections platform with a Voice AI engine that automates compliant calls, reduces handle time, and boosts recoveries. Easy API integration with most systems.",
+  path: "/solutions/collection-software",
+});
 
 export default function CollectionSoftwarePage() {
   return (

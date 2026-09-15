@@ -13,6 +13,7 @@ import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { BankIcon, PhoneCallIcon, ShieldPlusIcon } from "@/components/ui/icons";
 import solutionHeroBg from "@/public/assets/solution-payment-reminders-hero-bg.jpg";
+import { pageMetadata } from "@/lib/seo";
 
 const INDUSTRY_CARDS = [
   {
@@ -90,11 +91,12 @@ const RESULTS_STATS = [
   },
 ];
 
-export const metadata: Metadata = {
-  title: "Vodex — AI Voice Agents for Payment Reminders",
+export const metadata: Metadata = pageMetadata({
+  title: "AI Payment Reminder Software | Reduce Missed Payments with Voice AI",
   description:
-    "Timely reminders help your customers avoid missed payments and reduce delinquencies.",
-};
+    "Automate payment reminders with FDCPA-compliant AI voice agents. Send timely due date, grace period, and overdue reminders to reduce delinquencies and improve cash flow in the US.",
+  path: "/solutions/payment-reminders",
+});
 
 export default function PaymentRemindersPage() {
   return (

@@ -11,6 +11,10 @@
 }
 
 .list {
+  /* The global reset only strips ul markers — without this the <ol> shows
+     browser "1." numbers outside the active-item border. */
+  padding: 0;
+  list-style: none;
   margin-top: 16px;
   display: grid;
   gap: 10px;

@@ -9,12 +9,14 @@ import { FinalCta } from "@/components/sections/FinalCta";
 import { PlayIcon } from "@/components/ui/icons";
 import { VIDEO_CATEGORIES, getFeaturedVideo, getGridVideos } from "@/lib/videos";
 import videosHeroBg from "@/public/assets/product-hero-bg.jpg";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Vodex — Videos & Podcasts",
+export const metadata: Metadata = pageMetadata({
+  title: "Vodex Videos | Insights, Demos & AI in Action",
   description:
-    "Check out our latest videos, including insights, updates, announcements, demos, customer stories, tutorials & podcasts.",
-};
+    "Discover a collection of Vodex videos, including AI voice agent demos, industry insights, customer success stories, and more",
+  path: "/resources/videos",
+});
 
 export default function VideosIndexPage() {
   const featured = getFeaturedVideo();

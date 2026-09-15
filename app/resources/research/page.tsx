@@ -11,12 +11,14 @@ import { SolutionWorkflows } from "@/components/sections/SolutionWorkflows";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import researchHeroBg from "@/public/assets/results-bg.jpg";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Vodex — Research & Innovation",
+export const metadata: Metadata = pageMetadata({
+  title: "Vodex Research – Voice AI Innovation & Model Development",
   description:
-    "Vodex is an AI-native voice automation company building speech intelligence for real-world, high-stakes conversations in mortgage, insurance, and collections.",
-};
+    "Explore Vodex Research—our dedicated space for voice AI innovation, model development, and the future of enterprise-scale communication. Get early insights into how we’re shaping tomorrow’s conversations.",
+  path: "/resources/research",
+});
 
 /**
  * Reuses `results-bg.jpg` for the hero background per the user's explicit

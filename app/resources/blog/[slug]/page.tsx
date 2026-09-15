@@ -11,6 +11,10 @@ import { RelatedPosts } from "@/components/blog/RelatedPosts";
 import { BLOG_POSTS, getPostBySlug, getRelatedPosts, type BlogPostFrontmatter } from "@/lib/blog-posts";
 import { renderMdx } from "@/lib/mdx";
 import styles from "./page.module.css";
+import { pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { FaqAccordion } from "@/components/sections/FaqAccordion";
+import { articleSchema, breadcrumbSchema, faqPageSchema } from "@/lib/structured-data";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -29,10 +33,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post) return {};
-  return {
-    title: `Vodex — ${post.title}`,
+  return pageMetadata({
+    title: post.title,
     description: post.excerpt,
-  };
+    path: `/resources/blog/${post.slug}`,
+    image: post.thumb,
+    type: "article",
+    publishedTime: post.date,
+  });
 }
 
 export default async function BlogPostPage({ params }: PageProps) {
@@ -51,13 +59,44 @@ export default async function BlogPostPage({ params }: PageProps) {
         <Navbar solid />
       </header>
       <main>
+        <JsonLd
+          data={[
+            articleSchema({
+              headline: post.title,
+              description: post.excerpt,
+              path: `/resources/blog/${post.slug}`,
+              image: post.thumb,
+              datePublished: post.date,
+            }),
+            breadcrumbSchema([
+              { name: "Home", path: "/" },
+              { name: "Blog", path: "/resources/blog" },
+              { name: post.title, path: `/resources/blog/${post.slug}` },
+            ]),
+            ...(post.faqs?.length
+              ? [faqPageSchema(post.faqs.map(({ q, a }) => ({ question: q, answer: a })))]
+              : []),
+          ]}
+        />
         <ArticleHeader post={post} />
 
         <section className={styles.section}>
           <div className="container">
             <div className={`${styles.grid} ${hasToc ? "" : styles.gridNoToc}`}>
               {hasToc && <ArticleToc items={toc} />}
-              <ArticleBody>{content}</ArticleBody>
+              <div>
+                <ArticleBody>{content}</ArticleBody>
+                {post.faqs && post.faqs.length > 0 && (
+                  <section className={styles.faqs} aria-labelledby="article-faqs-title">
+                    <h2 id="article-faqs-title" className={styles.faqsTitle}>
+                      Frequently asked questions
+                    </h2>
+                    <FaqAccordion
+                      items={post.faqs.map(({ q, a }) => ({ question: q, answer: a }))}
+                    />
+                  </section>
+                )}
+              </div>
             </div>
           </div>
         </section>

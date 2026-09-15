@@ -9,12 +9,14 @@ import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { getFeaturedCaseStudy, getGridCaseStudies } from "@/lib/case-studies";
 import caseStudiesHeroBg from "@/public/assets/solution-payment-reminders-hero-bg.jpg";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Vodex — Case Studies",
+export const metadata: Metadata = pageMetadata({
+  title: "Vodex Case Studies | AI Voice Agents Driving Business Success",
   description:
-    "How collections teams and enterprises use Vodex AI voice agents to recover more, connect more, and spend less per contact.",
-};
+    "How businesses leverage Vodex’s AI voice agents to streamline operations, enhance engagement, and scale effortlessly while staying compliant.",
+  path: "/resources/case-studies",
+});
 
 /**
  * Built "like the blog page" per explicit user direction — dedicated

@@ -42,7 +42,7 @@ export function FeaturedCaseStudy() {
                   <p className={styles.statLabel}>{stat.label}</p>
                 </div>
               ))}
-              <Link href="/case-studies/debt-recovery" className={styles.cta}>
+              <Link href="/resources/case-studies/this-debt-collection-firm-increased-connectivity-rate-by-3x" className={styles.cta}>
                 Read the full case study
                 <ArrowRight />
               </Link>

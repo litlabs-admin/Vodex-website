@@ -9,12 +9,14 @@ import { ContactOffices } from "@/components/sections/ContactOffices";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import contactHeroBg from "@/public/assets/debt-collection-hero-bg.jpg";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Vodex — Contact Us",
+export const metadata: Metadata = pageMetadata({
+  title: "Contact Vodex",
   description:
-    "Whether you're a potential partner, a curious customer, a talented candidate, or an interested investor, we'd love to hear from you. Let's explore opportunities together.",
-};
+    "Have questions or inquiries? Contact Vodex to learn more about our GenAI driven solutions and how we can assist your business.",
+  path: "/company/contact",
+});
 
 /**
  * This page makes two confirmed fixes to

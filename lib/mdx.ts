@@ -7,6 +7,8 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import type { ReactElement } from "react";
+import type { MDXComponents } from "mdx/types";
+import type { PluggableList } from "unified";
 import { mdxComponents } from "@/components/blog/mdx-components";
 import { rehypeCollectHeadings, type TocItem } from "@/lib/rehype-collect-headings";
 
@@ -59,6 +61,14 @@ export type RenderedMdx<T> = {
   toc: TocItem[];
 };
 
+export type RenderMdxOptions = {
+  /** Run after rehype-slug (ids are set) and before the TOC is collected, so
+   * any heading text they rewrite is what the TOC shows. */
+  rehypePlugins?: PluggableList;
+  /** Merged over the shared article `mdxComponents`. */
+  components?: MDXComponents;
+};
+
 /** Compiles one post's body to React elements, and collects its h2 table of
  * contents in the same pass (see rehypeCollectHeadings for why a second,
  * separate extraction pass would risk drifting from what rehype-slug
@@ -66,6 +76,7 @@ export type RenderedMdx<T> = {
 export async function renderMdx<T extends Record<string, unknown>>(
   dir: string,
   slug: string,
+  options: RenderMdxOptions = {},
 ): Promise<RenderedMdx<T>> {
   const full = path.join(process.cwd(), "content", dir, `${slug}.mdx`);
   const raw = readFileSync(full, "utf8");
@@ -74,11 +85,11 @@ export async function renderMdx<T extends Record<string, unknown>>(
   const toc: TocItem[] = [];
   const { content } = await compileMDX<Record<string, unknown>>({
     source: body,
-    components: mdxComponents,
+    components: { ...mdxComponents, ...options.components },
     options: {
       mdxOptions: {
         remarkPlugins: [remarkGfm],
-        rehypePlugins: [rehypeSlug, rehypeCollectHeadings(toc)],
+        rehypePlugins: [rehypeSlug, ...(options.rehypePlugins ?? []), rehypeCollectHeadings(toc)],
       },
     },
   });

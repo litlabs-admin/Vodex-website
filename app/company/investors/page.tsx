@@ -15,12 +15,14 @@ import oneHundredXLogo from "@/public/assets/investor-100x.png";
 import googleCloudLogo from "@/public/assets/partner-google-cloud.png";
 import mongodbLogo from "@/public/assets/partner-mongodb.png";
 import krispLogo from "@/public/assets/partner-krisp.png";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Vodex — Investors & Partners",
+export const metadata: Metadata = pageMetadata({
+  title: "Investors & Partners | Vodex",
   description:
-    "The investors backing Vodex and the technology partners behind every Vodex voice conversation.",
-};
+    "Explore investment opportunities with Vodex.ai, a leading innovator in generative AI for enterprise outreach.",
+  path: "/company/investors",
+});
 
 /**
  * Reference hero is pixel-confirmed flat #000000 with no photo, and the

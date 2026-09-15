@@ -11,12 +11,14 @@ import { WhatYourTeamGets } from "@/components/sections/WhatYourTeamGets";
 import { Faq } from "@/components/sections/Faq";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Vodex — AI powered phone calls for enterprises",
+export const metadata: Metadata = pageMetadata({
+  title: "Automate Inbound & Outbound Calls with AI Voice Agents",
   description:
-    "Effortless, intelligent calling that scales with your business. Human-like conversations, deep system integration, and enterprise-grade standards, built for high call volumes.",
-};
+    "Automate payment reminders, lead qualification and scheduling with Vodex AI voice agents, improve contact rates and operational efficiency.",
+  path: "/products",
+});
 
 export default function ProductsPage() {
   return (

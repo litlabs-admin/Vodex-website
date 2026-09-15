@@ -13,6 +13,7 @@ import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { BankIcon, PhoneCallIcon, SignalTowerIcon } from "@/components/ui/icons";
 import solutionHeroBg from "@/public/assets/blog-hero-bg.jpg";
+import { pageMetadata } from "@/lib/seo";
 
 const INDUSTRY_CARDS = [
   {
@@ -97,11 +98,12 @@ const RESULTS_STATS = [
   },
 ];
 
-export const metadata: Metadata = {
-  title: "Vodex — AI Voice Agents for Promise-to-Pay Capture",
+export const metadata: Metadata = pageMetadata({
+  title: "Voice AI Agents that capture payment intent | Automated PTP & Compliance",
   description:
-    "Automated agents that handle payment term negotiations, capture payment-related intent, whether partial or complete, and handle compliance language automatically.",
-};
+    "Use Voice AI to capture PTPs and payment intent on every call. Reduce follow ups, track commitments instantly, and keep collections compliant.",
+  path: "/solutions/promise-to-pay",
+});
 
 export default function PromiseToPayPage() {
   return (

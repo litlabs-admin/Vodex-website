@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -14,10 +15,21 @@ import { Resources } from "@/components/sections/Resources";
 import { Faq } from "@/components/sections/Faq";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
+import { pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { organizationSchema, websiteSchema } from "@/lib/structured-data";
+
+export const metadata: Metadata = pageMetadata({
+  title: "Voice AI for Debt Collection & Automated Outreach | Vodex",
+  description:
+    "Boost recovery with enterprise Voice AI for debt collection. Automate right-party contact, payment reminders, and promise-to-pay capture with fully compliant, 24/7 conversational agents.",
+  path: "/",
+});
 
 export default function HomePage() {
   return (
     <>
+      <JsonLd data={[organizationSchema(), websiteSchema()]} />
       <header className="siteHeader">
         <AnnouncementBar />
         <Navbar />

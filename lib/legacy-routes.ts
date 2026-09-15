@@ -46,12 +46,6 @@ export const PREFIX_REDIRECTS: Array<[string, string]> = [
   ["/case-studies/", "/resources/case-studies/"],
 ];
 
-/** Old paths with genuinely no destination on the new site yet (legal
- * pages that were never built) — listed so they're a deliberate, documented
- * gap rather than a silent omission. Left un-redirected: sending these to
- * a nonexistent page would be worse than the clean 404 they get today. */
-export const UNRESOLVED_LEGACY_PATHS = ["/privacy-policy", "/terms-of-use", "/cookie-management"];
-
 /**
  * Resolves an absolute vodex.ai URL or a bare path to its new internal
  * route. Returns `null` if the input isn't a vodex.ai URL at all (the

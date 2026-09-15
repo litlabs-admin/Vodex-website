@@ -13,12 +13,14 @@ import aboutHeroBg from "@/public/assets/blog-hero-bg.jpg";
 import aboutVisionBg from "@/public/assets/about-vision-bg.jpg";
 import aboutLocationUsa from "@/public/assets/about-location-usa.jpg";
 import aboutLocationIndia from "@/public/assets/about-location-india.jpg";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Vodex — About",
+export const metadata: Metadata = pageMetadata({
+  title: "About Us | Vodex",
   description:
-    "The team behind Vodex's Gen AI voice agents — our mission, story, leadership, and offices.",
-};
+    "Discover Vodex's journey, mission, and vision as we lead the way in AI-driven solutions for sales.",
+  path: "/company/about",
+});
 
 /**
  * Reference hero is pixel-confirmed flat #000000 with no photo, but the
@@ -93,7 +95,7 @@ export default function AboutPage() {
             {
               title: "USA",
               description: "Vodex AI Inc, 8 The Green, Dover, DE 19901, USA",
-              href: "/contact",
+              href: "/company/contact",
               background: "image",
               bgImage: aboutLocationUsa,
               bgAlt: "United States flag",
@@ -102,7 +104,7 @@ export default function AboutPage() {
               title: "India",
               description:
                 "WeWork, Salarpuria Symbiosis, Arakere Bannerghatta Rd, Bengaluru, KA 560076, India",
-              href: "/contact",
+              href: "/company/contact",
               background: "image",
               bgImage: aboutLocationIndia,
               bgAlt: "India flag",

@@ -14,6 +14,9 @@ import {
 } from "@/lib/case-studies";
 import { renderMdx } from "@/lib/mdx";
 import styles from "./page.module.css";
+import { pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { breadcrumbSchema } from "@/lib/structured-data";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -29,10 +32,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const study = getCaseStudyBySlug(slug);
   if (!study) return {};
-  return {
-    title: `Vodex — ${study.title}`,
+  return pageMetadata({
+    title: study.title,
     description: study.description,
-  };
+    path: `/resources/case-studies/${study.slug}`,
+    image: study.thumb,
+  });
 }
 
 export default async function CaseStudyDetailPage({ params }: PageProps) {
@@ -49,6 +54,13 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
         <Navbar solid />
       </header>
       <main>
+        <JsonLd
+          data={breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Case Studies", path: "/resources/case-studies" },
+            { name: study.title, path: `/resources/case-studies/${study.slug}` },
+          ])}
+        />
         <CaseStudyDetailHeader study={study} />
 
         <section className={styles.section}>

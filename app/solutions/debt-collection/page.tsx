@@ -17,6 +17,7 @@ import { PhoneCallIcon, SignalTowerIcon, SparkleIcon } from "@/components/ui/ico
 import solutionHeroBg from "@/public/assets/debt-collection-hero-bg.jpg";
 import statBandBg from "@/public/assets/case-study-bg.jpg";
 import integrationBg from "@/public/assets/case-study-featured-bg.jpg";
+import { pageMetadata } from "@/lib/seo";
 
 const STATS = [
   { number: "3X", label: "Debt recovery rate improvement" },
@@ -93,11 +94,12 @@ const BLOG_POSTS: ResourceRef[] = [
   { type: "blog", slug: "how-to-automate-promise-to-pay-ptp-capture-with-voice-ai" },
 ];
 
-export const metadata: Metadata = {
-  title: "Vodex — AI Voice Agents for Debt Collection",
+export const metadata: Metadata = pageMetadata({
+  title: "AI Voice Agents for Debt Collection | FDCPA, TCPA, CFPB Compliant",
   description:
-    "For payment reminders, overdue follow-ups, and debt recovery, helping you scale collections while staying fully compliant.",
-};
+    "Recover debt faster with Vodex FDCPA/TCPA-compliant AI voice agents. Automate payment reminders, follow-ups and collections 24/7 — audit-ready and scalable.",
+  path: "/solutions/debt-collection",
+});
 
 export default function DebtCollectionPage() {
   return (

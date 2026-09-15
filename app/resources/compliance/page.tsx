@@ -9,12 +9,14 @@ import { ComplianceDpoBanner } from "@/components/sections/ComplianceDpoBanner";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import complianceHeroBg from "@/public/assets/debt-collection-hero-bg.jpg";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Vodex — Compliance & Security",
+export const metadata: Metadata = pageMetadata({
+  title: "Vodex Compliance & Security",
   description:
-    "Vodex is ISO 27001 and SOC 2 Type II certified. Disclosures, calling windows, consent handling, opt-outs, call caps, and audit logging are enforced on every call.",
-};
+    "Our SOC 2 and ISO 27001 certifications ensure data protection, privacy, and regulatory adherence for every interaction.",
+  path: "/resources/compliance",
+});
 
 /**
  * Notable decisions: the reference's "Named Voices" eyebrow is corrected to

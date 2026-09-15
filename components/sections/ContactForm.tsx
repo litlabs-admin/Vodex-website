@@ -327,9 +327,9 @@ export function ContactForm() {
                 </button>
 
                 <p className={styles.legal}>
-                  <Link href="/terms">Terms and conditions</Link>
+                  <Link href="/terms-of-use">Terms and conditions</Link>
                   <span className={styles.legalDot}>•</span>
-                  <Link href="/privacy">Privacy policy</Link>
+                  <Link href="/privacy-policy">Privacy policy</Link>
                 </p>
               </form>
             )}

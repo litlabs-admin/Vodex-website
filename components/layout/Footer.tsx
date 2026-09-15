@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 import { ExternalLinkIcon } from "@/components/ui/icons";
 import { FooterWordmark } from "@/components/ui/FooterWordmark";
+import { SOCIAL_PROFILES } from "@/lib/structured-data";
 import styles from "./Footer.module.css";
 
 const COLUMNS: Array<{
@@ -12,11 +13,11 @@ const COLUMNS: Array<{
   {
     title: "Product",
     links: [
-      { label: "Voice Agents", href: "/product/voice-agents" },
+      { label: "Voice Agents", href: "/products" },
       { label: "Pricing", href: "/pricing" },
-      { label: "Call Samples", href: "/#call-samples-title" },
+      { label: "Call Samples", href: "/resources/call-samples" },
       { label: "Compliance", href: "/resources/compliance" },
-      { label: "Docs", href: "/docs", external: true },
+      { label: "Docs", href: "https://docs.vodex.ai", external: true },
     ],
   },
   {
@@ -37,7 +38,7 @@ const COLUMNS: Array<{
       { label: "Case Studies", href: "/resources/case-studies" },
       { label: "Research", href: "/resources/research" },
       { label: "FAQ", href: "/resources/faq" },
-      { label: "Help Center", href: "/help", external: true },
+      { label: "Help Center", href: "https://vodexhelpcenter.featurebase.app/help", external: true },
     ],
   },
   {
@@ -51,6 +52,14 @@ const COLUMNS: Array<{
     ],
   },
 ];
+
+const LEGAL_LINKS = [
+  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "Terms of Use", href: "/terms-of-use" },
+  { label: "Cookie Policy", href: "/cookie-management" },
+];
+
+const SOCIAL_LABELS = ["LinkedIn", "X", "YouTube", "Instagram"];
 
 const CERTIFICATIONS = [
   { label: "ISO 27001", src: "/assets/footer-cert-iso.png", width: 420, height: 420 },
@@ -136,6 +145,25 @@ export function Footer() {
             height={250}
             className={styles.backersImg}
           />
+        </div>
+
+        <hr className={styles.divider} />
+        <div className={styles.bottom}>
+          <nav aria-label="Legal" className={styles.bottomLinks}>
+            <span>&copy; {new Date().getFullYear()} Vodex</span>
+            {LEGAL_LINKS.map(({ label, href }) => (
+              <Link key={href} href={href}>
+                {label}
+              </Link>
+            ))}
+          </nav>
+          <nav aria-label="Social" className={styles.bottomLinks}>
+            {SOCIAL_PROFILES.map((href, i) => (
+              <a key={href} href={href} target="_blank" rel="noopener noreferrer">
+                {SOCIAL_LABELS[i]}
+              </a>
+            ))}
+          </nav>
         </div>
 
         <div className={styles.wordmarkWrap}>

@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
 import { BLOG_POSTS } from "@/lib/blog-posts";
 import { CASE_STUDIES } from "@/lib/case-studies";
+import { SITE_URL } from "@/lib/seo";
 
-const SITE_URL = "https://www.vodex.ai";
 
 const STATIC_ROUTES = [
   "/",
@@ -24,6 +24,9 @@ const STATIC_ROUTES = [
   "/company/news",
   "/company/investors",
   "/company/contact",
+  "/privacy-policy",
+  "/terms-of-use",
+  "/cookie-management",
 ];
 
 /**
