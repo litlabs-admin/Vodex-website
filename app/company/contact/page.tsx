@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * See CLAUDE.md for the reasoning behind this page's two confirmed fixes to
+ * This page makes two confirmed fixes to
  * the reference mockup: the hero badge (mismatched "Newsroom" leftover from
  * a different page's mockup, fixed to "Contact") and the form's submit
  * controls (a nonsensical "Sign Up" / "Back to Login" pair, fixed to a

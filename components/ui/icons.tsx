@@ -14,22 +14,14 @@ import {
   X,
   Play,
   Pause,
-  TrendingUp,
   Landmark,
   PhoneCall,
   ShieldPlus,
-  Bell,
-  Funnel,
   RadioTower,
   Sparkle,
   Lock,
   Search,
-  SquarePlay,
-  FileText,
   Briefcase,
-  FlaskConical,
-  Info,
-  Newspaper,
   Mail,
   ChartColumn,
   Megaphone,
@@ -157,13 +149,6 @@ export const PlayIcon = (props: LucideProps) => <Play fill="currentColor" stroke
 export const PauseIcon = (props: LucideProps) => <Pause fill="currentColor" stroke="none" {...props} />;
 
 /* -------------------------------------------------------------------------- */
-/* Mega-menu / misc                                                           */
-/* -------------------------------------------------------------------------- */
-
-/** Trending-up chart — Investors & Partners. */
-export const TrendingUpIcon = (props: LucideProps) => <TrendingUp strokeWidth={WEIGHT} {...props} />;
-
-/* -------------------------------------------------------------------------- */
 /* Solutions page icons                                                       */
 /* -------------------------------------------------------------------------- */
 
@@ -175,12 +160,6 @@ export const PhoneCallIcon = (props: LucideProps) => <PhoneCall strokeWidth={WEI
 
 /** Shield with a medical plus. */
 export const ShieldPlusIcon = (props: LucideProps) => <ShieldPlus strokeWidth={WEIGHT} {...props} />;
-
-/** Reminder bell. */
-export const BellIcon = (props: LucideProps) => <Bell strokeWidth={WEIGHT} {...props} />;
-
-/** Lead funnel. */
-export const FunnelIcon = (props: LucideProps) => <Funnel strokeWidth={WEIGHT} {...props} />;
 
 /** Broadcast mast — utilities & telecom. */
 export const SignalTowerIcon = (props: LucideProps) => <RadioTower strokeWidth={WEIGHT} {...props} />;
@@ -201,27 +180,12 @@ export const LockIcon = (props: LucideProps) => <Lock strokeWidth={WEIGHT} {...p
  * country picker). */
 export const SearchIcon = (props: LucideProps) => <Search strokeWidth={WEIGHT} {...props} />;
 
-/** Play triangle in a screen frame — video/podcast overlays. */
-export const PlayFrameIcon = (props: LucideProps) => <SquarePlay strokeWidth={WEIGHT} {...props} />;
-
 /* -------------------------------------------------------------------------- */
 /* Resources mega menu icons                                                  */
 /* -------------------------------------------------------------------------- */
 
-/** Article page. */
-export const ArticleIcon = (props: LucideProps) => <FileText strokeWidth={WEIGHT} {...props} />;
-
 /** Briefcase — case studies. */
 export const CaseStudyIcon = (props: LucideProps) => <Briefcase strokeWidth={WEIGHT} {...props} />;
-
-/** Lab flask — research & reports. */
-export const ResearchIcon = (props: LucideProps) => <FlaskConical strokeWidth={WEIGHT} {...props} />;
-
-/** Circled "i" — About. */
-export const InfoIcon = (props: LucideProps) => <Info strokeWidth={WEIGHT} {...props} />;
-
-/** Folded newspaper — News. */
-export const NewsIcon = (props: LucideProps) => <Newspaper strokeWidth={WEIGHT} {...props} />;
 
 /** Envelope — Contact Us. */
 export const MailIcon = (props: LucideProps) => <Mail strokeWidth={WEIGHT} {...props} />;

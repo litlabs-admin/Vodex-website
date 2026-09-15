@@ -13,7 +13,7 @@ const CARDS = [
     title: "System integration",
     description:
       "Connects to your CRM and dialer stack via APIs, webhooks, SFTP, or CSV, and writes results back automatically.",
-    src: "/assets/why-works-2.jpg",
+    src: "/assets/collection-software-step-2.jpg",
   },
   {
     title: "Enterprise-grade standards",

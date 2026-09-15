@@ -57,7 +57,7 @@ const PRICING_FAQS: FaqItem[] = [
 ];
 
 /**
- * See CLAUDE.md §23 for the full reasoning behind this page's two confirmed
+ * This page has two confirmed
  * deviations from the reference: the hero badge ("Newsroom" in the
  * reference — a mismatched leftover, replaced with "Pricing"). The pricing
  * cards themselves now carry the previous live site's real two-tier content

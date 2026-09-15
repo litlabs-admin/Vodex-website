@@ -25,7 +25,7 @@ type SolutionComparisonProps = {
 };
 
 export function SolutionComparison({
-  bgImage = "/assets/comparison-vodex-bg.jpg",
+  bgImage = "/assets/about-vision-bg.jpg",
 }: SolutionComparisonProps) {
   return (
     <section className={styles.section} aria-labelledby="comparison-title">

@@ -8,12 +8,12 @@ const OFFICES = [
   {
     name: "USA",
     address: "Vodex AI Inc, 8 The Green, Dover, DE 19901, USA",
-    src: "/assets/contact-office-usa.jpg",
+    src: "/assets/about-location-usa.jpg",
   },
   {
     name: "India",
     address: "WeWork, Salarpuria Symbiosis, Arakere Bannerghatta Rd, Bengaluru, KA 560076, India",
-    src: "/assets/contact-office-india.jpg",
+    src: "/assets/about-location-india.jpg",
   },
 ];
 

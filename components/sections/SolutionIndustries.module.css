@@ -52,7 +52,7 @@
   flex-direction: column;
   overflow: hidden;
   /* Sharp corners — confirmed by zooming into the PDF crop, same finding as
-     Why/FeaturedCaseStudy/Resources documented in CLAUDE.md. */
+     Why/FeaturedCaseStudy/Resources. */
   border-radius: 0;
   /* Measured off the PDF crop (244,244,244), not the Resources #f7f7f7 gray. */
   background: #f4f4f4;

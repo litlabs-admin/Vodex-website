@@ -7,11 +7,10 @@ import styles from "./ArticleBody.module.css";
 /**
  * MDX component overrides for migrated article bodies (blog posts + case
  * studies, both compiled via lib/mdx.ts's `renderMdx`). Two custom
- * components (`Figure`, `Embed`) are the only literal JSX tags the Webflow
- * migration script ever emits into .mdx source — everything else in a
- * migrated body is plain Markdown syntax, specifically so the MDX compiler
- * never has to parse raw HTML as JSX (see scripts/webflow/lib/html-to-mdx.mjs's
- * top-of-file comment for why that matters).
+ * components (`Figure`, `Embed`) are the only literal JSX tags used in the
+ * .mdx sources — everything else is plain Markdown syntax, because MDX
+ * parses raw HTML as JSX (attributes like `class=` or `style="a:b"` fail
+ * to compile). Keep new content to Markdown plus these two components.
  */
 
 type FigureProps = {

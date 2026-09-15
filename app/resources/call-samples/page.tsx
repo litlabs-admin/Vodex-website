@@ -20,9 +20,8 @@ export const metadata: Metadata = {
  * Resources) plus the shared EnterpriseBand/FinalCta/Footer, per explicit
  * user direction ("we have sections created on either home page, so we
  * will use those sections, instead") rather than rebuilding new ones to
- * match the reference mockup's copy — see CLAUDE.md §18 for the full
- * reasoning, including why CallSamples keeps its own existing header copy
- * instead of the mockup's (confirmed with the user).
+ * match the reference mockup's copy. CallSamples keeps its own existing
+ * header copy instead of the mockup's (confirmed with the user).
  */
 export default function CallSamplesPage() {
   return (

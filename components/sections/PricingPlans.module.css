@@ -104,43 +104,6 @@
   border-color: var(--brand);
 }
 
-/* --- "Popular" / "Best Value" ribbon --------------------------------- */
-/* The reference bakes the ribbon's gradient + grain + text into a supplied
-   image asset — rendered as-is via next/image rather than recreated in
-   CSS, per this project's "the supplied asset already bakes in the
-   design" precedent. The wrapper clips it to rounded top corners and lets
-   it straddle the card's own top edge. */
-.ribbon {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  overflow: hidden;
-  border-radius: 10px 10px 3px 3px;
-}
-
-.ribbonImage {
-  display: block;
-  height: 30px;
-  width: auto;
-}
-
-.ribbonSheen {
-  position: absolute;
-  inset: -2px;
-  width: 45%;
-  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.65), transparent);
-  transform: translateX(-140%) skewX(-12deg);
-  animation: ribbonSheenSweep 2.8s linear infinite;
-}
-
-@keyframes ribbonSheenSweep {
-  to {
-    transform: translateX(260%) skewX(-12deg);
-  }
-}
-
 .planName {
   font-size: 16px;
   font-weight: 500;

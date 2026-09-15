@@ -38,7 +38,7 @@ export type ResolvedResource = {
   /** Off-site link (news coverage) — open in a new tab. */
   external: boolean;
   /** News thumbnails are outlet logos, not photos — never cover-crop them
-   * (see CLAUDE.md §31). */
+   * — scale-down on white instead. */
   thumbFit: "cover" | "logo";
 };
 

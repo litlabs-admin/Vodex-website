@@ -12,7 +12,7 @@ import { Faq } from "@/components/sections/Faq";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { BankIcon, PhoneCallIcon, SignalTowerIcon } from "@/components/ui/icons";
-import solutionHeroBg from "@/public/assets/solution-promise-to-pay-hero-bg.jpg";
+import solutionHeroBg from "@/public/assets/blog-hero-bg.jpg";
 
 const INDUSTRY_CARDS = [
   {
@@ -27,7 +27,7 @@ const INDUSTRY_CARDS = [
     description:
       "Make timely and compliant reminders to capture intent or allow borrowers to negotiate payment terms.",
     Icon: PhoneCallIcon,
-    src: "/assets/promise-to-pay-industries-2.jpg",
+    src: "/assets/why-vodex-3.jpg",
   },
   {
     title: "Utilities & Telecom",
@@ -73,7 +73,7 @@ const WORKFLOWS = [
     title: "PTP Negotiation Paths",
     description:
       "Voice AI agents can handle sensitive payment negotiations with borrowers to create flexibility for the borrower and improve recovery rates.",
-    src: "/assets/promise-to-pay-workflow-6.jpg",
+    src: "/assets/feature-5.jpg",
   },
 ];
 
@@ -133,7 +133,7 @@ export default function PromiseToPayPage() {
           lead="Ensure reduced missed payments, a better recovery rate, and improved customer experience for your borrowers."
           workflows={WORKFLOWS}
         />
-        <SolutionComparison bgImage="/assets/promise-to-pay-comparison-bg.jpg" />
+        <SolutionComparison bgImage="/assets/about-vision-bg.jpg" />
         <SolutionResults
           lead="Results our clients report when voice AI runs the PTP conversation end to end."
           stats={RESULTS_STATS}

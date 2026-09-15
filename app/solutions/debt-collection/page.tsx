@@ -15,8 +15,8 @@ import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { PhoneCallIcon, SignalTowerIcon, SparkleIcon } from "@/components/ui/icons";
 import solutionHeroBg from "@/public/assets/debt-collection-hero-bg.jpg";
-import statBandBg from "@/public/assets/debt-collection-stats-bg.jpg";
-import integrationBg from "@/public/assets/debt-collection-integration-bg.jpg";
+import statBandBg from "@/public/assets/case-study-bg.jpg";
+import integrationBg from "@/public/assets/case-study-featured-bg.jpg";
 
 const STATS = [
   { number: "3X", label: "Debt recovery rate improvement" },
@@ -29,13 +29,13 @@ const WHY_CARDS = [
     description:
       "Maintain regular contact with debtors through automated calls, reducing human errors.",
     Icon: PhoneCallIcon,
-    src: "/assets/why-vodex-1.jpg",
+    src: "/assets/feature-4.jpg",
   },
   {
     title: "Operational Scalability",
     description: "Handle high call volumes without increasing manpower.",
     Icon: SignalTowerIcon,
-    src: "/assets/why-vodex-2.jpg",
+    src: "/assets/feature-1.jpg",
   },
   {
     title: "Effortless Compliance",
@@ -67,7 +67,7 @@ const INDUSTRIES = [
   {
     title: "Credit Card Payments",
     description: "Delinquency recovery and payment plan negotiation.",
-    src: "/assets/debt-collection-industry-4.jpg",
+    src: "/assets/action-1.jpg",
   },
   {
     title: "Insurance Collections",
@@ -77,7 +77,7 @@ const INDUSTRIES = [
   {
     title: "Banks & Lending",
     description: "Loan repayment follow-ups and credit card payment reminders.",
-    src: "/assets/debt-collection-industry-6.jpg",
+    src: "/assets/industries-banks.jpg",
   },
 ];
 

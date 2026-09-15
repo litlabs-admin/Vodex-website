@@ -317,7 +317,7 @@
    the same (0,1,0,0) specificity as Button.module.css's own `.lg`/`.light`,
    so whichever wins would depend on stylesheet bundling order rather than
    intent (the exact bug already hit and fixed for PricingPlans' `.cardDark
-   .cta` override, per CLAUDE.md). This compound selector always outranks
+   .cta` override). This compound selector always outranks
    theirs regardless of import order. */
 .demoWrap .demoButton {
   min-width: 0;

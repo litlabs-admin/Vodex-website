@@ -71,7 +71,7 @@
 }
 
 /* News thumbnails are outlet logos: scale-down on white, padded, never
-   enlarged or cropped (CLAUDE.md §31). */
+   enlarged or cropped. */
 .thumb[data-fit="logo"] {
   background: #fff;
 }

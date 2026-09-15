@@ -34,7 +34,7 @@ const INDUSTRY_CARDS = [
     description:
       "Ensure reduced missed payments with due date reminders, on-day reminders, and more.",
     Icon: ShieldPlusIcon,
-    src: "/assets/industries-healthcare.jpg",
+    src: "/assets/debt-collection-industry-2.jpg",
   },
 ];
 
@@ -47,7 +47,7 @@ const WORKFLOWS = [
   {
     title: "Same-Day Payment Reminders",
     description: "Reduce missed payments with same-day reminders at scale.",
-    src: "/assets/workflow-2.jpg",
+    src: "/assets/debt-collection-industry-3.jpg",
   },
   {
     title: "Grace-Period Follow-Ups",

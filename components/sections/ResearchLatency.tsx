@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Entrance } from "@/components/ui/Entrance";
 import { Button } from "@/components/ui/Button";
 import styles from "./ResearchLatency.module.css";
-import latencyBg from "@/public/assets/research-latency-bg.jpg";
+import latencyBg from "@/public/assets/collection-software-hero-bg.jpg";
 
 const STATS = [
   { number: "189ms", label: "Average time-to-first-byte (TTFB) today" },

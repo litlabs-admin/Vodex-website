@@ -21,7 +21,7 @@ export function InvestorContactBanner() {
       <div className="container">
         <Entrance className={styles.banner}>
           <Image
-            src="/assets/investors-contact-bg.jpg"
+            src="/assets/product-hero-bg.jpg"
             alt=""
             fill
             sizes="(max-width: 1184px) 100vw, 1184px"

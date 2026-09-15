@@ -9,7 +9,7 @@ import styles from "./CaseStudyFeatured.module.css";
  * Self-contained section: header + the one featured case study banner +
  * cross-sell line. Rebuilt to match the reference mockup's literal
  * full-bleed-photo-with-overlay layout (per direct user request, reversing
- * the earlier "build it like Blog instead" decision — see CLAUDE.md §19):
+ * the earlier "build it like Blog instead" decision):
  * a dark-scrim photo banner with the CTA copy overlaid bottom-left and a
  * stats + "Learn More" column overlaid on the right, rather than a
  * side-by-side photo/white-card split.

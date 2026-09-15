@@ -8,7 +8,7 @@ import { InvestorLogoRow } from "@/components/sections/InvestorLogoRow";
 import { InvestorContactBanner } from "@/components/sections/InvestorContactBanner";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
-import investorsHeroBg from "@/public/assets/investors-hero-bg.jpg";
+import investorsHeroBg from "@/public/assets/debt-collection-hero-bg.jpg";
 import unicornLogo from "@/public/assets/investor-unicorn-india-ventures.png";
 import pentathlonLogo from "@/public/assets/investor-pentathlon-ventures.png";
 import oneHundredXLogo from "@/public/assets/investor-100x.png";

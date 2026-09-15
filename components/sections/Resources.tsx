@@ -37,7 +37,7 @@ export function Resources({ items = DEFAULT_ITEMS }: ResourcesProps) {
           {resources.map((r, i) => (
             // Entrance gates the reveal on an outer wrapper; the hover lift
             // lives on the inner card so `rise`'s fill mode can't pin its
-            // transform (CLAUDE.md §23).
+            // transform.
             <Entrance key={r.key} delay={i * 70} className={styles.cardWrap}>
               <article className={styles.card}>
                 <div className={styles.thumb} data-fit={r.thumbFit}>

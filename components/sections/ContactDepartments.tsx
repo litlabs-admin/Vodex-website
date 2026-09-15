@@ -18,7 +18,7 @@ const DEPARTMENTS = [
     description: "Anything else, or not sure who to ask.",
     email: "contact@vodex.ai",
     Icon: PhoneCallIcon,
-    src: "/assets/contact-dept-general.jpg",
+    src: "/assets/feature-4.jpg",
   },
   {
     title: "Sales",
@@ -39,7 +39,7 @@ const DEPARTMENTS = [
     description: "Investor and partner conversations.",
     email: "partnership@vodex.ai",
     Icon: HandshakeIcon,
-    src: "/assets/contact-dept-partnership.jpg",
+    src: "/assets/workflow-6.jpg",
   },
   {
     title: "Careers",

@@ -165,7 +165,8 @@ export function InitiateCallForm() {
       <div className={styles.formRow}>
         {/* Entrance wraps a plain, unstyled positioning element — the bar's
             own hover/focus-within visuals live on a nested child, never on
-            the element Entrance itself animates (see CLAUDE.md §23). */}
+            the element Entrance itself animates — its `rise` animation's
+            fill mode would otherwise pin `transform` over hover styles. */}
         <Entrance delay={280} className={styles.barSlot}>
           {status === "success" ? (
             <div className={styles.success} role="status">

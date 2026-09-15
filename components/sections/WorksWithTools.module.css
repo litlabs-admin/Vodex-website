@@ -1,7 +1,7 @@
 /* Short, plain band — no eyebrow pill, no H2. Measured against the reference:
    the heading text sits at body/lead size, not the big section-H2 style used
    elsewhere, and the faint grid lines visible in the PDF at this section are
-   the Figma layout-grid overlay (#EDEDED, same as CLAUDE.md documents for the
+   the Figma layout-grid overlay (#EDEDED, also present on the
    landing PDF) — not real card borders, so no dividers are drawn here. */
 .section {
   background: var(--bg);

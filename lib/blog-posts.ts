@@ -4,8 +4,7 @@ import { readFrontmatterDir, wordCount } from "@/lib/mdx";
 
 /**
  * Real content, migrated from Webflow (site 66a38648fc56330fa5753f86,
- * "blog-posts" collection) — see scripts/webflow/ for the one-time
- * extraction/conversion pipeline. Article bodies live as MDX files in
+ * "blog-posts" collection). Article bodies live as MDX files in
  * content/blog/*.mdx; this module only reads their frontmatter (cheap,
  * synchronous, no MDX compile) for the listing pages and route params.
  * The detail route (app/resources/blog/[slug]/page.tsx) calls

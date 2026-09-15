@@ -24,7 +24,7 @@ export function ComplianceDpoBanner() {
       <div className="container">
         <Entrance className={styles.banner}>
           <Image
-            src="/assets/compliance-dpo-bg.jpg"
+            src="/assets/collection-software-hero-bg.jpg"
             alt=""
             fill
             sizes="(max-width: 1184px) 100vw, 1184px"

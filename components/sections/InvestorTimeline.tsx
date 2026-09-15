@@ -2,11 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
 import styles from "./InvestorTimeline.module.css";
-import timeline1 from "@/public/assets/investor-timeline-1.jpg";
-import timeline2 from "@/public/assets/investor-timeline-2.jpg";
-import timeline3 from "@/public/assets/investor-timeline-3.jpg";
-import timeline4 from "@/public/assets/investor-timeline-4.jpg";
-import timeline5 from "@/public/assets/investor-timeline-5.jpg";
+import timeline1 from "@/public/assets/feature-1.jpg";
+import timeline2 from "@/public/assets/why-tile-1.jpg";
+import timeline3 from "@/public/assets/action-2.jpg";
+import timeline4 from "@/public/assets/results-bg.jpg";
+import timeline5 from "@/public/assets/feature-3.jpg";
 
 const ENTRIES = [
   {

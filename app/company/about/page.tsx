@@ -9,7 +9,7 @@ import { AboutTimeline } from "@/components/sections/AboutTimeline";
 import { AboutLeadership } from "@/components/sections/AboutLeadership";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
-import aboutHeroBg from "@/public/assets/about-hero-bg.jpg";
+import aboutHeroBg from "@/public/assets/blog-hero-bg.jpg";
 import aboutVisionBg from "@/public/assets/about-vision-bg.jpg";
 import aboutLocationUsa from "@/public/assets/about-location-usa.jpg";
 import aboutLocationIndia from "@/public/assets/about-location-india.jpg";
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 /**
  * Reference hero is pixel-confirmed flat #000000 with no photo, but the
  * user asked for a photo background instead — this deliberately deviates
- * from the PDF (see CLAUDE.md's About page section for the full reasoning).
+ * from the PDF.
  * The Locations section (2nd AboutMissionVision usage below) also replaces
  * the PDF's literal eyebrow/heading, which duplicates the Mission/Vision
  * section's copy verbatim over unrelated office-address content — a

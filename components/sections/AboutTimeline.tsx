@@ -2,9 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
 import styles from "./AboutTimeline.module.css";
-import timeline2016 from "@/public/assets/about-timeline-2016.jpg";
-import timeline2021 from "@/public/assets/about-timeline-2021.jpg";
-import timeline2022 from "@/public/assets/about-timeline-2022.jpg";
+import timeline2016 from "@/public/assets/feature-3.jpg";
+import timeline2021 from "@/public/assets/why-tile-1.jpg";
+import timeline2022 from "@/public/assets/why-works-1.jpg";
 import timeline2024 from "@/public/assets/about-timeline-2024.jpg";
 
 const ENTRIES = [

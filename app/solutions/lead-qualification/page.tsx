@@ -11,13 +11,13 @@ import { COMPLIANCE_PAGE_REF, SolutionSecurity } from "@/components/sections/Sol
 import { Faq } from "@/components/sections/Faq";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
-import solutionHeroBg from "@/public/assets/lead-qualification-hero-bg.jpg";
+import solutionHeroBg from "@/public/assets/collection-software-hero-bg.jpg";
 
 const INDUSTRIES = [
   {
     label: "Banking & Credit",
     description: "Pre-qualify credit card and loan applicants before they reach a loan officer.",
-    src: "/assets/lead-qualification-industry-1.jpg",
+    src: "/assets/why-vodex-3.jpg",
   },
   {
     label: "Education & Student Loans",
@@ -32,7 +32,7 @@ const INDUSTRIES = [
   {
     label: "Healthcare",
     description: "Verify financing eligibility for procedures and payment plans.",
-    src: "/assets/lead-qualification-industry-4.jpg",
+    src: "/assets/debt-collection-industry-2.jpg",
   },
   {
     label: "Mortgage & Property Finance",
@@ -42,7 +42,7 @@ const INDUSTRIES = [
   {
     label: "Insurance",
     description: "Screen policy inquiries for eligibility and coverage fit.",
-    src: "/assets/lead-qualification-industry-6.jpg",
+    src: "/assets/debt-collection-industry-5.jpg",
   },
   {
     label: "Marketing & Sales Teams",
@@ -68,24 +68,24 @@ const WORKFLOWS = [
     title: "Intent Analysis",
     description:
       "Detect interest level, urgency, and qualification status in real time by analyzing responses and sentiment.",
-    src: "/assets/lead-qualification-workflow-3.jpg",
+    src: "/assets/promise-to-pay-workflow-2.jpg",
   },
   {
     title: "Compliance & Consent Logging",
     description:
       "Ensure every communication is compliant (e.g., GLBA, TCPA, HIPAA), log disclosures, and handle opt-outs.",
-    src: "/assets/lead-qualification-workflow-4.jpg",
+    src: "/assets/security-4.jpg",
   },
   {
     title: "Human Handoff",
     description: "Escalate complex cases or high-value opportunities to live human agents when needed.",
-    src: "/assets/lead-qualification-workflow-5.jpg",
+    src: "/assets/feature-6.jpg",
   },
   {
     title: "Appointment Scheduling",
     description:
       "Book meetings, site visits, callbacks, or policy walkthroughs automatically without human coordination.",
-    src: "/assets/lead-qualification-workflow-6.jpg",
+    src: "/assets/feature-4.jpg",
   },
 ];
 

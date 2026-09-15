@@ -44,7 +44,7 @@ const STEPS = [
     title: "Sync outcomes back",
     description:
       "Call outcomes and transcripts are written back to your platform via API, webhook, or downloadable CSV. Everything stays audit-ready.",
-    src: "/assets/collection-software-step-4.jpg",
+    src: "/assets/promise-to-pay-workflow-3.jpg",
   },
 ];
 
@@ -54,7 +54,7 @@ const CAPABILITY_CARDS = [
     description:
       "Effectively capture promise-to-pays with timely and compliant payment reminder calls.",
     Icon: BankIcon,
-    src: "/assets/collection-software-capability-1.jpg",
+    src: "/assets/promise-to-pay-industries-1.jpg",
   },
   {
     title: "Lending & Financial Services",
@@ -68,7 +68,7 @@ const CAPABILITY_CARDS = [
     description:
       "Reduce missed payments with timely reminders and meaningful capturing of promise-to-pays, with a smooth experience for your customers.",
     Icon: SignalTowerIcon,
-    src: "/assets/collection-software-capability-3.jpg",
+    src: "/assets/promise-to-pay-industries-3.jpg",
   },
 ];
 
@@ -77,7 +77,7 @@ const WORKFLOWS = [
     title: "Payment Reminders",
     description:
       "Automated reminder calls before and after due dates, with every outcome logged back to your platform.",
-    src: "/assets/collection-software-workflow-1.jpg",
+    src: "/assets/why-works-1.jpg",
   },
   {
     title: "Promise to Pay Capture",
@@ -89,13 +89,13 @@ const WORKFLOWS = [
     title: "Right Party Contact",
     description:
       "Verify identity before any account discussion so every conversation stays compliant.",
-    src: "/assets/collection-software-workflow-3.jpg",
+    src: "/assets/why-works-3.jpg",
   },
   {
     title: "Dispute Triage",
     description:
       "Log disputes, tag the account, and route complex cases to your human agents.",
-    src: "/assets/collection-software-workflow-4.jpg",
+    src: "/assets/why-works-4.jpg",
   },
 ];
 
@@ -194,7 +194,7 @@ export default function CollectionSoftwarePage() {
               "Vodex adds a Voice AI layer to your platform instantly; no rebuilds required.",
             items: ["Instant integration", "No rebuilds", "Multi-channel consistency"],
           }}
-          bgImage="/assets/collection-software-voicelayer-bg.jpg"
+          bgImage="/assets/about-vision-bg.jpg"
         />
         <SolutionIndustries
           eyebrow="Platform"

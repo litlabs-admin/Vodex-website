@@ -17,9 +17,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * See CLAUDE.md §21 for the full reasoning behind this page's build,
- * including the "Named Voices" → "Data Protection" eyebrow correction and
- * the Footer/ResourcesMegaMenu nav-wiring decisions.
+ * Notable decisions: the reference's "Named Voices" eyebrow is corrected to
+ * "Data Protection", and the page is linked from both the Footer and the
+ * Resources mega-menu.
  */
 export default function CompliancePage() {
   return (

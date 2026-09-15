@@ -20,8 +20,7 @@ export const metadata: Metadata = {
  * Built "like the blog page" per explicit user direction — dedicated
  * CaseStudyFeatured/CaseStudyGrid components (new, not the shared
  * FeaturedCaseStudy/Resources sections) rather than reusing or editing the
- * landing page's existing sections. See CLAUDE.md §19 for the full
- * reasoning, including which mockup elements were kept vs. dropped.
+ * landing page's existing sections.
  */
 export default function CaseStudiesPage() {
   const featured = getFeaturedCaseStudy();

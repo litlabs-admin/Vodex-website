@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * See CLAUDE.md §20 for the full reasoning behind this page's three
+ * This page has three
  * confirmed deviations from the reference PDF: mock/placeholder FAQ copy
  * (kept generic per explicit user direction, not rewritten like the
  * landing page's own FAQ), functional category tabs replacing the PDF's

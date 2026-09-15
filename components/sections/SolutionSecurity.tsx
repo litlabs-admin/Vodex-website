@@ -48,7 +48,7 @@ export function SolutionSecurity({ items }: SolutionSecurityProps) {
           <div className={styles.grid}>
             {resources.map((r, i) => (
               // Outer Entrance gates the reveal; the inner card owns the
-              // hover lift (CLAUDE.md §23).
+              // hover lift, so `rise`'s fill mode can't pin its transform.
               <Entrance key={r.key} delay={i * 60} className={styles.cardWrap}>
                 <article className={styles.card}>
                   <div className={styles.thumb} data-fit={r.thumbFit}>

@@ -3,8 +3,7 @@ import "server-only";
 import { readFrontmatterDir } from "@/lib/mdx";
 
 /**
- * Real content, migrated from Webflow's "case-studies" collection — see
- * scripts/webflow/. Body sections (About / Challenges / Solutions /
+ * Real content, migrated from Webflow's "case-studies" collection. Body sections (About / Challenges / Solutions /
  * Results) live as MDX in content/case-studies/*.mdx; this module reads
  * only the frontmatter for the listing/card views. The detail route
  * (app/resources/case-studies/[slug]/page.tsx) calls lib/mdx.ts's

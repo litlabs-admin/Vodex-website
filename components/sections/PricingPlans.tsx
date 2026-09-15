@@ -1,11 +1,8 @@
 import type { CSSProperties } from "react";
-import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { CheckIcon } from "@/components/ui/icons";
 import { Entrance } from "@/components/ui/Entrance";
-import popularBadge from "@/public/assets/pricing-badge-popular.jpg";
-import bestValueBadge from "@/public/assets/pricing-badge-best-value.jpg";
 import styles from "./PricingPlans.module.css";
 
 type Plan = {
@@ -14,16 +11,11 @@ type Plan = {
   description: string;
   features: string[];
   cta: { label: string; href: string };
-  badge?: { src: StaticImageData; alt: string };
   dark?: boolean;
 };
 
 /* Content matches the previous (live) Vodex pricing page: two tiers only —
-   a free trial tier and a single Enterprise plan. The old 5-tier ladder
-   (Starter/Standard/Premium, with the "Popular"/"Best Value" ribbons) was
-   invented copy and is gone; `Plan.badge`/`.ribbon` are kept in place since
-   nothing renders them today but the styling is still correct if a tier
-   ever needs one again. */
+   a free trial tier and a single Enterprise plan. */
 const PLANS: Plan[] = [
   {
     name: "Free",
@@ -75,13 +67,6 @@ export function PricingPlans() {
           {PLANS.map((plan, i) => (
             <Entrance key={plan.name} delay={i * 70} as="article" className={styles.cardWrap}>
               <div className={[styles.card, plan.dark ? styles.cardDark : ""].filter(Boolean).join(" ")}>
-                {plan.badge ? (
-                  <div className={styles.ribbon}>
-                    <Image src={plan.badge.src} alt={plan.badge.alt} className={styles.ribbonImage} />
-                    <span className={styles.ribbonSheen} aria-hidden="true" />
-                  </div>
-                ) : null}
-
                 <p className={styles.planName}>{plan.name}</p>
                 <p className={styles.price}>
                   {plan.price}

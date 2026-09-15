@@ -3,9 +3,9 @@ import Link from "next/link";
 import { Entrance } from "@/components/ui/Entrance";
 import styles from "./ResearchTts.module.css";
 import tts1 from "@/public/assets/research-tts-1.jpg";
-import tts2 from "@/public/assets/research-tts-2.jpg";
+import tts2 from "@/public/assets/collection-software-step-2.jpg";
 import tts3 from "@/public/assets/research-tts-3.jpg";
-import tts4 from "@/public/assets/research-tts-4.jpg";
+import tts4 from "@/public/assets/feature-5.jpg";
 
 const CARDS = [
   {

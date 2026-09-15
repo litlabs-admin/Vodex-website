@@ -11,8 +11,8 @@ import { ResourcesMegaMenu, RESOURCES_ITEMS } from "./ResourcesMegaMenu";
 import { CompanyMegaMenu, COMPANY_ITEMS } from "./CompanyMegaMenu";
 import styles from "./Navbar.module.css";
 
-// "Solutions"/"Resources"/"Company" have no hub page (none is planned — see
-// CLAUDE.md) — they're hover-only triggers on desktop (each renders its own
+// "Solutions"/"Resources"/"Company" have no hub page (none is planned) —
+// they're hover-only triggers on desktop (each renders its own
 // mega-menu, see the imports above) and tap-to-expand accordions on mobile
 // (built inline below, since there's no hover on touch). "Products"/
 // "Pricing" are the only two plain, directly-navigable top-level links —

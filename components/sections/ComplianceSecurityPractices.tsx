@@ -14,7 +14,7 @@ const CARDS = [
     title: "Role-based access control",
     description:
       "Access to borrower data is scoped by role, so people only see what their job requires.",
-    src: "/assets/compliance-security-2.jpg",
+    src: "/assets/collection-software-step-2.jpg",
   },
   {
     title: "Multi-factor authentication",
@@ -26,7 +26,7 @@ const CARDS = [
     title: "Audit-ready records",
     description:
       "Detailed audit logs, with recordings and transcripts indexed, searchable, and exportable.",
-    src: "/assets/compliance-security-4.jpg",
+    src: "/assets/feature-5.jpg",
   },
 ];
 
