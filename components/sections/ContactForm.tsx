@@ -341,7 +341,7 @@ export function ContactForm() {
               alt=""
               fill
               quality={90}
-              sizes="(max-width: 900px) 100vw, 460px"
+              sizes="(max-width: 1023px) 100vw, 460px"
               style={{ objectFit: "cover" }}
             />
           </Entrance>

@@ -29,7 +29,7 @@ function Figure({ src, width, height, alt, caption }: FigureProps) {
         width={width ?? 1200}
         height={height ?? 675}
         alt={alt}
-        sizes="(max-width: 780px) 100vw, 720px"
+        sizes="(max-width: 1023px) 100vw, 720px"
         className={styles.figureImage}
       />
       {caption && <figcaption className={styles.figcaption}>{caption}</figcaption>}

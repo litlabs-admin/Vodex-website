@@ -56,7 +56,7 @@ export function SolutionSecurity({ items }: SolutionSecurityProps) {
                       src={r.thumb}
                       alt=""
                       fill
-                      sizes="(max-width: 560px) 100vw, (max-width: 1100px) 50vw, 322px"
+                      sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 322px"
                       style={{ objectFit: r.thumbFit === "logo" ? "scale-down" : "cover" }}
                     />
                   </div>

@@ -56,7 +56,7 @@ export function AboutMissionVision({
                   src={bgImage}
                   alt={bgAlt ?? ""}
                   fill
-                  sizes="(max-width: 900px) 100vw, 660px"
+                  sizes="(max-width: 1023px) 100vw, 660px"
                   className={styles.cardImage}
                 />
               )}

@@ -29,7 +29,8 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  height: 34px;
+  min-height: 34px;
+  padding-block: 4px;
   padding-inline: 18px;
   border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.1);
@@ -155,7 +156,11 @@
   --radius: var(--ring-inner);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
+  .section {
+    padding-block: 32px 64px;
+  }
+
   .grid {
     grid-template-columns: 1fr;
   }
@@ -165,9 +170,18 @@
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 767px) {
+  .section {
+    padding-block: 24px 64px;
+  }
+
   .banner {
-    padding: 48px 24px;
+    padding: 48px 20px;
+  }
+
+  .badge {
+    padding-block: 6px;
+    line-height: 1.35;
   }
 
   .actions {

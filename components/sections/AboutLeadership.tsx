@@ -39,7 +39,7 @@ export function AboutLeadership() {
                     src={photo}
                     alt={name}
                     fill
-                    sizes="(max-width: 480px) 90vw, 340px"
+                    sizes="(max-width: 479px) 90vw, 340px"
                     className={styles.photo}
                   />
                 ) : (

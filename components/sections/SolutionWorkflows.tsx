@@ -67,7 +67,7 @@ export function SolutionWorkflows({
                       src={src}
                       alt={`${title} — photo`}
                       fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 900px) 50vw, (max-width: 1327px) 25vw, 322px"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1023px) 50vw, (max-width: 1327px) 25vw, 322px"
                       style={{ objectFit: "cover" }}
                     />
                   </div>
@@ -82,7 +82,7 @@ export function SolutionWorkflows({
                     src={src}
                     alt={`${title} — photo`}
                     fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 900px) 50vw, (max-width: 1327px) 33vw, 436px"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1023px) 50vw, (max-width: 1327px) 33vw, 436px"
                     style={{ objectFit: "cover" }}
                   />
                   <div className={styles.scrim} />

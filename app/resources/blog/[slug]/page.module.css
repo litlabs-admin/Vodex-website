@@ -7,10 +7,14 @@
   max-width: 940px;
   margin-inline: auto;
   display: grid;
+  /* Explicit, not the implicit `auto` track — an auto column grows to its
+     content's min-content width, so a wide table in the article pushed the
+     whole page ~200px past a phone viewport. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 48px;
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .grid {
     grid-template-columns: 220px minmax(0, 1fr);
     gap: 64px;

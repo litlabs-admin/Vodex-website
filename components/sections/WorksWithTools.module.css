@@ -40,7 +40,7 @@
   width: auto;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   .section {
     padding-block: 56px;
   }

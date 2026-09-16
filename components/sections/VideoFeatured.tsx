@@ -16,7 +16,7 @@ export function VideoFeatured({ video }: { video: Video }) {
               src={video.thumb}
               alt=""
               fill
-              sizes="(max-width: 900px) 100vw, 620px"
+              sizes="(max-width: 1023px) 100vw, 620px"
               style={{ objectFit: "cover" }}
               priority
             />

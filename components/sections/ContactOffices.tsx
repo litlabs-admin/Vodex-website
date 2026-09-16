@@ -40,7 +40,7 @@ export function ContactOffices() {
                 alt=""
                 fill
                 quality={90}
-                sizes="(max-width: 900px) 100vw, 50vw"
+                sizes="(max-width: 1023px) 100vw, 50vw"
                 style={{ objectFit: "cover" }}
               />
               <div className={styles.scrim} />

@@ -12,7 +12,8 @@
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  height: 34px;
+  min-height: 34px;
+  padding-block: 4px;
   padding-inline: 20px;
   border-radius: var(--radius-pill);
   background: #ececec;
@@ -90,13 +91,13 @@
   transform: translateX(4px);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .grid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 479px) {
   .section {
     padding-block: 0 64px;
   }

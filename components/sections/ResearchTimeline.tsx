@@ -60,7 +60,7 @@ export function ResearchTimeline() {
                   src={src}
                   alt={`${title} — photo`}
                   fill
-                  sizes="(max-width: 900px) 100vw, 600px"
+                  sizes="(max-width: 1023px) 100vw, 600px"
                   style={{ objectFit: "cover" }}
                 />
               </div>

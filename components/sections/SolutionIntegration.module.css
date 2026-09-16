@@ -28,7 +28,8 @@
   left: 40px;
   display: inline-flex;
   align-items: center;
-  height: 34px;
+  min-height: 34px;
+  padding-block: 4px;
   padding-inline: 18px;
   border-radius: var(--radius-pill);
   background: rgba(20, 8, 0, 0.55);
@@ -83,7 +84,7 @@
   line-height: 1.35;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
   .banner {
     padding: 88px 40px 40px;
   }
@@ -94,7 +95,7 @@
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 767px) {
   .section {
     padding-block: 56px 64px;
   }

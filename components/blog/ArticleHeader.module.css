@@ -75,7 +75,7 @@
   overflow: hidden;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   .header {
     padding-block: calc(var(--header-h) + 32px) 0;
   }

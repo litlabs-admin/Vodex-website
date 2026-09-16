@@ -38,7 +38,7 @@ export function ArticleHeader({ post }: { post: BlogPost }) {
             src={post.thumb}
             alt=""
             fill
-            sizes="(max-width: 1100px) 100vw, 1180px"
+            sizes="(max-width: 1279px) 100vw, 1180px"
             style={{ objectFit: "cover" }}
             /* Same convention as Hero/ProductHero/SolutionHero for large hero
                banners. Matters here specifically: 10 of the 18 migrated Webflow

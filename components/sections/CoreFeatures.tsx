@@ -83,7 +83,7 @@ export function CoreFeatures() {
               src={src}
               alt=""
               fill
-              sizes="(max-width: 560px) 50vw, (max-width: 900px) 34vw, 40vw"
+              sizes="(max-width: 767px) 50vw, (max-width: 1023px) 34vw, 40vw"
               style={{ objectFit: "cover" }}
             />
             <div className={styles.scrim} />

@@ -58,7 +58,7 @@ export function Why() {
                     src={src}
                     alt={caption}
                     fill
-                    sizes="(max-width: 560px) 100vw, (max-width: 820px) 50vw, 300px"
+                    sizes="(max-width: 767px) 100vw, (max-width: 820px) 50vw, 300px"
                     style={{ objectFit: "cover" }}
                   />
                 </div>

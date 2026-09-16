@@ -25,7 +25,8 @@
 .industry {
   display: inline-flex;
   align-items: center;
-  height: 28px;
+  min-height: 28px;
+  padding-block: 4px;
   margin-top: 24px;
   padding-inline: 14px;
   border-radius: var(--radius-pill);
@@ -105,7 +106,7 @@
   color: var(--fg-muted);
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   .header {
     padding-block: calc(var(--header-h) + 32px) 0;
   }
@@ -129,7 +130,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 479px) {
   .stats {
     grid-template-columns: 1fr;
   }

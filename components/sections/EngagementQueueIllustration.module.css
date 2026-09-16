@@ -52,7 +52,10 @@
   width: 480px;
   height: 610px;
   transform-origin: top left;
-  transform: scale(calc(100cqw / 480));
+  /* Needs a unitless ratio: calc(100cqw / 480) is still a length, which made
+     the whole transform invalid and left the canvas unscaled (clipped on
+     narrow frames). tan(atan2(a, b)) is the portable length÷length. */
+  transform: scale(tan(atan2(100cqw, 480px)));
 }
 
 /* --- "Fully Automated" ribbon ------------------------------------------- */

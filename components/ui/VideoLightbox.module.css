@@ -54,7 +54,7 @@
   border: 0;
 }
 
-@media (max-width: 560px) {
+@media (max-width: 767px) {
   .dialog {
     width: 100vw;
   }

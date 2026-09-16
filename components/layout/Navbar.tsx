@@ -66,7 +66,24 @@ export function Navbar({ solid = false }: NavbarProps) {
     return () => window.removeEventListener("scroll", onScroll);
   }, [solid]);
 
-  const isSolid = solid || scrolled;
+  // Past the desktop breakpoint the panel is display:none — drop the open
+  // state too, so rotating/resizing back down doesn't reveal a stale menu.
+  useIsomorphicLayoutEffect(() => {
+    if (!open) return;
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    function onChange() {
+      if (!desktop.matches) return;
+      setOpen(false);
+      setOpenMobileGroup(null);
+    }
+    onChange();
+    desktop.addEventListener("change", onChange);
+    return () => desktop.removeEventListener("change", onChange);
+  }, [open]);
+
+  // An open menu is a solid ink sheet — the bar above it has to match, or
+  // it reads as a transparent strip floating over the hero artwork.
+  const isSolid = solid || scrolled || open;
 
   return (
     <nav
@@ -135,76 +152,78 @@ export function Navbar({ solid = false }: NavbarProps) {
         id="mobile-nav"
         className={`${styles.panel} ${open ? styles.panelOpen : ""}`}
       >
-        <div className={`container ${styles.panelInner}`}>
-          <Link
-            href="/products"
-            className={styles.panelLink}
-            onClick={() => setOpen(false)}
-          >
-            Product
-          </Link>
-
-          {MOBILE_GROUPS.map((group) => {
-            const isGroupOpen = openMobileGroup === group.label;
-            return (
-              <div key={group.label} className={styles.mobileGroup}>
-                <button
-                  type="button"
-                  className={`${styles.panelLink} ${styles.mobileGroupTrigger}`}
-                  aria-expanded={isGroupOpen}
-                  onClick={() =>
-                    setOpenMobileGroup((current) =>
-                      current === group.label ? null : group.label
-                    )
-                  }
-                >
-                  {group.label}
-                  <ChevronDownIcon
-                    className={`${styles.mobileGroupChevron} ${
-                      isGroupOpen ? styles.mobileGroupChevronOpen : ""
-                    }`}
-                  />
-                </button>
-                <div
-                  className={styles.mobileSubPanel}
-                  data-open={isGroupOpen}
-                >
-                  <div className={styles.mobileSubInner}>
-                    {group.items.map((subItem) => (
-                      <Link
-                        key={subItem.label}
-                        href={subItem.href}
-                        className={styles.mobileSubLink}
-                        onClick={() => {
-                          setOpen(false);
-                          setOpenMobileGroup(null);
-                        }}
-                      >
-                        {subItem.label}
-                      </Link>
-                    ))}
+        <div className={styles.panelInner}>
+          <div className={`container ${styles.panelBody}`}>
+            <Link
+              href="/products"
+              className={styles.panelLink}
+              onClick={() => setOpen(false)}
+            >
+              Product
+            </Link>
+  
+            {MOBILE_GROUPS.map((group) => {
+              const isGroupOpen = openMobileGroup === group.label;
+              return (
+                <div key={group.label} className={styles.mobileGroup}>
+                  <button
+                    type="button"
+                    className={`${styles.panelLink} ${styles.mobileGroupTrigger}`}
+                    aria-expanded={isGroupOpen}
+                    onClick={() =>
+                      setOpenMobileGroup((current) =>
+                        current === group.label ? null : group.label
+                      )
+                    }
+                  >
+                    {group.label}
+                    <ChevronDownIcon
+                      className={`${styles.mobileGroupChevron} ${
+                        isGroupOpen ? styles.mobileGroupChevronOpen : ""
+                      }`}
+                    />
+                  </button>
+                  <div
+                    className={styles.mobileSubPanel}
+                    data-open={isGroupOpen}
+                  >
+                    <div className={styles.mobileSubInner}>
+                      {group.items.map((subItem) => (
+                        <Link
+                          key={subItem.label}
+                          href={subItem.href}
+                          className={styles.mobileSubLink}
+                          onClick={() => {
+                            setOpen(false);
+                            setOpenMobileGroup(null);
+                          }}
+                        >
+                          {subItem.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-
-          <Link
-            href="/pricing"
-            className={styles.panelLink}
-            onClick={() => setOpen(false)}
-          >
-            Pricing
-          </Link>
-
-          <div className={styles.panelActions}>
-            <Link href="/login" className={styles.login} style={{ display: "inline-flex" }}>
-              Login
-              <LoginIcon />
+              );
+            })}
+  
+            <Link
+              href="/pricing"
+              className={styles.panelLink}
+              onClick={() => setOpen(false)}
+            >
+              Pricing
             </Link>
-            <Button href={BOOK_DEMO_URL} variant="light" size="sm" withArrow>
-              Book a Demo
-            </Button>
+  
+            <div className={styles.panelActions}>
+              <Link href="/login" className={styles.login} style={{ display: "inline-flex" }}>
+                Login
+                <LoginIcon />
+              </Link>
+              <Button href={BOOK_DEMO_URL} variant="light" size="sm" withArrow>
+                Book a Demo
+              </Button>
+            </div>
           </div>
         </div>
       </div>

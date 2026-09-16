@@ -190,6 +190,23 @@
   align-items: center;
 }
 
+/* On phones the dial trigger sits ~70px in from the cell edge, so a 280px
+   popover anchored to it ran past the viewport (and, even while hidden,
+   widened the page's scroll area). Anchor it to the full-width cell
+   instead and let it span that. */
+@media (max-width: 767px) {
+  .dialWrap {
+    position: static;
+  }
+
+  .dialWrap > [role="presentation"] {
+    left: 0;
+    right: 0;
+    width: auto;
+    max-width: none;
+  }
+}
+
 @keyframes cellShake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
@@ -432,14 +449,14 @@
 
 /* --- Responsive ------------------------------------------------------------- */
 
-@media (max-width: 1100px) {
+@media (max-width: 1279px) {
   .section {
     min-height: 0;
     padding-block: 72px;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .formRow {
     align-items: stretch;
   }
@@ -453,9 +470,7 @@
   .demoWrap .demoButton {
     width: 100%;
   }
-}
 
-@media (max-width: 720px) {
   .section {
     padding-block: 56px;
   }
@@ -465,7 +480,7 @@
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 359px) {
   .captchaSlot {
     transform: scale(0.88);
     transform-origin: left top;

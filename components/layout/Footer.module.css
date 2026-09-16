@@ -190,15 +190,11 @@
   aspect-ratio: 4548 / 1003;
 }
 
-@media (max-width: 640px) {
-  .badgeDivider {
-    display: none;
-  }
-}
-
-@media (max-width: 1100px) {
+@media (max-width: 1023px) {
+  /* Brand block on its own row, then all four link columns side by side —
+     at 768px each column still has ~170px, enough for the longest label. */
   .top {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     row-gap: 40px;
   }
 
@@ -207,16 +203,37 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .footer {
     padding-top: 56px;
   }
 
   .top {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
   }
 
   .newsletter {
     max-width: none;
+  }
+
+  .description {
+    max-width: none;
+  }
+
+  .badgeDivider {
+    display: none;
+  }
+
+  .bottom {
+    flex-direction: column;
+  }
+}
+
+/* Two link columns stop fitting their longest labels ("Investors &
+   Partners", "Promise-to-Pay Capture") below ~360px. */
+@media (max-width: 359px) {
+  .top {
+    grid-template-columns: 1fr;
   }
 }

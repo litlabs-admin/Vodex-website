@@ -53,7 +53,7 @@ export function ComplianceSecurityPractices() {
                   src={src}
                   alt=""
                   fill
-                  sizes="(max-width: 560px) 100vw, (max-width: 1100px) 50vw, 25vw"
+                  sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 25vw"
                   style={{ objectFit: "cover" }}
                 />
               </div>

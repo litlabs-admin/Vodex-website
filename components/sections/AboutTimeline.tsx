@@ -65,7 +65,7 @@ export function AboutTimeline() {
                   src={src}
                   alt={`${tag} — photo`}
                   fill
-                  sizes="(max-width: 900px) 100vw, 600px"
+                  sizes="(max-width: 1023px) 100vw, 600px"
                   style={{ objectFit: "cover" }}
                 />
               </div>

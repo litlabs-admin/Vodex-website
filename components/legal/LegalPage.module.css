@@ -60,6 +60,7 @@
   max-width: 1000px;
   margin-inline: auto;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 48px;
 }
 
@@ -69,7 +70,7 @@
   min-width: 0;
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .grid {
     grid-template-columns: 220px minmax(0, 1fr);
     gap: 64px;
@@ -164,7 +165,7 @@
   text-decoration: underline;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   .header {
     padding-block: calc(var(--header-h) + 40px) 0;
   }

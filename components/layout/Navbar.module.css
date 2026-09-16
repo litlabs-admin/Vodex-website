@@ -145,25 +145,48 @@
      contains variable-height accordion groups (see .mobileSubPanel below),
      so a guessed max-height ceiling would either clip an expanded group or
      leave dead space when every group is collapsed. Same technique as
-     FaqAccordion's item collapse. */
+     FaqAccordion's item collapse. The collapsing grid item (.panelInner)
+     must carry no padding of its own — padding can't shrink below its own
+     size, so it used to leave a ~32px strip of the first link peeking out
+     under the bar while "closed". The spacing lives on .panelBody instead.
+     visibility (delayed on close) keeps the collapsed links out of the tab
+     order. */
   .panel {
     display: grid;
     grid-template-rows: 0fr;
     overflow: hidden;
+    visibility: hidden;
     background: var(--ink);
-    transition: grid-template-rows 320ms var(--ease);
+    transition:
+      grid-template-rows 320ms var(--ease),
+      visibility 0s 320ms;
   }
 
   .panelOpen {
     grid-template-rows: 1fr;
+    visibility: visible;
+    transition:
+      grid-template-rows 320ms var(--ease),
+      visibility 0s;
   }
 
   .panelInner {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* Scrolls on its own when the expanded menu is taller than the space
+     left under the header (phones in landscape, or every group open). */
+  .panelOpen .panelInner {
+    max-height: calc(100dvh - var(--nav-h));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .panelBody {
     display: grid;
     gap: 4px;
     padding-block: 8px 24px;
-    min-height: 0;
-    overflow: hidden;
   }
 
   .panelLink {
@@ -175,6 +198,7 @@
 
   .panelActions {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 16px;
     padding-top: 16px;
@@ -249,7 +273,7 @@
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 479px) {
   .navCta {
     display: none;
   }

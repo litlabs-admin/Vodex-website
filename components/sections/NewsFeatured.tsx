@@ -19,7 +19,7 @@ export function NewsFeatured({ post }: { post: NewsPost }) {
               src={post.thumb}
               alt=""
               fill
-              sizes="(max-width: 900px) 100vw, 620px"
+              sizes="(max-width: 1023px) 100vw, 620px"
               // scale-down, not cover — outlet logo, not a photo. See
               // NewsCard.module.css's .thumb comment.
               style={{ objectFit: "scale-down" }}

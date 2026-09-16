@@ -22,7 +22,8 @@
   /* --- Layout ------------------------------------------------------------ */
   --container: 1440px;     /* content grid inside the 1516px artboard        */
   --container-nav: 1348px; /* navbar lockup is inset further than the grid   */
-  --page-x: 40px;
+  /* Fluid page gutter: 16px at 320px, 40px from 1000px up. */
+  --page-x: clamp(16px, 4vw, 40px);
 
   --announce-h: 44px;
   --nav-h: 64px;
@@ -99,6 +100,25 @@ figure {
   margin: 0;
 }
 
+/* Evens out ragged display lines on narrow screens (no orphan word on a
+   line of its own); ignored where unsupported. */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* Long unbroken tokens (emails, URLs) must never push past the viewport. */
+p,
+li,
+dd,
+h1,
+h2,
+h3,
+h4 {
+  overflow-wrap: break-word;
+}
+
 ul {
   margin: 0;
   padding: 0;
@@ -119,7 +139,9 @@ button {
 }
 
 img,
-svg {
+svg,
+video,
+iframe {
   display: block;
   max-width: 100%;
 }
@@ -255,16 +277,14 @@ html[data-announcement-dismissed="true"] .js-announcement-bar {
 
 /* ==========================================================================
    Responsive layout scale
-   ========================================================================== */
+   ==========================================================================
+   Canonical breakpoints — plain CSS has no custom media, so component
+   modules use these literal values (max-width queries, desktop-first):
 
-@media (max-width: 1100px) {
-  :root {
-    --page-x: 32px;
-  }
-}
+     1279px  small desktop / large tablet landscape
+     1023px  tablet            (768–1023)
+      767px  mobile            (320–767)
+      479px  small mobile
 
-@media (max-width: 720px) {
-  :root {
-    --page-x: 20px;
-  }
-}
+   Height-constrained layouts (phones in landscape) use
+   (max-height: 500px) and (orientation: landscape). */

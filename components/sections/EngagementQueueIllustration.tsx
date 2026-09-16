@@ -44,7 +44,7 @@ export function EngagementQueueIllustration() {
         src={bgPhoto}
         alt=""
         fill
-        sizes="(max-width: 860px) 90vw, (max-width: 1440px) 40vw, 480px"
+        sizes="(max-width: 1023px) 90vw, (max-width: 1440px) 40vw, 480px"
         quality={75}
         placeholder="blur"
         className={styles.bg}

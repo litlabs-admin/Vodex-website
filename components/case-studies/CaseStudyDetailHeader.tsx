@@ -40,7 +40,7 @@ export function CaseStudyDetailHeader({ study }: { study: CaseStudy }) {
             src={study.thumb}
             alt=""
             fill
-            sizes="(max-width: 1100px) 100vw, 1180px"
+            sizes="(max-width: 1279px) 100vw, 1180px"
             style={{ objectFit: "cover" }}
             quality={90}
             priority

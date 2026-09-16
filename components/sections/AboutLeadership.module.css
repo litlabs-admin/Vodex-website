@@ -12,7 +12,8 @@
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  height: 34px;
+  min-height: 34px;
+  padding-block: 4px;
   padding-inline: 20px;
   border-radius: var(--radius-pill);
   background: #ececec;
@@ -93,7 +94,7 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
-@media (max-width: 480px) {
+@media (max-width: 479px) {
   .section {
     padding-block: 64px;
   }

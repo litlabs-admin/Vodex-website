@@ -12,7 +12,8 @@
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  height: 34px;
+  min-height: 34px;
+  padding-block: 4px;
   padding-inline: 20px;
   border-radius: var(--radius-pill);
   background: #ececec;
@@ -99,7 +100,8 @@
 .tag {
   display: inline-flex;
   align-items: center;
-  height: 32px;
+  min-height: 32px;
+  padding-block: 4px;
   padding-inline: 16px;
   border-radius: var(--radius-pill);
   background: var(--brand);
@@ -130,7 +132,7 @@
   text-underline-offset: 3px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
   .rows {
     margin-top: 56px;
     gap: 40px;
@@ -168,7 +170,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 479px) {
   .section {
     padding-block: 64px 0;
   }

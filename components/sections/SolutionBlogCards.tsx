@@ -33,7 +33,7 @@ export function SolutionBlogCards({ lead, posts }: SolutionBlogCardsProps) {
                   src={r.thumb}
                   alt=""
                   fill
-                  sizes="(max-width: 1100px) 100vw, 33vw"
+                  sizes="(max-width: 1279px) 100vw, 33vw"
                   style={{ objectFit: "cover" }}
                 />
               </div>

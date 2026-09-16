@@ -40,7 +40,7 @@
   font-weight: 600;
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .nav {
     display: block;
   }
