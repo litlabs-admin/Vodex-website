@@ -18,6 +18,9 @@ import solutionHeroBg from "@/public/assets/debt-collection-hero-bg.jpg";
 import statBandBg from "@/public/assets/case-study-bg.jpg";
 import integrationBg from "@/public/assets/case-study-featured-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { DEBT_COLLECTION_FAQS } from "@/lib/faqs";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { faqPageSchema } from "@/lib/structured-data";
 import { BOOK_DEMO_URL } from "@/lib/links";
 
 const STATS = [
@@ -152,7 +155,8 @@ export default function DebtCollectionPage() {
           items={INTEGRATION_ITEMS}
           bgImage={integrationBg}
         />
-        <Faq />
+        <Faq items={DEBT_COLLECTION_FAQS} />
+        <JsonLd data={faqPageSchema(DEBT_COLLECTION_FAQS)} />
         <SolutionBlogCards
           lead="Playbooks and field notes on running compliant, high-recovery collections with voice AI."
           posts={BLOG_POSTS}

@@ -14,6 +14,9 @@ import { FinalCta } from "@/components/sections/FinalCta";
 import { BankIcon, PhoneCallIcon, SignalTowerIcon } from "@/components/ui/icons";
 import solutionHeroBg from "@/public/assets/blog-hero-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { PROMISE_TO_PAY_FAQS } from "@/lib/faqs";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { faqPageSchema } from "@/lib/structured-data";
 import { BOOK_DEMO_URL } from "@/lib/links";
 
 const INDUSTRY_CARDS = [
@@ -149,7 +152,8 @@ export default function PromiseToPayPage() {
             COMPLIANCE_PAGE_REF,
           ]}
         />
-        <Faq />
+        <Faq items={PROMISE_TO_PAY_FAQS} />
+        <JsonLd data={faqPageSchema(PROMISE_TO_PAY_FAQS)} />
         <EnterpriseBand />
         <FinalCta />
       </main>

@@ -13,6 +13,9 @@ import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import solutionHeroBg from "@/public/assets/collection-software-hero-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { LEAD_QUALIFICATION_FAQS } from "@/lib/faqs";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { faqPageSchema } from "@/lib/structured-data";
 import { BOOK_DEMO_URL } from "@/lib/links";
 
 const INDUSTRIES = [
@@ -159,7 +162,8 @@ export default function LeadQualificationPage() {
             COMPLIANCE_PAGE_REF,
           ]}
         />
-        <Faq />
+        <Faq items={LEAD_QUALIFICATION_FAQS} />
+        <JsonLd data={faqPageSchema(LEAD_QUALIFICATION_FAQS)} />
         <EnterpriseBand />
         <FinalCta />
       </main>

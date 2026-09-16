@@ -17,7 +17,8 @@ import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { organizationSchema, websiteSchema } from "@/lib/structured-data";
+import { faqPageSchema, organizationSchema, websiteSchema } from "@/lib/structured-data";
+import { HOME_FAQS } from "@/lib/faqs";
 
 export const metadata: Metadata = pageMetadata({
   title: "Voice AI for Debt Collection & Automated Outreach | Vodex",
@@ -29,7 +30,7 @@ export const metadata: Metadata = pageMetadata({
 export default function HomePage() {
   return (
     <>
-      <JsonLd data={[organizationSchema(), websiteSchema()]} />
+      <JsonLd data={[organizationSchema(), websiteSchema(), faqPageSchema(HOME_FAQS)]} />
       <header className="siteHeader">
         <AnnouncementBar />
         <Navbar />
@@ -45,7 +46,7 @@ export default function HomePage() {
         <Why />
         <FeaturedCaseStudy />
         <Resources />
-        <Faq />
+        <Faq items={HOME_FAQS} />
         <EnterpriseBand />
         <FinalCta />
       </main>

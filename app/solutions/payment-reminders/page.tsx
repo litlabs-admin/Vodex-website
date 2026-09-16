@@ -14,6 +14,9 @@ import { FinalCta } from "@/components/sections/FinalCta";
 import { BankIcon, PhoneCallIcon, ShieldPlusIcon } from "@/components/ui/icons";
 import solutionHeroBg from "@/public/assets/solution-payment-reminders-hero-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { PAYMENT_REMINDERS_FAQS } from "@/lib/faqs";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { faqPageSchema } from "@/lib/structured-data";
 import { BOOK_DEMO_URL } from "@/lib/links";
 
 const INDUSTRY_CARDS = [
@@ -142,7 +145,8 @@ export default function PaymentRemindersPage() {
             COMPLIANCE_PAGE_REF,
           ]}
         />
-        <Faq />
+        <Faq items={PAYMENT_REMINDERS_FAQS} />
+        <JsonLd data={faqPageSchema(PAYMENT_REMINDERS_FAQS)} />
         <EnterpriseBand />
         <FinalCta />
       </main>

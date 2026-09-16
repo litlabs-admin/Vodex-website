@@ -21,6 +21,9 @@ import {
 } from "@/components/ui/icons";
 import solutionHeroBg from "@/public/assets/collection-software-hero-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { COLLECTION_SOFTWARE_FAQS } from "@/lib/faqs";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { faqPageSchema } from "@/lib/structured-data";
 import { BOOK_DEMO_URL } from "@/lib/links";
 
 const STEPS = [
@@ -236,7 +239,8 @@ export default function CollectionSoftwarePage() {
           items={COMPLIANCE_ITEMS}
           closing={CLOSING}
         />
-        <Faq />
+        <Faq items={COLLECTION_SOFTWARE_FAQS} />
+        <JsonLd data={faqPageSchema(COLLECTION_SOFTWARE_FAQS)} />
         <EnterpriseBand />
         <FinalCta />
       </main>

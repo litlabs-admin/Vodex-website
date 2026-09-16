@@ -12,6 +12,9 @@ import { Faq } from "@/components/sections/Faq";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { pageMetadata } from "@/lib/seo";
+import { PRODUCT_FAQS } from "@/lib/faqs";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { faqPageSchema } from "@/lib/structured-data";
 
 export const metadata: Metadata = pageMetadata({
   title: "Automate Inbound & Outbound Calls with AI Voice Agents",
@@ -34,7 +37,8 @@ export default function ProductsPage() {
         <WorksWithTools />
         <SeeItInAction />
         <WhatYourTeamGets />
-        <Faq />
+        <Faq items={PRODUCT_FAQS} />
+        <JsonLd data={faqPageSchema(PRODUCT_FAQS)} />
         <EnterpriseBand />
         <FinalCta />
       </main>

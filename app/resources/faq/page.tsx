@@ -10,6 +10,9 @@ import { FinalCta } from "@/components/sections/FinalCta";
 import faqHeroBg from "@/public/assets/results-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
 import { BOOK_DEMO_URL } from "@/lib/links";
+import { FAQ_PAGE_FAQS } from "@/lib/faqs";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { faqPageSchema } from "@/lib/structured-data";
 
 export const metadata: Metadata = pageMetadata({
   title: "Frequently Asked Questions | Vodex",
@@ -19,13 +22,9 @@ export const metadata: Metadata = pageMetadata({
 });
 
 /**
- * This page has three
- * confirmed deviations from the reference PDF: mock/placeholder FAQ copy
- * (kept generic per explicit user direction, not rewritten like the
- * landing page's own FAQ), functional category tabs replacing the PDF's
- * content-type tabs (Overview/Tutorials/Product/Podcasts & Interviews →
- * Overview/Product/Compliance & Security/Pricing), and the Help Center
- * card's link text fixed from a mismatched "Medical & Healthcare →".
+ * FAQ copy and categories come from the old vodex.ai /faq page
+ * (lib/faqs.ts). The Help Center card's link text was fixed from a
+ * mismatched "Medical & Healthcare →".
  */
 export default function FaqPage() {
   return (
@@ -49,6 +48,7 @@ export default function FaqPage() {
           bgImage={faqHeroBg}
         />
         <FaqTopics />
+        <JsonLd data={faqPageSchema(FAQ_PAGE_FAQS)} />
         <FaqHumanSupport />
         <EnterpriseBand />
         <FinalCta />
