@@ -12,6 +12,7 @@ import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import researchHeroBg from "@/public/assets/results-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 export const metadata: Metadata = pageMetadata({
   title: "Vodex Research – Voice AI Innovation & Model Development",
@@ -43,8 +44,8 @@ export default function ResearchPage() {
             </>
           }
           lead="Vodex is an AI-native voice automation company building speech intelligence for real-world, high-stakes conversations in mortgage, insurance, and collections."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={researchHeroBg}
         />
         <ResearchTimeline />

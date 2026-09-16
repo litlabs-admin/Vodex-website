@@ -10,6 +10,7 @@ import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import contactHeroBg from "@/public/assets/debt-collection-hero-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 export const metadata: Metadata = pageMetadata({
   title: "Contact Vodex",
@@ -42,8 +43,8 @@ export default function ContactPage() {
             </>
           }
           lead="Whether you're a potential partner, a curious customer, a talented candidate, or an interested investor, we'd love to hear from you. Let's explore opportunities together."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={contactHeroBg}
         />
         <ContactDepartments />

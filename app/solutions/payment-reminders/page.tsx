@@ -14,6 +14,7 @@ import { FinalCta } from "@/components/sections/FinalCta";
 import { BankIcon, PhoneCallIcon, ShieldPlusIcon } from "@/components/ui/icons";
 import solutionHeroBg from "@/public/assets/solution-payment-reminders-hero-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 const INDUSTRY_CARDS = [
   {
@@ -116,8 +117,8 @@ export default function PaymentRemindersPage() {
             </>
           }
           lead="Timely reminders help your customers avoid missed payments and reduce delinquencies."
-          primaryCta={{ label: "Get Started", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Get Started", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={solutionHeroBg}
         />
         <SolutionIndustries

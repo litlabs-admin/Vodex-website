@@ -13,6 +13,7 @@ import {
   type InitiateCallInput,
 } from "@/lib/initiate-call-validation";
 import styles from "./InitiateCall.module.css";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 type FieldName = Exclude<InitiateCallField, "country">;
 const FIELD_ORDER: FieldName[] = ["name", "email", "phone"];
@@ -295,7 +296,7 @@ export function InitiateCallForm() {
         ) : null}
 
         <Entrance delay={280} className={styles.demoWrap}>
-          <Button href="/demo" variant="light" size="lg" className={styles.demoButton}>
+          <Button href={BOOK_DEMO_URL} variant="light" size="lg" className={styles.demoButton}>
             Book a Demo
           </Button>
         </Entrance>

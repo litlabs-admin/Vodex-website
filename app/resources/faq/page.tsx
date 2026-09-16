@@ -9,6 +9,7 @@ import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import faqHeroBg from "@/public/assets/results-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 export const metadata: Metadata = pageMetadata({
   title: "Frequently Asked Questions | Vodex",
@@ -43,8 +44,8 @@ export default function FaqPage() {
             </>
           }
           lead="Everything you need to know about putting GenAI voice agents to work, from platform basics to collections-specific compliance, performance, and pricing."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={faqHeroBg}
         />
         <FaqTopics />

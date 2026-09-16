@@ -3,6 +3,7 @@ import { ChatIcon } from "@/components/ui/icons";
 import { Entrance } from "@/components/ui/Entrance";
 import { FaqAccordion } from "./FaqAccordion";
 import styles from "./Faq.module.css";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 /**
  * The reference PDF's FAQ copy ("Recruiting vs Staffing pricing", "Talently")
@@ -74,7 +75,7 @@ export function Faq({ items = FAQS }: { items?: FaqItem[] }) {
                 Talk to our team about putting GenAI voice agents to work for
                 your collections pipeline.
               </p>
-              <Button href="/demo" className={styles.cardButton} withArrow>
+              <Button href={BOOK_DEMO_URL} className={styles.cardButton} withArrow>
                 Talk to Sales
               </Button>
             </div>

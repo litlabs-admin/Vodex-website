@@ -18,6 +18,7 @@ import solutionHeroBg from "@/public/assets/debt-collection-hero-bg.jpg";
 import statBandBg from "@/public/assets/case-study-bg.jpg";
 import integrationBg from "@/public/assets/case-study-featured-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 const STATS = [
   { number: "3X", label: "Debt recovery rate improvement" },
@@ -118,8 +119,8 @@ export default function DebtCollectionPage() {
             </>
           }
           lead="For payment reminders, overdue follow-ups, and debt recovery, helping you scale collections while staying fully compliant."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={solutionHeroBg}
         />
         <SolutionStatBand bgImage={statBandBg} stats={STATS} />

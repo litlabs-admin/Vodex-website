@@ -13,6 +13,7 @@ import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import solutionHeroBg from "@/public/assets/collection-software-hero-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 const INDUSTRIES = [
   {
@@ -133,8 +134,8 @@ export default function LeadQualificationPage() {
             </>
           }
           lead="Automate borrower screening and pre-qualification with natural conversations that verify intent, financial readiness, and eligibility for credit or repayment programs."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={solutionHeroBg}
         />
         <SolutionIndustryStrip

@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Entrance } from "@/components/ui/Entrance";
 import styles from "./FinalCta.module.css";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 /* Angles are measured off the reference illustration as clock angles from the
    cluster's centre (0deg = 12 o'clock, positive = clockwise); each icon then
@@ -45,7 +46,7 @@ export function FinalCta() {
               </p>
 
               <div className={styles.actions}>
-                <Button href="/demo" variant="primary" withArrow>
+                <Button href={BOOK_DEMO_URL} variant="primary" withArrow>
                   Schedule a Demo
                 </Button>
                 <Button href="/use-cases" variant="secondary">

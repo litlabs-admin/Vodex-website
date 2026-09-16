@@ -12,6 +12,7 @@ import pricingHeroBg from "@/public/assets/collection-software-hero-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { faqPageSchema } from "@/lib/structured-data";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 export const metadata: Metadata = pageMetadata({
   title: "Flexible Voice AI Pricing — Only Pay for Connected Calls | Vodex",
@@ -88,8 +89,8 @@ export default function PricingPage() {
             </>
           }
           lead="No commitments to get started. Enterprise plans are available for teams with advanced requirements."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={pricingHeroBg}
         />
         <PricingPlans />

@@ -8,6 +8,7 @@ import { Resources } from "@/components/sections/Resources";
 import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import callSamplesHeroBg from "@/public/assets/debt-collection-hero-bg.jpg";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 export const metadata: Metadata = {
   title: "Vodex — Call Samples",
@@ -40,8 +41,8 @@ export default function CallSamplesPage() {
             </>
           }
           lead="Explore real call recordings and see how AI-powered voice agents can transform your business."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={callSamplesHeroBg}
         />
         <CallSamples />

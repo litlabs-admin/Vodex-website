@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { CheckIcon } from "@/components/ui/icons";
 import { Entrance } from "@/components/ui/Entrance";
 import styles from "./PricingPlans.module.css";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 type Plan = {
   name: string;
@@ -27,7 +28,7 @@ const PLANS: Plan[] = [
       "AI Agent builder",
       "Platform access",
     ],
-    cta: { label: "Get started", href: "/demo" },
+    cta: { label: "Get started", href: BOOK_DEMO_URL },
   },
   {
     name: "Enterprise Plan",

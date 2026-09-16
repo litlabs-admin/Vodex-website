@@ -10,6 +10,7 @@ import { PlayIcon } from "@/components/ui/icons";
 import { VIDEO_CATEGORIES, getFeaturedVideo, getGridVideos } from "@/lib/videos";
 import videosHeroBg from "@/public/assets/product-hero-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 export const metadata: Metadata = pageMetadata({
   title: "Vodex Videos | Insights, Demos & AI in Action",
@@ -35,8 +36,8 @@ export default function VideosIndexPage() {
           badgeIcon={PlayIcon}
           titleLines={<>Videos &amp; podcasts</>}
           lead="Check out our latest videos, including insights, updates, announcements, demos, customer stories, tutorials & podcasts."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={videosHeroBg}
         />
         <VideoFeatured video={featured} />

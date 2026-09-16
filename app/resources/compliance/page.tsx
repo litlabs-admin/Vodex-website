@@ -10,6 +10,7 @@ import { EnterpriseBand } from "@/components/sections/EnterpriseBand";
 import { FinalCta } from "@/components/sections/FinalCta";
 import complianceHeroBg from "@/public/assets/debt-collection-hero-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 export const metadata: Metadata = pageMetadata({
   title: "Vodex Compliance & Security",
@@ -40,8 +41,8 @@ export default function CompliancePage() {
             </>
           }
           lead="Vodex is ISO 27001 and SOC 2 Type II certified. Disclosures, calling windows, consent handling, opt-outs, call caps, and audit logging are enforced on every call, so sensitive borrower information stays protected."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={complianceHeroBg}
         />
         <ComplianceCertifications />

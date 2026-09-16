@@ -9,6 +9,7 @@ import { FinalCta } from "@/components/sections/FinalCta";
 import { CATEGORIES, getFeaturedPost, getGridPosts } from "@/lib/blog-posts";
 import blogHeroBg from "@/public/assets/blog-hero-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 export const metadata: Metadata = pageMetadata({
   title: "Vodex | Blogs",
@@ -38,8 +39,8 @@ export default function BlogIndexPage() {
             </>
           }
           lead="Field notes from thousands of AI-run conversations. Collections, compliance, and the future of voice."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={blogHeroBg}
         />
         <BlogFeaturedPost post={featured} />

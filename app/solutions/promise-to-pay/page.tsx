@@ -14,6 +14,7 @@ import { FinalCta } from "@/components/sections/FinalCta";
 import { BankIcon, PhoneCallIcon, SignalTowerIcon } from "@/components/ui/icons";
 import solutionHeroBg from "@/public/assets/blog-hero-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 const INDUSTRY_CARDS = [
   {
@@ -123,8 +124,8 @@ export default function PromiseToPayPage() {
             </>
           }
           lead="Automated agents that handle payment term negotiations, capture payment-related intent, whether partial or complete, and handle compliance language automatically."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={solutionHeroBg}
         />
         <SolutionIndustries

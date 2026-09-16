@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/icons";
 import solutionHeroBg from "@/public/assets/collection-software-hero-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 const STEPS = [
   {
@@ -159,8 +160,8 @@ export default function CollectionSoftwarePage() {
             </>
           }
           lead="Run payment reminders, capture promises-to-pay, and write outcomes back to your collections platform. With pilot-ready and API-first integration."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={solutionHeroBg}
         />
         <SolutionIntegrationSteps

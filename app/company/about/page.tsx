@@ -14,6 +14,7 @@ import aboutVisionBg from "@/public/assets/about-vision-bg.jpg";
 import aboutLocationUsa from "@/public/assets/about-location-usa.jpg";
 import aboutLocationIndia from "@/public/assets/about-location-india.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 export const metadata: Metadata = pageMetadata({
   title: "About Us | Vodex",
@@ -48,8 +49,8 @@ export default function AboutPage() {
             </>
           }
           lead="Vodex was born from a clear realization: traditional outreach methods were holding businesses back. The founders saw potential in using Gen AI for improved communication, creating a platform that redefines how businesses handle their outbound and inbound communication."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={aboutHeroBg}
         />
         <AboutStats />

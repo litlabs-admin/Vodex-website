@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Entrance } from "@/components/ui/Entrance";
 import { Waveform } from "@/components/ui/icons";
 import styles from "./Hero.module.css";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 export function Hero() {
   return (
@@ -46,7 +47,7 @@ export function Hero() {
         </Entrance>
 
         <Entrance delay={260} className={styles.actions}>
-          <Button href="/demo" variant="primary" withArrow>
+          <Button href={BOOK_DEMO_URL} variant="primary" withArrow>
             Schedule a Demo
           </Button>
           <Button href="/use-cases" variant="secondary">

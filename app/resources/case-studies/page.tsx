@@ -10,6 +10,7 @@ import { FinalCta } from "@/components/sections/FinalCta";
 import { getFeaturedCaseStudy, getGridCaseStudies } from "@/lib/case-studies";
 import caseStudiesHeroBg from "@/public/assets/solution-payment-reminders-hero-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 export const metadata: Metadata = pageMetadata({
   title: "Vodex Case Studies | AI Voice Agents Driving Business Success",
@@ -44,8 +45,8 @@ export default function CaseStudiesPage() {
             </>
           }
           lead="How collections teams and enterprises use Vodex AI voice agents to recover more, connect more, and spend less per contact."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={caseStudiesHeroBg}
         />
         <CaseStudyFeatured study={featured} />

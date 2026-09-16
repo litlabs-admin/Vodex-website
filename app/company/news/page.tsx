@@ -10,6 +10,7 @@ import { FinalCta } from "@/components/sections/FinalCta";
 import { CATEGORIES, getFeaturedPost, getGridPosts } from "@/lib/news";
 import newsHeroBg from "@/public/assets/enterprise-bg.jpg";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 export const metadata: Metadata = pageMetadata({
   title: "Vodex | News",
@@ -46,8 +47,8 @@ export default function NewsIndexPage() {
             </>
           }
           lead="Press releases, funding milestones, events and features covering our work in Gen AI voice agents."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={newsHeroBg}
         />
         <NewsFeatured post={featured} />

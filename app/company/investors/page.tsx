@@ -16,6 +16,7 @@ import googleCloudLogo from "@/public/assets/partner-google-cloud.png";
 import mongodbLogo from "@/public/assets/partner-mongodb.png";
 import krispLogo from "@/public/assets/partner-krisp.png";
 import { pageMetadata } from "@/lib/seo";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 export const metadata: Metadata = pageMetadata({
   title: "Investors & Partners | Vodex",
@@ -53,8 +54,8 @@ export default function InvestorsPage() {
             </>
           }
           lead="Together with our partners, we're shaping a future of growth, efficiency, and innovation powered by Gen AI-driven solutions."
-          primaryCta={{ label: "Talk To Our Expert", href: "/demo" }}
-          secondaryCta={{ label: "Schedule a Demo", href: "/demo" }}
+          primaryCta={{ label: "Talk To Our Expert", href: BOOK_DEMO_URL }}
+          secondaryCta={{ label: "Schedule a Demo", href: BOOK_DEMO_URL }}
           bgImage={investorsHeroBg}
         />
         <InvestorTimeline />

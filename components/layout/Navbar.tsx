@@ -10,6 +10,7 @@ import { SolutionsMegaMenu, MAIN_SOLUTIONS } from "./SolutionsMegaMenu";
 import { ResourcesMegaMenu, RESOURCES_ITEMS } from "./ResourcesMegaMenu";
 import { CompanyMegaMenu, COMPANY_ITEMS } from "./CompanyMegaMenu";
 import styles from "./Navbar.module.css";
+import { BOOK_DEMO_URL } from "@/lib/links";
 
 // "Solutions"/"Resources"/"Company" have no hub page (none is planned) —
 // they're hover-only triggers on desktop (each renders its own
@@ -99,7 +100,7 @@ export function Navbar({ solid = false }: NavbarProps) {
             <LoginIcon />
           </Link>
           <Button
-            href="/demo"
+            href={BOOK_DEMO_URL}
             variant="light"
             size="sm"
             withArrow
@@ -201,7 +202,7 @@ export function Navbar({ solid = false }: NavbarProps) {
               Login
               <LoginIcon />
             </Link>
-            <Button href="/demo" variant="light" size="sm" withArrow>
+            <Button href={BOOK_DEMO_URL} variant="light" size="sm" withArrow>
               Book a Demo
             </Button>
           </div>
