@@ -18,7 +18,7 @@ export function FeaturedCaseStudy() {
             src="/assets/case-study-bg.jpg"
             alt=""
             fill
-            sizes="1180px"
+            sizes="(max-width: 1180px) 100vw, 1180px"
             className={styles.bg}
           />
           <div className={styles.grid}>

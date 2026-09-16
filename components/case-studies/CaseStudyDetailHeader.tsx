@@ -16,26 +16,26 @@ export function CaseStudyDetailHeader({ study }: { study: CaseStudy }) {
   return (
     <header className={styles.header}>
       <div className="container">
-        <Entrance delay={0}>
+        <Entrance immediate delay={0}>
           <Link href="/resources/case-studies" className={styles.back}>
             <ArrowRight className={styles.backIcon} />
             All case studies
           </Link>
         </Entrance>
 
-        <Entrance delay={60}>
+        <Entrance immediate delay={60}>
           <span className={styles.industry}>{study.industry}</span>
         </Entrance>
 
-        <Entrance delay={120}>
+        <Entrance immediate delay={120}>
           <h1 className={styles.title}>{study.title}</h1>
         </Entrance>
 
-        <Entrance delay={170}>
+        <Entrance immediate delay={170}>
           <p className={styles.excerpt}>{study.description}</p>
         </Entrance>
 
-        <Entrance delay={220} className={styles.thumb}>
+        <Entrance immediate delay={220} className={styles.thumb}>
           <Image
             src={study.thumb}
             alt=""
@@ -48,7 +48,7 @@ export function CaseStudyDetailHeader({ study }: { study: CaseStudy }) {
         </Entrance>
 
         {study.stats.length > 0 && (
-          <Entrance delay={260} className={styles.stats} data-count={study.stats.length}>
+          <Entrance immediate delay={260} className={styles.stats} data-count={study.stats.length}>
             {study.stats.map((stat) => (
               <div key={stat.label} className={styles.stat}>
                 <p className={styles.statNumber}>{stat.number}</p>

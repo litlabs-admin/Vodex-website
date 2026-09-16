@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 type Grecaptcha = {
   ready: (cb: () => void) => void;
@@ -15,7 +15,12 @@ declare global {
   }
 }
 
-export type RecaptchaHandle = { reset: () => void };
+export type RecaptchaHandle = {
+  reset: () => void;
+  /** Start loading Google's script now (e.g. the visitor focused the form),
+   * rather than waiting for the widget to scroll near the viewport. */
+  load: () => void;
+};
 
 type Props = {
   onChange: (token: string | null) => void;
@@ -49,9 +54,16 @@ function loadRecaptcha(): Promise<Grecaptcha> {
   return loadPromise;
 }
 
+/** How far outside the viewport the widget starts loading. */
+const LOAD_MARGIN = "400px";
+
 /**
  * Google reCAPTCHA v2 checkbox ("I'm not a robot"), rendered explicitly so it
- * mounts inside React's tree. The token it yields is single-use and is
+ * mounts inside React's tree. Google's script (hundreds of KB plus iframes)
+ * is only fetched once the widget nears the viewport or the parent calls
+ * `load()` on intent — never as part of the initial page load. The parent
+ * should reserve the widget's 78px height so its arrival doesn't shift
+ * layout. The token it yields is single-use and is
  * verified server-side in `app/api/initiate-call/route.ts` — never trust it
  * on the client.
  */
@@ -63,16 +75,37 @@ export const Recaptcha = forwardRef<RecaptchaHandle, Props>(function Recaptcha(
   const widgetId = useRef<number | null>(null);
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
+  const [shouldLoad, setShouldLoad] = useState(false);
 
   useImperativeHandle(ref, () => ({
     reset() {
       if (widgetId.current !== null) window.grecaptcha?.reset(widgetId.current);
       onChangeRef.current(null);
     },
+    load() {
+      setShouldLoad(true);
+    },
   }));
 
   useEffect(() => {
-    if (!RECAPTCHA_SITE_KEY) return;
+    const el = containerRef.current;
+    if (shouldLoad || !el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setShouldLoad(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) setShouldLoad(true);
+      },
+      { rootMargin: LOAD_MARGIN },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [shouldLoad]);
+
+  useEffect(() => {
+    if (!RECAPTCHA_SITE_KEY || !shouldLoad) return;
     let cancelled = false;
     loadRecaptcha()
       .then((g) => {
@@ -89,7 +122,7 @@ export const Recaptcha = forwardRef<RecaptchaHandle, Props>(function Recaptcha(
     return () => {
       cancelled = true;
     };
-  }, [theme]);
+  }, [theme, shouldLoad]);
 
   if (!RECAPTCHA_SITE_KEY) return null;
   return <div ref={containerRef} className={className} />;

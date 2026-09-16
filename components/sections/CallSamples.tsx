@@ -8,7 +8,8 @@ import styles from "./CallSamples.module.css";
  * copy (supplied by the user for wiring up real playback; real Vodex call
  * recordings will replace them later). Filenames are position-based
  * (call-sample-1/2/3.mp3) specifically so a future swap is just "overwrite
- * the file" — no code change needed.
+ * the file, then run `node scripts/waveform-peaks.mjs`" to refresh the
+ * precomputed waveform + duration — no component change needed.
  */
 const CALLS: CallCardData[] = [
   {

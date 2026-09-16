@@ -21,7 +21,7 @@ export function Hero() {
       </div>
 
       <div className={`container ${styles.content}`}>
-        <Entrance delay={0}>
+        <Entrance immediate delay={0}>
           <p className={styles.badge}>
             <span className={styles.badgeIcon}>
               <Waveform />
@@ -30,7 +30,7 @@ export function Hero() {
           </p>
         </Entrance>
 
-        <Entrance delay={90}>
+        <Entrance immediate delay={90}>
           <h1 id="hero-title" className={styles.title}>
             Voice agents that turn
             <br className={styles.titleBreak} />{" "}
@@ -38,7 +38,7 @@ export function Hero() {
           </h1>
         </Entrance>
 
-        <Entrance delay={180}>
+        <Entrance immediate delay={180}>
           <p className={styles.lead}>
             GenAI-powered voice agents for enterprise engagement. Make reminders,
             collections, follow-ups, qualification, payment negotiation and more
@@ -46,7 +46,7 @@ export function Hero() {
           </p>
         </Entrance>
 
-        <Entrance delay={260} className={styles.actions}>
+        <Entrance immediate delay={260} className={styles.actions}>
           <Button href={BOOK_DEMO_URL} variant="primary" withArrow>
             Schedule a Demo
           </Button>

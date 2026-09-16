@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import agentAvatar from "@/public/assets/agent-avatar.png";
 import { AudioWaveform } from "@/components/ui/AudioWaveform";
-import { useWaveformData } from "@/components/ui/useWaveformData";
+import { CALL_SAMPLE_WAVEFORMS } from "@/lib/call-sample-waveforms";
 import { PauseIcon, PlayIcon } from "@/components/ui/icons";
 import styles from "./CallCard.module.css";
 
@@ -47,12 +47,15 @@ export function CallCard({
   const waveformRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
   const [playing, setPlaying] = useState(false);
-  const [duration, setDuration] = useState(NaN);
+  // Waveform + duration are precomputed (scripts/waveform-peaks.mjs) so the
+  // audio itself isn't fetched until the visitor presses Play.
+  const precomputed = CALL_SAMPLE_WAVEFORMS[src];
+  const waveformHeights = precomputed?.heights;
+  const [duration, setDuration] = useState(precomputed?.duration ?? NaN);
   // Counts down while playing (duration - currentTime) rather than showing
   // a static total, per explicit user feedback that the label should be
   // dynamic and reflect the real time left to finish.
-  const [remaining, setRemaining] = useState(NaN);
-  const waveformHeights = useWaveformData(src);
+  const [remaining, setRemaining] = useState(precomputed?.duration ?? NaN);
 
   // A different card became active — stop this one. This, not a direct ref
   // into sibling cards, is what makes "starting one stops the other" work.
@@ -62,17 +65,18 @@ export function CallCard({
     }
   }, [isActive]);
 
-  // Reads the real audio duration once known. Attached imperatively (rather
-  // than via the onLoadedMetadata JSX prop) because these local files load
-  // fast enough that the native event can fire before React finishes
-  // attaching its listener — readyState is checked immediately in case
-  // metadata already arrived by the time this effect runs.
+  // Swaps the precomputed duration for the element's own once metadata
+  // arrives (after the first Play). Attached imperatively (rather than via the
+  // onLoadedMetadata JSX prop) because the native event can fire before React
+  // finishes attaching its listener — readyState is checked immediately in
+  // case metadata already arrived by the time this effect runs. Remaining is
+  // measured from currentTime, since a pre-load seek may have moved it.
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     const readDuration = () => {
       setDuration(audio.duration);
-      setRemaining(audio.duration);
+      setRemaining(Math.max(0, audio.duration - audio.currentTime));
     };
     if (audio.readyState >= 1) readDuration();
     audio.addEventListener("loadedmetadata", readDuration);
@@ -115,15 +119,18 @@ export function CallCard({
   const handleSeek = (event: React.MouseEvent<HTMLDivElement>) => {
     const audio = audioRef.current;
     const wave = waveformRef.current;
-    if (!audio || !wave || !audio.duration) return;
+    // Before the first Play (preload="none") the element doesn't know its
+    // duration yet — fall back to the precomputed one.
+    const total = audio?.duration || duration;
+    if (!audio || !wave || !total) return;
     const rect = wave.getBoundingClientRect();
     const fraction = Math.min(
       1,
       Math.max(0, (event.clientX - rect.left) / rect.width),
     );
-    audio.currentTime = fraction * audio.duration;
+    audio.currentTime = fraction * total;
     wave.style.setProperty("--progress", String(fraction));
-    setRemaining(Math.max(0, audio.duration - audio.currentTime));
+    setRemaining(Math.max(0, total * (1 - fraction)));
     if (!playing) {
       onActivate();
       void audio.play();
@@ -180,11 +187,11 @@ export function CallCard({
         >
           <AudioWaveform
             className={styles.waveformBase}
-            heights={waveformHeights ?? undefined}
+            heights={waveformHeights}
           />
           <AudioWaveform
             className={styles.waveformProgress}
-            heights={waveformHeights ?? undefined}
+            heights={waveformHeights}
           />
         </div>
         <span className={styles.time}>{formatTime(remaining)}</span>
@@ -200,7 +207,7 @@ export function CallCard({
       <audio
         ref={audioRef}
         src={src}
-        preload="metadata"
+        preload="none"
         className={styles.audioEl}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}

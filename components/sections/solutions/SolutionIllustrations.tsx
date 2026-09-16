@@ -4,13 +4,14 @@ import { useEffect, useRef, useState, type ReactNode, type RefObject } from "rea
 import {
   AnimatePresence,
   animate,
-  motion,
+  m,
   useInView,
   useMotionValue,
   useReducedMotion,
   useTransform,
 } from "framer-motion";
 import { ArrowRight, HandshakeIcon, ShieldCheckIcon } from "@/components/ui/icons";
+import { usePauseOffscreen } from "@/components/ui/PauseOffscreen";
 import styles from "./SolutionIllustrations.module.css";
 
 /**
@@ -104,10 +105,12 @@ function Panel({
   label: string;
   children: ReactNode;
 }) {
+  // The CSS sheen loops forever; the JS loop above is already view-gated.
+  usePauseOffscreen(rootRef);
   return (
     <div ref={rootRef} className={styles.panel} role="img" aria-label={label}>
       <span className={styles.panelSheen} aria-hidden="true" />
-      <motion.div
+      <m.div
         className={styles.panelInner}
         aria-hidden="true"
         initial={{ opacity: 0, y: 14 }}
@@ -116,7 +119,7 @@ function Panel({
         transition={{ duration: 0.55, ease: EASE }}
       >
         {children}
-      </motion.div>
+      </m.div>
     </div>
   );
 }
@@ -124,7 +127,7 @@ function Panel({
 function Check() {
   return (
     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-      <motion.path
+      <m.path
         d="M2.5 6.5L5 9L9.5 3.5"
         stroke="currentColor"
         strokeWidth="1.8"
@@ -140,7 +143,7 @@ function Check() {
 
 function LiveDot({ loop }: { loop: boolean }) {
   return (
-    <motion.span
+    <m.span
       className={styles.liveDot}
       aria-hidden="true"
       animate={loop ? { scale: [1, 1.4, 1], opacity: [1, 0.5, 1] } : { scale: 1, opacity: 1 }}
@@ -158,7 +161,7 @@ function Waveform({ active, loop }: { active: boolean; loop: boolean }) {
   return (
     <div className={styles.waveform} aria-hidden="true">
       {WAVE_PEAKS.map((peak, i) => (
-        <motion.span
+        <m.span
           key={i}
           className={styles.waveBar}
           animate={
@@ -216,13 +219,13 @@ function CountUp({ active, to, className }: { active: boolean; to: number; class
     return () => controls.stop();
   }, [active, to, mv]);
 
-  return <motion.span className={className}>{rounded}</motion.span>;
+  return <m.span className={className}>{rounded}</m.span>;
 }
 
 function Clock({ loop }: { loop: boolean }) {
   return (
     <span className={styles.clock} aria-hidden="true">
-      <motion.span
+      <m.span
         className={styles.clockHand}
         animate={loop ? { rotate: 360 } : { rotate: 220 }}
         transition={loop ? { duration: 8, repeat: Infinity, ease: "linear" } : { duration: 0 }}
@@ -264,7 +267,7 @@ function IdentityCheck({ hovered, index }: IlloProps) {
           <StatusPill active={active} pendingText="Verifying…" doneText="Confirmed" />
         </div>
         <div className={styles.thinTrack}>
-          <motion.div
+          <m.div
             className={styles.thinFill}
             animate={{ width: active ? "100%" : "42%" }}
             transition={{ duration: active ? 0.6 : 0.3, ease: EASE }}
@@ -275,29 +278,29 @@ function IdentityCheck({ hovered, index }: IlloProps) {
             <div className={styles.fieldRow} key={field.label}>
               <span className={styles.fieldLabel}>{field.label}</span>
               <span className={styles.fieldValue}>
-                <motion.span
+                <m.span
                   className={styles.fieldMasked}
                   animate={{ opacity: active ? 0 : 1 }}
                   transition={{ duration: 0.2 }}
                 >
                   {field.value}
-                </motion.span>
-                <motion.span
+                </m.span>
+                <m.span
                   className={styles.fieldCheck}
                   animate={{ opacity: active ? 1 : 0, scale: active ? 1 : 0.6 }}
                   transition={{ duration: 0.3, ease: EASE, delay: active && loop ? i * 0.1 : 0 }}
                 >
                   <Check />
-                </motion.span>
+                </m.span>
               </span>
             </div>
           ))}
         </div>
       </div>
-      <motion.div className={styles.chip} {...reveal(active, 0.32)}>
+      <m.div className={styles.chip} {...reveal(active, 0.32)}>
         <ShieldCheckIcon className={styles.chipIcon} aria-hidden="true" />
         <span>Compliance log written · 0:12</span>
-      </motion.div>
+      </m.div>
     </Panel>
   );
 }
@@ -355,7 +358,7 @@ function ReminderCall({
         <div className={styles.scriptSlot}>
           <AnimatePresence mode="wait" initial={false}>
             {active ? (
-              <motion.p
+              <m.p
                 key="reply"
                 className={[styles.callScript, styles.callReply].join(" ")}
                 initial={{ opacity: 0, x: 6 }}
@@ -364,9 +367,9 @@ function ReminderCall({
                 transition={{ duration: 0.3, ease: EASE }}
               >
                 &ldquo;{firstName}: Yes — I can take care of that today.&rdquo;
-              </motion.p>
+              </m.p>
             ) : (
-              <motion.p
+              <m.p
                 key="ask"
                 className={styles.callScript}
                 initial={{ opacity: 0, x: -6 }}
@@ -376,7 +379,7 @@ function ReminderCall({
               >
                 &ldquo;Hi {firstName}, following up on your {subject}. Have you had a chance to
                 take care of it yet?&rdquo;
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
         </div>
@@ -384,12 +387,12 @@ function ReminderCall({
           <StatusPill active={active} pendingText="On call…" doneText="Payment confirmed" />
         </div>
       </div>
-      <motion.div className={styles.chip} {...reveal(active, 0.2)}>
+      <m.div className={styles.chip} {...reveal(active, 0.2)}>
         <span className={styles.chipAmount}>{amount}</span>
         <span className={active ? styles.chipDone : styles.chipPending}>
           {active ? "Paid" : due}
         </span>
-      </motion.div>
+      </m.div>
     </Panel>
   );
 }
@@ -424,7 +427,7 @@ function PlanNegotiation({ hovered, index }: IlloProps) {
         </div>
         <div className={styles.balanceBar}>
           {installments.map((step, i) => (
-            <motion.div
+            <m.div
               key={step.date}
               className={styles.balanceSegment}
               animate={{ marginInline: active ? 2 : 0, borderRadius: active ? 6 : 0 }}
@@ -434,7 +437,7 @@ function PlanNegotiation({ hovered, index }: IlloProps) {
         </div>
         <div className={styles.installmentLabels}>
           {installments.map((step, i) => (
-            <motion.div
+            <m.div
               key={step.date}
               className={styles.installmentItem}
               animate={{ opacity: active ? 1 : 0, y: active ? 0 : 4 }}
@@ -446,14 +449,14 @@ function PlanNegotiation({ hovered, index }: IlloProps) {
             >
               <span className={styles.installmentDate}>{step.date}</span>
               <span className={styles.installmentAmount}>{step.amount}</span>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>
-      <motion.div className={styles.chip} {...reveal(active, 0.32)}>
+      <m.div className={styles.chip} {...reveal(active, 0.32)}>
         <HandshakeIcon className={styles.chipIcon} aria-hidden="true" />
         <span>Promise-to-pay captured · 3 installments</span>
-      </motion.div>
+      </m.div>
     </Panel>
   );
 }
@@ -499,7 +502,7 @@ function RedialLadder({ hovered, index }: IlloProps) {
                   {active && i === last && <span className={styles.ladderPing} aria-hidden="true" />}
                 </span>
                 {i < last && (
-                  <motion.span
+                  <m.span
                     className={styles.ladderConnector}
                     animate={{ scaleY: active ? 1 : 0 }}
                     transition={{ duration: 0.4, ease: EASE, delay: active && loop ? i * 0.3 : 0 }}
@@ -510,13 +513,13 @@ function RedialLadder({ hovered, index }: IlloProps) {
                 <span className={styles.ladderTime}>
                   Attempt {i + 1} · {attempt.time}
                 </span>
-                <motion.span
+                <m.span
                   className={i === last ? styles.ladderStatusDone : styles.ladderStatusMuted}
                   animate={{ opacity: active ? 1 : 0 }}
                   transition={{ duration: 0.3, delay: active && loop ? i * 0.3 + 0.15 : 0 }}
                 >
                   {i === last ? "Connected · 0:42" : "No answer"}
-                </motion.span>
+                </m.span>
               </div>
             </div>
           ))}
@@ -564,13 +567,13 @@ function LeadFunnel({ hovered, index, total, noun }: IlloProps & LeadFunnelProps
                 </span>
                 <span className={styles.leadName}>{lead.name}</span>
               </span>
-              <motion.span
+              <m.span
                 className={lead.qualified ? styles.leadBadgeDone : styles.leadBadgeMuted}
                 animate={{ opacity: active ? 1 : 0.001, y: active ? 0 : 4 }}
                 transition={{ duration: 0.3, delay: active && loop ? i * 0.12 : 0 }}
               >
                 {lead.qualified ? "Qualified" : "Not a fit"}
-              </motion.span>
+              </m.span>
             </div>
           ))}
         </div>
@@ -618,20 +621,20 @@ function ClaimIntake({ hovered, index }: IlloProps) {
             <div className={styles.fieldRow} key={field.label}>
               <span className={styles.fieldLabel}>{field.label}</span>
               <span className={styles.fieldValue}>
-                <motion.span
+                <m.span
                   className={styles.fieldMasked}
                   animate={{ opacity: active ? 0 : 1 }}
                   transition={{ duration: 0.2 }}
                 >
                   —
-                </motion.span>
-                <motion.span
+                </m.span>
+                <m.span
                   className={styles.fieldFilled}
                   animate={{ opacity: active ? 1 : 0, x: active ? 0 : 6 }}
                   transition={{ duration: 0.3, ease: EASE, delay: active && loop ? i * 0.1 : 0 }}
                 >
                   {field.value}
-                </motion.span>
+                </m.span>
               </span>
             </div>
           ))}
@@ -639,7 +642,7 @@ function ClaimIntake({ hovered, index }: IlloProps) {
             <span className={styles.fieldLabel}>Photos</span>
             <span className={styles.photoStrip}>
               {[0, 1, 2].map((p) => (
-                <motion.span
+                <m.span
                   key={p}
                   className={styles.photoThumb}
                   animate={{ opacity: active ? 1 : 0, scale: active ? 1 : 0.6 }}
@@ -654,10 +657,10 @@ function ClaimIntake({ hovered, index }: IlloProps) {
           </div>
         </div>
       </div>
-      <motion.div className={styles.chip} {...reveal(active, 0.5)}>
+      <m.div className={styles.chip} {...reveal(active, 0.5)}>
         <ArrowRight className={styles.chipIcon} aria-hidden="true" />
         <span>Routed to claims specialist · Wait 0:00</span>
-      </motion.div>
+      </m.div>
     </Panel>
   );
 }

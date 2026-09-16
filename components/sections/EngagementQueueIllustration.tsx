@@ -2,6 +2,7 @@ import Image from "next/image";
 import bgPhoto from "@/public/assets/engagement-queue-bg.jpg";
 import ribbon from "@/public/assets/fully-automated-ribbon.png";
 import { CheckIcon } from "@/components/ui/icons";
+import { PauseOffscreen } from "@/components/ui/PauseOffscreen";
 import styles from "./EngagementQueueIllustration.module.css";
 
 /**
@@ -34,7 +35,7 @@ function Sheen() {
 
 export function EngagementQueueIllustration() {
   return (
-    <div
+    <PauseOffscreen
       className={styles.stage}
       role="img"
       aria-label="Illustration of Vodex's automated engagement queue: customer accounts are worked one after another — reminders sent, negotiation, promise-to-pay captured — while the weekly recovered amount rises and completed accounts drop out as new ones enter."
@@ -204,6 +205,6 @@ export function EngagementQueueIllustration() {
           </div>
         </div>
       </div>
-    </div>
+    </PauseOffscreen>
   );
 }

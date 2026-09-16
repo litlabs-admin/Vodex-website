@@ -27,7 +27,7 @@ export function FaqHumanSupport() {
             {/* ⚠️ Reference PDF's link text here literally said "Medical & Healthcare →"
                 — a mismatched Figma artifact (an industry link, not a Help Center
                 destination). Fixed per confirmed user direction. */}
-            <Link href="/help" className={styles.cardLink}>
+            <Link href="https://vodexhelpcenter.featurebase.app/help" className={styles.cardLink}>
               Visit Help Center
               <ArrowRight />
             </Link>

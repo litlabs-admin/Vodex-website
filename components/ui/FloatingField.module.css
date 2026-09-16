@@ -49,7 +49,10 @@
   line-height: 1;
   color: var(--fg-muted);
   pointer-events: none;
-  transition: all var(--dur) var(--ease);
+  /* Explicit list, not `all` — only what the float state actually changes. */
+  transition-property: top, left, transform, color, background-color, padding;
+  transition-duration: var(--dur);
+  transition-timing-function: var(--ease);
   z-index: 1;
 }
 

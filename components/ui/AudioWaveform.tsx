@@ -1,5 +1,5 @@
-/** Decorative fallback — shown until a card's real per-file heights (from
- * useWaveformData) have finished decoding. */
+/** Decorative fallback — shown when a sample has no precomputed heights (see
+ * lib/call-sample-waveforms.ts). */
 const FALLBACK_HEIGHTS = [
   10, 18, 26, 14, 30, 20, 8, 24, 32, 16, 10, 22, 28, 12, 20, 30, 18, 8, 26,
   14, 32, 20, 10, 24, 16, 28, 12, 22, 8, 18,
@@ -7,7 +7,7 @@ const FALLBACK_HEIGHTS = [
 
 type AudioWaveformProps = {
   className?: string;
-  /** Real per-bar pixel heights (0–32, from useWaveformData). Falls back to
+  /** Real per-bar pixel heights (0–32, from lib/call-sample-waveforms.ts). Falls back to
    * the decorative shape above when omitted/still decoding. */
   heights?: number[];
 };

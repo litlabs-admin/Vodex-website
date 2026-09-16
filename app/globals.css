@@ -216,6 +216,18 @@ html[data-announcement-dismissed="true"] .js-announcement-bar {
   animation-delay: var(--reveal-delay, 0ms);
 }
 
+/* Below-the-fold entrances play as they scroll in, rather than all firing
+   (unseen) during page load — that burst competed with hydration and first
+   paint. Heroes opt out via <Entrance immediate> and keep the staggered
+   on-load version above. Unsupported browsers keep the on-load animation. */
+@supports (animation-timeline: view()) {
+  .enter:not([data-immediate]) {
+    animation-timeline: view();
+    animation-range: entry 0% entry 60%;
+    animation-delay: 0ms;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -229,6 +241,16 @@ html[data-announcement-dismissed="true"] .js-announcement-bar {
   .enter {
     animation: none;
   }
+}
+
+/* Set by PauseOffscreen / usePauseOffscreen (components/ui/PauseOffscreen.tsx)
+   while a decorative looping animation is scrolled out of view, so it stops
+   costing paint/layout every frame. */
+[data-offscreen="true"],
+[data-offscreen="true"] *,
+[data-offscreen="true"] *::before,
+[data-offscreen="true"] *::after {
+  animation-play-state: paused !important;
 }
 
 /* ==========================================================================

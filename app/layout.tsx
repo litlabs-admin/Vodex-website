@@ -4,9 +4,10 @@ import { Ancizar_Serif, Inter } from "next/font/google";
 import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
+// No `weight` list: Inter is a variable font, so next/font ships one file
+// covering 400–700 instead of four static ones.
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-inter",
 });
@@ -20,6 +21,9 @@ const ancizar = Ancizar_Serif({
   // next/font ships no metric overrides for this family yet.
   adjustFontFallback: false,
   fallback: ["Iowan Old Style", "Georgia", "serif"],
+  // Accent-only face (a word or two per heading) — don't let its preload
+  // compete with Inter and the hero image for the critical path.
+  preload: false,
 });
 
 const HOME_TITLE = "Voice AI for Debt Collection & Automated Outreach | Vodex";
@@ -119,12 +123,13 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
           {`!function(){window.semaphore=window.semaphore||[],window.ketch=function(){window.semaphore.push(arguments)};var e=document.createElement("script");e.type="text/javascript",e.src="https://global.ketchcdn.com/web/v3/config/vodex/website_smart_tag/boot.js",e.defer=e.async=!0,document.getElementsByTagName("head")[0].appendChild(e)}();`}
         </Script>
 
-        {/* Google Analytics 4 */}
+        {/* Google Analytics 4 — lazyOnload so it never competes with
+            hydration; the consent defaults above still run first. */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-1PCZCW5M7M"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="ga-config" strategy="afterInteractive">
+        <Script id="ga-config" strategy="lazyOnload">
           {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
 gtag('js',new Date());gtag('config','G-1PCZCW5M7M');`}
         </Script>

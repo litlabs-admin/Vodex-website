@@ -22,7 +22,7 @@ export default function NotFound() {
       <main>
         <section className={styles.section}>
           <div className="container">
-            <Entrance delay={0} className={styles.imageWrap}>
+            <Entrance immediate delay={0} className={styles.imageWrap}>
               <Image
                 src="/assets/404-desert-illustration.png"
                 alt="Desert illustration with cacti and a broken 404 sign under a setting sun"
@@ -32,13 +32,13 @@ export default function NotFound() {
                 priority
               />
             </Entrance>
-            <Entrance as="h1" delay={140} className={styles.title}>
+            <Entrance immediate as="h1" delay={140} className={styles.title}>
               Page not found
             </Entrance>
-            <Entrance as="p" delay={200} className={styles.lead}>
+            <Entrance immediate as="p" delay={200} className={styles.lead}>
               The page you&rsquo;re looking for doesn&rsquo;t exist or may have been moved.
             </Entrance>
-            <Entrance delay={260} className={styles.actions}>
+            <Entrance immediate delay={260} className={styles.actions}>
               <Button href="/" variant="light" withArrow>
                 Back to Home
               </Button>

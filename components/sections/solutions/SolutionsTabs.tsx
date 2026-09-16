@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
-import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
+import { AnimatePresence, LazyMotion, m, useInView, useReducedMotion } from "framer-motion";
 import { Mockup, type IlloSpec } from "./SolutionIllustrations";
 import styles from "./SolutionsTabs.module.css";
 
 const EASE = [0.44, 0, 0.56, 1] as const;
+const loadMotionFeatures = () => import("./motion-features").then((mod) => mod.default);
 const DWELL_MS = 8000;
 
 type Card = {
@@ -242,113 +243,115 @@ export function SolutionsTabs() {
   };
 
   return (
-    <div
-      ref={rootRef}
-      className={styles.lifecycle}
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
-      onFocus={() => setFocusedWithin(true)}
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-          setFocusedWithin(false);
-        }
-      }}
-    >
+    <LazyMotion features={loadMotionFeatures}>
       <div
-        className={styles.tabSwitcher}
-        role="tablist"
-        aria-label="Industry"
-        onKeyDown={handleKeyDown}
+        ref={rootRef}
+        className={styles.lifecycle}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
+        onFocus={() => setFocusedWithin(true)}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+            setFocusedWithin(false);
+          }
+        }}
       >
-        {INDUSTRIES.map((industry, i) => {
-          const isActive = i === activeIndex;
-          const tabId = `${uid}-tab-${industry.id}`;
-          const panelId = `${uid}-panel-${industry.id}`;
-          return (
-            <button
-              key={industry.id}
-              ref={(el) => {
-                tabRefs.current[i] = el;
-              }}
-              id={tabId}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              aria-controls={panelId}
-              tabIndex={isActive ? 0 : -1}
-              className={[styles.tab, isActive ? styles.tabActive : ""].join(" ").trim()}
-              onClick={() => selectIndex(i)}
-            >
-              {isActive && (
-                <motion.span
-                  layoutId="solutionsTabFill"
-                  className={styles.tabFill}
-                  transition={{ duration: reduce ? 0 : 0.42, ease: EASE }}
-                />
-              )}
-              <span className={styles.tabLabel}>{industry.label}</span>
-              {isActive && !reduce && !autoplayStopped && (
-                <span
-                  key={activeIndex}
-                  className={styles.tabProgress}
-                  data-active={autoplayActive || undefined}
-                  style={{ ["--dwell" as string]: `${DWELL_MS}ms` }}
-                  aria-hidden="true"
-                />
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={active.id}
-          id={`${uid}-panel-${active.id}`}
-          role="tabpanel"
-          aria-labelledby={`${uid}-tab-${active.id}`}
-          tabIndex={0}
-          initial={reduce ? false : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={reduce ? undefined : { opacity: 0, y: -12 }}
-          transition={{ duration: 0.4, ease: EASE }}
+        <div
+          className={styles.tabSwitcher}
+          role="tablist"
+          aria-label="Industry"
+          onKeyDown={handleKeyDown}
         >
-          <motion.div
-            className={styles.grid}
-            data-count={active.cards.length}
-            variants={reduce ? undefined : cardsContainer}
-            initial={reduce ? false : "hidden"}
-            animate={reduce ? undefined : "show"}
-          >
-            {active.cards.map((card, i) => (
-              <motion.article
-                key={card.id}
-                className={styles.card}
-                variants={reduce ? undefined : cardVariant}
-                whileHover={reduce ? undefined : { y: -4 }}
-                transition={{ duration: 0.25, ease: EASE }}
-                onMouseEnter={() => setHoveredId(card.id)}
-                onMouseLeave={() => setHoveredId((h) => (h === card.id ? null : h))}
+          {INDUSTRIES.map((industry, i) => {
+            const isActive = i === activeIndex;
+            const tabId = `${uid}-tab-${industry.id}`;
+            const panelId = `${uid}-panel-${industry.id}`;
+            return (
+              <button
+                key={industry.id}
+                ref={(el) => {
+                  tabRefs.current[i] = el;
+                }}
+                id={tabId}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={panelId}
+                tabIndex={isActive ? 0 : -1}
+                className={[styles.tab, isActive ? styles.tabActive : ""].join(" ").trim()}
+                onClick={() => selectIndex(i)}
               >
-                <div className={styles.cardText}>
-                  <h3 className={styles.cardTitle}>{card.title}</h3>
-                  <ul className={styles.cardBullets}>
-                    {card.bullets.map((bullet) => (
-                      <li key={bullet}>{bullet}</li>
-                    ))}
-                  </ul>
-                  {card.link && (
-                    <a className={styles.cardLink} href={card.link.href}>
-                      {card.link.text}
-                    </a>
-                  )}
-                </div>
-                <Mockup spec={card.illo} hovered={hoveredId === card.id} index={i} />
-              </motion.article>
-            ))}
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
-    </div>
+                {isActive && (
+                  <m.span
+                    layoutId="solutionsTabFill"
+                    className={styles.tabFill}
+                    transition={{ duration: reduce ? 0 : 0.42, ease: EASE }}
+                  />
+                )}
+                <span className={styles.tabLabel}>{industry.label}</span>
+                {isActive && !reduce && !autoplayStopped && (
+                  <span
+                    key={activeIndex}
+                    className={styles.tabProgress}
+                    data-active={autoplayActive || undefined}
+                    style={{ ["--dwell" as string]: `${DWELL_MS}ms` }}
+                    aria-hidden="true"
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        <AnimatePresence mode="wait">
+          <m.div
+            key={active.id}
+            id={`${uid}-panel-${active.id}`}
+            role="tabpanel"
+            aria-labelledby={`${uid}-tab-${active.id}`}
+            tabIndex={0}
+            initial={reduce ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduce ? undefined : { opacity: 0, y: -12 }}
+            transition={{ duration: 0.4, ease: EASE }}
+          >
+            <m.div
+              className={styles.grid}
+              data-count={active.cards.length}
+              variants={reduce ? undefined : cardsContainer}
+              initial={reduce ? false : "hidden"}
+              animate={reduce ? undefined : "show"}
+            >
+              {active.cards.map((card, i) => (
+                <m.article
+                  key={card.id}
+                  className={styles.card}
+                  variants={reduce ? undefined : cardVariant}
+                  whileHover={reduce ? undefined : { y: -4 }}
+                  transition={{ duration: 0.25, ease: EASE }}
+                  onMouseEnter={() => setHoveredId(card.id)}
+                  onMouseLeave={() => setHoveredId((h) => (h === card.id ? null : h))}
+                >
+                  <div className={styles.cardText}>
+                    <h3 className={styles.cardTitle}>{card.title}</h3>
+                    <ul className={styles.cardBullets}>
+                      {card.bullets.map((bullet) => (
+                        <li key={bullet}>{bullet}</li>
+                      ))}
+                    </ul>
+                    {card.link && (
+                      <a className={styles.cardLink} href={card.link.href}>
+                        {card.link.text}
+                      </a>
+                    )}
+                  </div>
+                  <Mockup spec={card.illo} hovered={hoveredId === card.id} index={i} />
+                </m.article>
+              ))}
+            </m.div>
+          </m.div>
+        </AnimatePresence>
+      </div>
+    </LazyMotion>
   );
 }

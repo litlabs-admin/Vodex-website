@@ -10,14 +10,14 @@ export function ArticleHeader({ post }: { post: BlogPost }) {
   return (
     <header className={styles.header}>
       <div className="container">
-        <Entrance delay={0}>
+        <Entrance immediate delay={0}>
           <Link href="/resources/blog" className={styles.back}>
             <ArrowRight className={styles.backIcon} />
             All articles
           </Link>
         </Entrance>
 
-        <Entrance delay={60} className={styles.meta}>
+        <Entrance immediate delay={60} className={styles.meta}>
           <span className={styles.category}>{post.category}</span>
           <span className={styles.metaDot} aria-hidden="true" />
           <span>{formatDate(post.date)}</span>
@@ -25,15 +25,15 @@ export function ArticleHeader({ post }: { post: BlogPost }) {
           <span>{post.readMinutes} min read</span>
         </Entrance>
 
-        <Entrance delay={120}>
+        <Entrance immediate delay={120}>
           <h1 className={styles.title}>{post.title}</h1>
         </Entrance>
 
-        <Entrance delay={170}>
+        <Entrance immediate delay={170}>
           <p className={styles.excerpt}>{post.excerpt}</p>
         </Entrance>
 
-        <Entrance delay={220} className={styles.thumb}>
+        <Entrance immediate delay={220} className={styles.thumb}>
           <Image
             src={post.thumb}
             alt=""

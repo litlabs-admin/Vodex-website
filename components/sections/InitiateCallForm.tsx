@@ -183,7 +183,16 @@ export function InitiateCallForm() {
               </button>
             </div>
           ) : (
-            <form id="initiate-call-form" className={styles.bar} onSubmit={handleSubmit} noValidate>
+            <form
+              id="initiate-call-form"
+              className={styles.bar}
+              onSubmit={handleSubmit}
+              // Intent signals: start fetching reCAPTCHA before the visitor
+              // reaches the checkbox (it otherwise loads on scroll-into-view).
+              onFocusCapture={() => recaptchaRef.current?.load()}
+              onPointerEnter={() => recaptchaRef.current?.load()}
+              noValidate
+            >
               {/* Honeypot — invisible to people, tempting to bots. */}
               <div className={styles.honeypot} aria-hidden="true">
                 <label htmlFor="initiate-call-company-website">Company website</label>

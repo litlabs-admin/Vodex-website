@@ -21,7 +21,7 @@ export function ProductHero() {
       </div>
 
       <div className={`container ${styles.content}`}>
-        <Entrance delay={0}>
+        <Entrance immediate delay={0}>
           <p className={styles.badge}>
             <span className={styles.badgeIcon}>
               <Waveform />
@@ -30,14 +30,14 @@ export function ProductHero() {
           </p>
         </Entrance>
 
-        <Entrance delay={90}>
+        <Entrance immediate delay={90}>
           <h1 id="product-hero-title" className={styles.title}>
             AI powered <span className="accent">phone calls</span> for
             <br className={styles.titleBreak} /> enterprises
           </h1>
         </Entrance>
 
-        <Entrance delay={180}>
+        <Entrance immediate delay={180}>
           <p className={styles.lead}>
             Effortless, intelligent calling that scales with your business.
             Human-like conversations, deep system integration, and
@@ -45,7 +45,7 @@ export function ProductHero() {
           </p>
         </Entrance>
 
-        <Entrance delay={260} className={styles.actions}>
+        <Entrance immediate delay={260} className={styles.actions}>
           <Button href={BOOK_DEMO_URL} variant="primary" withArrow>
             Schedule a Demo
           </Button>

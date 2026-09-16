@@ -48,16 +48,16 @@ export async function LegalPage({ slug }: { slug: string }) {
         </noscript>
         <header className={styles.header}>
           <div className="container">
-            <Entrance delay={0}>
+            <Entrance immediate delay={0}>
               <p className={styles.eyebrow}>
                 <span className={styles.eyebrowDot} aria-hidden="true" />
                 Legal
               </p>
             </Entrance>
-            <Entrance delay={120}>
+            <Entrance immediate delay={120}>
               <h1 className={styles.title}>{frontmatter.title}</h1>
             </Entrance>
-            <Entrance delay={240}>
+            <Entrance immediate delay={240}>
               <p className={styles.intro}>
                 {frontmatter.description}
                 {frontmatter.lastUpdated && (

@@ -14,7 +14,7 @@ export function ResearchLatency() {
     <section className={styles.section} aria-labelledby="research-latency-title">
       <div className="container">
         <Entrance className={styles.banner}>
-          <Image src={latencyBg} alt="" fill sizes="1327px" className={styles.bg} />
+          <Image src={latencyBg} alt="" fill sizes="(max-width: 1327px) 100vw, 1327px" className={styles.bg} />
           <p className={styles.eyebrow}>Latency</p>
 
           <div className={styles.grid}>

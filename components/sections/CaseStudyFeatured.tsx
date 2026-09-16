@@ -34,7 +34,7 @@ export function CaseStudyFeatured({ study }: { study: CaseStudy }) {
             src="/assets/case-study-featured-bg.jpg"
             alt=""
             fill
-            sizes="1327px"
+            sizes="(max-width: 1327px) 100vw, 1327px"
             className={styles.bg}
           />
           <div className={styles.scrim} />

@@ -113,10 +113,12 @@
   gap: 12px;
   padding: 14px;
   border-radius: 16px;
-  background: rgba(20, 21, 24, 0.62);
+  /* Solid-ish tint instead of backdrop-filter: the ken-burns zoom behind this
+     bar changes every frame, and a live blur over it forced a full re-blur
+     (repaint) per frame — the main scroll/idle jank on slower devices. Over
+     the dark scrim the denser tint reads the same. */
+  background: rgba(20, 21, 24, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
 }
 
 .cell {

@@ -59,7 +59,7 @@ export function SolutionHero({
       )}
 
       <div className={`container ${styles.content}`}>
-        <Entrance delay={0}>
+        <Entrance immediate delay={0}>
           <p className={styles.badge}>
             <span className={styles.badgeIcon}>
               <BadgeIcon />
@@ -68,17 +68,17 @@ export function SolutionHero({
           </p>
         </Entrance>
 
-        <Entrance delay={90}>
+        <Entrance immediate delay={90}>
           <h1 id={headingId} className={styles.title}>
             {titleLines}
           </h1>
         </Entrance>
 
-        <Entrance delay={180}>
+        <Entrance immediate delay={180}>
           <p className={styles.lead}>{lead}</p>
         </Entrance>
 
-        <Entrance delay={260} className={styles.actions}>
+        <Entrance immediate delay={260} className={styles.actions}>
           <Button href={primaryCta.href} variant="primary" withArrow={primaryCta.withArrow ?? true}>
             {primaryCta.label}
           </Button>

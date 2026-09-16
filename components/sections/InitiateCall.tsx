@@ -1,6 +1,7 @@
 import Image from "next/image";
 import bg from "@/public/assets/initiate-call-bg.jpg";
 import { Entrance } from "@/components/ui/Entrance";
+import { PauseOffscreen } from "@/components/ui/PauseOffscreen";
 import { InitiateCallForm } from "./InitiateCallForm";
 import styles from "./InitiateCall.module.css";
 
@@ -17,7 +18,7 @@ import styles from "./InitiateCall.module.css";
 export function InitiateCall() {
   return (
     <section className={styles.section} aria-labelledby="initiate-call-title">
-      <div className={styles.backdrop}>
+      <PauseOffscreen className={styles.backdrop}>
         <Image
           src={bg}
           alt=""
@@ -28,7 +29,7 @@ export function InitiateCall() {
           style={{ objectFit: "cover", objectPosition: "center 42%" }}
         />
         <div className={styles.scrim} />
-      </div>
+      </PauseOffscreen>
 
       <div className={`container ${styles.content}`}>
         <Entrance delay={0}>
